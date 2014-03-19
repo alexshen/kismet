@@ -46,10 +46,12 @@ class common_matrix_impl
 {
     static_assert(detail::valid_dimension<Sizes...>::value, "Dimension must not be 0");
 public:
+    using size_type = std::size_t;
+
     // element-wise addition
     Derived& operator +=(Derived const& m)
     {
-        for (std::size_t i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
+        for (size_type i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
             m_a[i] += m.m_a[i];
         }
         return static_cast<Derived&>(*this);
@@ -58,7 +60,7 @@ public:
     // element-wise subtraction
     Derived& operator -=(Derived const& m)
     {
-        for (std::size_t i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
+        for (size_type i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
             m_a[i] -= m.m_a[i];
         }
         return static_cast<Derived&>(*this);
@@ -84,19 +86,19 @@ public:
     }
 
     // get the size of n-th dimension
-    std::size_t size(size_t index) const
+    size_type size(size_t index) const
     {
         assert(index < sizeof...(Sizes));
         return get(index, integer_sequence<size_type, Sizes...>());
     }
 
     // get the total number of elements
-    std::size_t size() const { return s_size; }
+    size_type size() const { return s_size; }
 
     T* data() { return m_a;  }
     T const* data() const { return m_a; }
 protected:
-    static const std::size_t s_size = detail::matrix_size<Size...>::value;
+    static const size_type s_size = detail::matrix_size<Size...>::value;
     T m_a[s_size];
 };
 
