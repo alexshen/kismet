@@ -87,7 +87,7 @@ public:
     std::size_t size(size_t index) const
     {
         assert(index < sizeof...(Sizes));
-        return get(index, utility::integer_sequence<std::size_t, Sizes...>());
+        return get(index, integer_sequence<size_type, Sizes...>());
     }
 
     // get the total number of elements

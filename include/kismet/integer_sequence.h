@@ -6,8 +6,6 @@
 
 namespace kismet
 {
-namespace utility
-{
 
 template<typename T, T... I>
 struct integer_sequence
@@ -28,7 +26,6 @@ std::size_t get(std::size_t index, integer_sequence<T, N, I...>)
     return index == 0 ? N : get(index - 1, integer_sequence<T, I...>());
 }
 
-} // namespace utility
 } // namespace kismet
 
 #endif // KISMET_UTILITY_INTEGER_SEQUENCE_H
