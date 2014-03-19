@@ -18,13 +18,11 @@ namespace math
 template<typename T, typename Out>
 bool solve(T const a[2][2], T const b[2], Out it, T tolerance = math_trait<T>::zero_tolerance())
 {
-    using std::abs; // for ADL
-
     // Calculate the determinant of a
     T det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
 
     // Determinant too small, no unique solution
-    if (abs(det) < tolerance)
+    if (is_zero(det, tolerance))
         return false;
 
     T inv_det = inv(det);
@@ -40,8 +38,6 @@ bool solve(T const a[2][2], T const b[2], Out it, T tolerance = math_trait<T>::z
 template<typename T, typename Out>
 bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::zero_tolerance())
 {
-    using std::abs; // for ADL
-
     T inv_mat[3][3];
     // Calculate the adjoint matrix
     inv_mat[0][0] = a[1][1] * a[2][2] - a[1][2] * a[2][1];
@@ -58,7 +54,7 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
     T det = a[0][0] * inv_mat[0][0] + a[0][1] * inv_mat[1][0] + a[0][2] * inv_mat[2][0];
 
     // Determinant too small, no unique solution
-    if (abs(det) < tolerance)
+    if (is_zero(det, tolerance))
         return false;
 
     T inv_det = inv(det);

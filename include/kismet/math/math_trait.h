@@ -2,6 +2,7 @@
 #define KISMET_MATH_TRAIT_H
 
 #include <cassert>
+#include <cmath>
 
 namespace kismet
 {
@@ -59,6 +60,13 @@ inline double inv(double d)
 {
     assert(d);
     return 1.0 / d;
+}
+
+template<typename T>
+inline bool is_zero(T v, T tol = math_trait<T>::zero_tolerance())
+{
+    using std::abs; // for ADL
+    return abs(v) < tol;
 }
 
 } // namespace math

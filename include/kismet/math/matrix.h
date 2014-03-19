@@ -78,9 +78,7 @@ public:
     // scalar division
     Derived& operator /=(T k)
     {
-        using std::abs;
-
-        assert(abs(k) > math_trait<T>::zero_tolerance());
+        assert(!is_zero(k));
         *this *= inv(k);
         return static_cast<Derived&>(*this);
     }
