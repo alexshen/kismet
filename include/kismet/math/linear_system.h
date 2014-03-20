@@ -67,7 +67,7 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
 }
 
 KISMET_FUNC_TEMPLATE_API(solve, bool, float const a[2][2], float const b[2], float* it, float tol)
-KISMET_FUNC_TEMPLATE_API(solve, double const a[2][2], double const b[2], double* it, double tol)
+KISMET_FUNC_TEMPLATE_API(solve, bool, double const a[2][2], double const b[2], double* it, double tol)
 
 KISMET_FUNC_TEMPLATE_API(solve, bool, float const a[3][3], float const b[3], float* it, float tol)
 KISMET_FUNC_TEMPLATE_API(solve, bool, double const a[3][3], double const b[3], double* it, double tol)

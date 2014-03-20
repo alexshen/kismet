@@ -34,7 +34,7 @@ struct valid_dimension<N, Sizes...>
 template<std::size_t N, std::size_t... Sizes>
 struct matrix_size
 {
-    enum { value = N * matrix_dim<Sizes...>::value };
+    enum { value = N * matrix_size<Sizes...>::value };
 };
 
 template<std::size_t N>
