@@ -105,7 +105,7 @@ public:
     // element-wise addition
     Derived& operator +=(Derived const& m)
     {
-        for (size_type i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
+        for (size_type i = 0; i < num; ++i) {
             m_a[i] += m.m_a[i];
         }
         return static_cast<Derived&>(*this);
@@ -114,7 +114,7 @@ public:
     // element-wise subtraction
     Derived& operator -=(Derived const& m)
     {
-        for (size_type i = 0; i < sizeof(m_a) / sizeof(m_a[0]); ++i) {
+        for (size_type i = 0; i < num; ++i) {
             m_a[i] -= m.m_a[i];
         }
         return static_cast<Derived&>(*this);
@@ -140,7 +140,7 @@ public:
     // get the size of n-th dimension
     size_type size(size_t index) const
     {
-        assert(index < sizeof...(Sizes));
+        assert(index < rank);
         return get(index, integer_sequence<size_type, Sizes...>());
     }
 
