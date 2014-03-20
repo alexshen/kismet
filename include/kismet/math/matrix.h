@@ -165,7 +165,7 @@ public:
     const_reverse_iterator rend() const { return const_reverse_iterator{ begin() }; }
 
     const_reverse_iterator crbegin() const { return rbegin(); }
-    const_reverse_iterator crend() const { return crend(); }
+    const_reverse_iterator crend() const { return rend(); }
 protected:
     T m_a[num];
 };
