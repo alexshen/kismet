@@ -60,14 +60,14 @@ template<typename T, std::size_t N>
 using matrix_initializer = typename make_matrix_initializer<T, N>::type;
 
 template<typename T>
-inline T* insert_flat(T* data, std::initializer_list<T> l)
+inline T* insert_flat(T* data, std::initializer_list<T> const& l)
 {
     std::copy(l.begin(), l.end(), data);
     return data + l.size();
 }
 
 template<typename T, typename U>
-inline T* insert_flat(T* data, std::initializer_list<U> l)
+inline T* insert_flat(T* data, std::initializer_list<U> const& l)
 {
     for (auto& e : l) {
         data = insert_flat(data, e);
