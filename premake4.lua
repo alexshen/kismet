@@ -7,11 +7,12 @@ solution "kismet"
     configurations { "debug", "release" }
     location "build"
     includedirs "include"
-    targetdir "lib"
+    libdirs { "lib" }
 
     project "common"
         kind "StaticLib"
         language "C++"
+        targetdir "lib"
         files
         {
             "include/kismet/*.h",
@@ -28,6 +29,7 @@ solution "kismet"
     project "math"
         kind "StaticLib"
         language "C++"
+        targetdir "lib"
         files
         {
             "include/kismet/math/**.h",
@@ -41,3 +43,23 @@ solution "kismet"
         configuration "release"
             defines { "NDEBUG" }
             targetname "math"
+
+    project "test"
+        kind "ConsoleApp"
+        language "C++"
+        targetdir "test"
+        links { "boost_unit_test_framework" }
+        files
+        {
+            "source/test/**.cpp",
+        }
+
+        configuration "debug"
+            links { "mathd" }
+            defines { "DEBUG" }
+            targetname "testd"
+
+        configuration "release"
+            links { "math" }
+            defines { "NDEBUG" }
+            targetname "testd"
