@@ -1,6 +1,5 @@
-#define BOOST_TEST_MODULE linear_system
 #include <algorithm>
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include "kismet/math/linear_system.h"
 using namespace std;
 using namespace kismet::math;
