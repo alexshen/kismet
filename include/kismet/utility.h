@@ -3,7 +3,7 @@
 
 #include "kismet/config.h"
 
-#ifndef KISMET_INSTATIATE_TEMPLATE
+#ifndef KISMET_INSTANTIATE_TEMPLATE
 #  ifndef KISMET_NO_EXTERN_TEMPLATE
 #    define KISMET_CLASS_TEMPLATE_API(T, ...)   extern template class T<__VA_ARGS__>;
 #    define KISMET_FUNC_TEMPLATE_API(F, R, ...) extern template R F(__VA_ARGS__);
@@ -12,7 +12,7 @@
 #    define KISMET_FUNC_TEMPLATE_API(F, R, ...)
 #  endif
 #else
-#  define KISMET_CLASS_TEMPLATE_API(Class )   template class T<__VA_ARGS__>;
+#  define KISMET_CLASS_TEMPLATE_API(T, ...)   template class T<__VA_ARGS__>;
 #  define KISMET_FUNC_TEMPLATE_API(F, R, ...) template R F(__VA_ARGS__);
 #endif
 
