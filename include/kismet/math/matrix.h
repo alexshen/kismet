@@ -262,6 +262,22 @@ KISMET_CLASS_TEMPLATE_API(basic_matrix, double, 2, 2)
 KISMET_CLASS_TEMPLATE_API(basic_matrix, double, 3, 3)
 KISMET_CLASS_TEMPLATE_API(basic_matrix, double, 4, 4)
 
+using matrix2f = basic_matrix<float, 2>;
+using matrix3f = basic_matrix<float, 3>;
+using matrix4f = basic_matrix<float, 4>;
+
+using matrix2d = basic_matrix<double, 2>;
+using matrix3d = basic_matrix<double, 3>;
+using matrix4d = basic_matrix<double, 4>;
+
+using matrix22f = basic_matrix<float, 2, 2>;
+using matrix33f = basic_matrix<float, 3, 3>;
+using matrix44f = basic_matrix<float, 4, 4>;
+
+using matrix22d = basic_matrix<double, 2, 2>;
+using matrix33d = basic_matrix<double, 3, 3>;
+using matrix44d = basic_matrix<double, 4, 4>;
+
 } // namespace math
 } // namespace kismet
 
