@@ -92,7 +92,7 @@ public:
     // number of dimension of the matrix
     static const size_type rank = sizeof...(Sizes);
     // number of elements
-    static const size_type num  = detail::matrix_size<Sizes...>::value;
+    static const size_type num  = matrix_size<Sizes...>::value;
 
     // default constructor, do nothing
     common_matrix_impl() {}
@@ -170,6 +170,11 @@ protected:
     T m_a[num];
 };
 
+template<typename Derived, typename T, std::size_t... Sizes>
+const typename common_matrix_impl<Derived, T, Sizes...>::size_type common_matrix_impl<Derived, T, Sizes...>::rank;
+
+template<typename Derived, typename T, std::size_t... Sizes>
+const typename common_matrix_impl<Derived, T, Sizes...>::size_type common_matrix_impl<Derived, T, Sizes...>::num;
 } // namespace detail
 
 // fixed sized matrix with arbitrary number of dimsensions
