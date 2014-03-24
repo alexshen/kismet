@@ -1,3 +1,8 @@
+local win32
+if string.find(_ACTION, 'vs') then
+    win32 = true
+end
+
 solution "kismet"
     -- Need c++11
     if _ACTION == 'gmake' then
@@ -6,8 +11,12 @@ solution "kismet"
 
     configurations { "debug", "release" }
     location "build"
-    includedirs "include"
+    includedirs { "include" }
     libdirs { "lib" }
+
+    if win32 then
+        defines { "WIN32", "_SCL_SECURE_NO_WARNINGS" }
+    end
 
     project "common"
         kind "StaticLib"
@@ -48,7 +57,18 @@ solution "kismet"
         kind "ConsoleApp"
         language "C++"
         targetdir "test"
-        links { "boost_unit_test_framework" }
+        if win32 then
+            if not os.getenv('BOOST_INCLUDE') then
+                error('BOOST_INCLUDE not specified')
+            end
+            if not os.getenv('BOOST_LIB') then
+                error('BOOST_LIB not specified')
+            end
+            includedirs { os.getenv('BOOST_INCLUDE') }
+            libdirs { os.getenv('BOOST_LIB') }
+        else
+            links { "boost_unit_test_framework" }
+        end
         files
         {
             "source/test/**.cpp",
@@ -56,7 +76,7 @@ solution "kismet"
 
         configuration "debug"
             links { "mathd" }
-            defines { "DEBUG" }
+            defines { "DEBUG", "_DEBUG" }
             targetname "testd"
 
         configuration "release"
