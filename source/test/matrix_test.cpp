@@ -21,3 +21,10 @@ BOOST_AUTO_TEST_CASE(matrix22f_num_4)
 {
     BOOST_CHECK_EQUAL(matrix22f::num, 4);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_1d_dot)
+{
+    matrix2f m{ 1, 1 };
+
+    BOOST_CHECK_EQUAL(dot(m, m), 2);
+}
