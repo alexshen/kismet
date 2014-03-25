@@ -13,10 +13,21 @@ solution "kismet"
     location "build"
     includedirs { "include" }
     libdirs { "lib" }
+    flags { "StaticRuntime" }
 
     if win32 then
         defines { "WIN32", "_SCL_SECURE_NO_WARNINGS" }
+        configuration { "debug" }
+            defines { "_DEBUG" }
     end
+
+    configuration { "debug" }
+        flags { "Symbols" }
+        defines { "DEBUG" }
+
+    configuration { "release" }
+        flags { "OptimizeSpeed" }
+        defines { "NDEBUG" }
 
     project "common"
         kind "StaticLib"
@@ -28,11 +39,9 @@ solution "kismet"
             "source/*.cpp",
         }
         configuration "debug"
-            defines { "DEBUG" }
             targetname "commond"
 
         configuration "release"
-            defines { "NDEBUG" }
             targetname "common"
 
     project "math"
@@ -46,11 +55,9 @@ solution "kismet"
         }
 
         configuration "debug"
-            defines { "DEBUG" }
             targetname "mathd"
 
         configuration "release"
-            defines { "NDEBUG" }
             targetname "math"
 
     project "test"
@@ -74,12 +81,11 @@ solution "kismet"
             "source/test/**.cpp",
         }
 
+        flags { "SEH" }
         configuration "debug"
             links { "mathd" }
-            defines { "DEBUG", "_DEBUG" }
             targetname "testd"
 
         configuration "release"
             links { "math" }
-            defines { "NDEBUG" }
-            targetname "testd"
+            targetname "test"
