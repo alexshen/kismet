@@ -241,7 +241,7 @@ template<typename T>
 class basic_matrix<T>;
 
 template<typename T, std::size_t N>
-inline T operator *(basic_matrix<T, N> const& m1, basic_matrix<T, N> const& m2)
+inline T dot(basic_matrix<T, N> const& m1, basic_matrix<T, N> const& m2)
 {
     return std::inner_product(m1.begin(), m1.end(), m2.begin(), T{});
 }
