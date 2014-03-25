@@ -76,7 +76,7 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
 }
 
 template<typename Derived, typename T, std::size_t... Sizes>
-class common_matrix_impl
+class matrix_base
 {
     static_assert(detail::valid_dimension<Sizes...>::value, "Dimension must not be 0");
 public:
@@ -95,9 +95,9 @@ public:
     static const size_type num  = matrix_size<Sizes...>::value;
 
     // default constructor, do nothing
-    common_matrix_impl() {}
+    matrix_base() {}
     
-    common_matrix_impl(matrix_initializer<T, rank> const& mi)
+    matrix_base(matrix_initializer<T, rank> const& mi)
     {
         insert_flat(data(), mi);
     }
@@ -171,17 +171,17 @@ protected:
 };
 
 template<typename Derived, typename T, std::size_t... Sizes>
-const typename common_matrix_impl<Derived, T, Sizes...>::size_type common_matrix_impl<Derived, T, Sizes...>::rank;
+const typename matrix_base<Derived, T, Sizes...>::size_type matrix_base<Derived, T, Sizes...>::rank;
 
 template<typename Derived, typename T, std::size_t... Sizes>
-const typename common_matrix_impl<Derived, T, Sizes...>::size_type common_matrix_impl<Derived, T, Sizes...>::num;
+const typename matrix_base<Derived, T, Sizes...>::size_type matrix_base<Derived, T, Sizes...>::num;
 } // namespace detail
 
 // fixed sized matrix with arbitrary number of dimsensions
 template<typename T, std::size_t... Sizes>
-class basic_matrix : public detail::common_matrix_impl<basic_matrix<T, Sizes...>, T, Sizes...>
+class basic_matrix : public detail::matrix_base<basic_matrix<T, Sizes...>, T, Sizes...>
 {
-    using base_type = detail::common_matrix_impl<basic_matrix<T, Sizes...>, T, Sizes...>;
+    using base_type = detail::matrix_base<basic_matrix<T, Sizes...>, T, Sizes...>;
 public:
     basic_matrix() {}
 
