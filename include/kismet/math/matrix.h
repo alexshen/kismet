@@ -86,8 +86,6 @@ public:
     using reference_type         = T&;
     using iterator               = T*;
     using const_iterator         = T const*;
-    using reverse_iterator       = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     // number of dimension of the matrix
     static const size_type rank = sizeof...(Sizes);
@@ -152,20 +150,12 @@ public:
 
     iterator       begin() { return iterator{ m_a }; }
     iterator       end() { return iterator{ m_a + size() }; }
+
     const_iterator begin() const { return m_a; }
     const_iterator end() const { return m_a + size(); }
 
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end();  }
-
-    reverse_iterator rbegin() { return reverse_iterator{ end() }; }
-    reverse_iterator rend() { return reverse_iterator{ begin() }; }
-
-    const_reverse_iterator rbegin() const { return const_reverse_iterator{ end() }; }
-    const_reverse_iterator rend() const { return const_reverse_iterator{ begin() }; }
-
-    const_reverse_iterator crbegin() const { return rbegin(); }
-    const_reverse_iterator crend() const { return rend(); }
 protected:
     T m_a[num];
 };
