@@ -83,6 +83,27 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
     return data;
 }
 
+template<typename T, typename It>
+inline void copy_impl(T* data, It start, std::size_t num, std::random_access_iterator_tag)
+{
+    std::copy(start, start + num, data);
+}
+
+template<typename T, typename It>
+inline void copy_impl(T* data, It start, std::size_t num, std::input_iterator_tag)
+{
+    while (num--)
+    {
+        *data++ = *start++;
+    }
+}
+
+template<typename T, typename It>
+inline void copy(T* data, It start, std::size_t num)
+{
+    copy_impl(data, start, num, typename std::iterator_traits<It>::iterator_category());
+}
+
 template<std::size_t S1, std::size_t S2>
 using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
 
@@ -420,10 +441,42 @@ public:
         detail::insert_flat(data(), mi);
     }
 
-    // initialize from an array
-    matrix(T const* p)
+    template<typename U>
+    matrix(matrix<U, N1, N2> const& m,
+           enable_if_convertible_t<U, T>* = 0)
     {
-        std::copy(p, p + num, &m_a[0][0]);
+        *this = m;
+    }
+
+    // initialize from a range which starts by the given iterator
+    template<typename Iter>
+    matrix(Iter it,
+           enable_if_convertible_t<
+            typename std::iterator_traits<Iter>::value_type, T>* = 0)
+    {
+        assign(it);
+    }
+
+    template<typename Iter>
+    matrix& assign(Iter it,
+                   enable_if_convertible_t<
+                       typename std::iterator_traits<Iter>::value_type, T>* = 0)
+    {
+        detail::copy(data(), it, num);
+        return *this;
+    }
+
+    template<typename U>
+    enable_if_convertible_t<U, T, matrix>& operator =(matrix<U, N1, N2> const& m)
+    {
+        std::copy(m.data(), m.data() + num, data());
+        return *this;
+    }
+
+    matrix& operator =(detail::matrix_initializer<T, rank> const& mi)
+    {
+        detail::insert_flat(data(), mi);
+        return *this;
     }
 
     // element-wise addition
@@ -548,20 +601,52 @@ inline matrix<T, N1, N2> operator -(matrix<T, N1, N2> m1, matrix<T, N1, N2> cons
     return m1 -= m2;
 }
 
+// return a matrix with element is common type of scalar and matrix's element type
 template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator *(U k, matrix<T, N1, N2> m)
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(U k, matrix<T, N1, N2> const& m)
+{
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res *= k;
+    return res;
+}
+
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator *(T k, matrix<T, N1, N2> m)
+{
+    m *= k;
+    return m;
+}
+
+// return a matrix with element is common type of scalar and matrix's element type
+template<typename U, typename T, std::size_t N1, std::size_t N2>
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(matrix<T, N1, N2> const& m, U k)
+{
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res *= k;
+    return res;
+}
+
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator *(matrix<T, N1, N2> m, T k)
 {
     m *= k;
     return m;
 }
 
 template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator *(matrix<T, N1, N2> m, U k)
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator /(matrix<T, N1, N2> const& m, U k)
 {
-    m *= k;
-    return m;
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res /= k;
+    return res;
 }
 
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
 template<typename T, std::size_t N1, std::size_t N2>
 inline matrix<T, N1, N2> operator /(matrix<T, N1, N2> m, T k)
 {
@@ -569,14 +654,14 @@ inline matrix<T, N1, N2> operator /(matrix<T, N1, N2> m, T k)
     return m;
 }
 
-template<typename T, std::size_t N1, std::size_t N2>
-inline bool operator ==(matrix<T, N1, N2> const& m1, matrix<T, N1, N2> const& m2)
+template<typename T, typename U, std::size_t N1, std::size_t N2>
+inline bool operator ==(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
 {
     return std::equal(m1.begin(), m1.end(), m2.begin());
 }
 
-template<typename T, std::size_t N1, std::size_t N2>
-inline bool operator !=(matrix<T, N1, N2> const& m1, matrix<T, N1, N2> const& m2)
+template<typename T, typename U, std::size_t N1, std::size_t N2>
+inline bool operator !=(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
 {
     return !(m1 == m2);
 }

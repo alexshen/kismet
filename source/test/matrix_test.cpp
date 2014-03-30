@@ -171,3 +171,37 @@ BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
     BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, m.data(), m.data() + m.size());
     BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, cm.data(), cm.data() + cm.size());
 }
+
+BOOST_AUTO_TEST_CASE(matrix22f_equal_to_matrix22i)
+{
+    matrix<int, 2, 2> im
+    {
+        { 1, 0 },
+        { 0, 1 }
+    };
+
+    matrix22f fm{im};
+    BOOST_CHECK_EQUAL(fm, im);
+}
+
+BOOST_AUTO_TEST_CASE(matrix22f_not_equal_to_matrix22i)
+{
+    matrix<int, 2, 2> im
+    {
+        { 1, 0 },
+        { 0, 1 }
+    };
+
+    matrix22f fm
+    {
+        { 1, 1 },
+        { 0, 1 },
+    };
+    BOOST_CHECK(fm != im);
+}
+
+BOOST_AUTO_TEST_CASE(int_matrix_sclale_float_return_float_matrix)
+{
+    BOOST_CHECK((std::is_same<matrix22f, decltype(1.0f * matrix<int, 2, 2>{})>::value));
+    BOOST_CHECK((std::is_same<matrix22f, decltype(matrix<int, 2, 2>{} * 1.0f)>::value));
+}
