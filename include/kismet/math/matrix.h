@@ -12,10 +12,11 @@
 #include <utility>
 
 #include "kismet/core/assert.h"
-#include "kismet/math/math_trait.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_either_convertible.h"
+#include "kismet/math/math_trait.h"
 #include "kismet/strided_iterator.h"
+#include "kismet/utility.h"
 
 namespace kismet
 {
@@ -600,6 +601,14 @@ std::ostream& operator <<(std::ostream& os, matrix<T, N1, N2> const& m)
     os << "}";
     return os;
 }
+
+KISMET_CLASS_TEMPLATE_API(matrix, float, 2, 2)
+KISMET_CLASS_TEMPLATE_API(matrix, float, 3, 3)
+KISMET_CLASS_TEMPLATE_API(matrix, float, 4, 4)
+
+KISMET_CLASS_TEMPLATE_API(matrix, double, 2, 2)
+KISMET_CLASS_TEMPLATE_API(matrix, double, 3, 3)
+KISMET_CLASS_TEMPLATE_API(matrix, double, 4, 4)
 
 using matrix22f = matrix<float, 2, 2>;
 using matrix33f = matrix<float, 3, 3>;
