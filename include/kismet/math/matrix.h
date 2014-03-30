@@ -450,7 +450,7 @@ public:
 
     // initialize from a range which starts by the given iterator
     template<typename Iter>
-    matrix(Iter it,
+    explicit matrix(Iter it,
            enable_if_convertible_t<
             typename std::iterator_traits<Iter>::value_type, T>* = 0)
     {
