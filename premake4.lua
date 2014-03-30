@@ -1,6 +1,12 @@
 local win32
 if string.find(_ACTION, 'vs') then
     win32 = true
+    if not os.getenv('BOOST_INCLUDE') then
+        error('BOOST_INCLUDE not specified')
+    end
+    if not os.getenv('BOOST_LIB') then
+        error('BOOST_LIB not specified')
+    end
 end
 
 solution "kismet"
@@ -13,6 +19,10 @@ solution "kismet"
     location "build"
     includedirs { "include" }
     libdirs { "lib" }
+    if win32 then
+        includedirs { os.getenv('BOOST_INCLUDE') }
+        libdirs { os.getenv('BOOST_LIB') }
+    end
     flags { "StaticRuntime" }
 
     if win32 then
@@ -64,16 +74,7 @@ solution "kismet"
         kind "ConsoleApp"
         language "C++"
         targetdir "test"
-        if win32 then
-            if not os.getenv('BOOST_INCLUDE') then
-                error('BOOST_INCLUDE not specified')
-            end
-            if not os.getenv('BOOST_LIB') then
-                error('BOOST_LIB not specified')
-            end
-            includedirs { os.getenv('BOOST_INCLUDE') }
-            libdirs { os.getenv('BOOST_LIB') }
-        else
+        if not win32 then
             links { "boost_unit_test_framework" }
         end
         files
