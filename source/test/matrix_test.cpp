@@ -63,9 +63,11 @@ BOOST_AUTO_TEST_CASE(matrix22f_row_equal_self)
         { 0, 1 },
     };
 
+    matrix22f const& cm = m;
     for (size_t i = 0; i < 2; ++i)
     {
         BOOST_CHECK_EQUAL(m.row(i), m.row(i));
+        BOOST_CHECK_EQUAL(cm.row(i), cm.row(i));
     }
 }
 
@@ -77,10 +79,11 @@ BOOST_AUTO_TEST_CASE(matrix22f_row_const_row_equal)
         { 0, 1 },
     };
 
+    matrix22f const& cm = m;
     for (size_t i = 0; i < 2; ++i)
     {
-        BOOST_CHECK_EQUAL(m.row(i), static_cast<matrix22f const&>(m).row(i));
-        BOOST_CHECK_EQUAL(static_cast<matrix22f const&>(m).row(i), m.row(i));
+        BOOST_CHECK_EQUAL(m.row(i), cm.row(i));
+        BOOST_CHECK_EQUAL(cm.row(i), m.row(i));
     }
 }
 
@@ -92,7 +95,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_row_assign_from_row)
         { 0, 1 },
     };
 
-    m.row(0).assign(m.row(1));
+    m.row(0) = m.row(1);
     BOOST_CHECK_EQUAL(m.row(0), m.row(1));
 }
 
@@ -127,9 +130,11 @@ BOOST_AUTO_TEST_CASE(matrix22f_col_equal_self)
         { 0, 1 },
     };
 
+    matrix22f const& cm = m;
     for (size_t i = 0; i < 2; ++i)
     {
         BOOST_CHECK_EQUAL(m.col(i), m.col(i));
+        BOOST_CHECK_EQUAL(cm.col(i), cm.col(i));
     }
 }
 
@@ -141,7 +146,9 @@ BOOST_AUTO_TEST_CASE(matrix22f_col_equal)
         { 1, 1 },
     };
 
+    matrix22f const& cm = m;
     BOOST_CHECK_EQUAL(m.col(0), m.col(1));
+    BOOST_CHECK_EQUAL(cm.col(0), cm.col(1));
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_col_convertible_to_const_col)
@@ -152,4 +159,15 @@ BOOST_AUTO_TEST_CASE(matrix22f_col_convertible_to_const_col)
 BOOST_AUTO_TEST_CASE(matrix22f_const_col_not_convertible_to_col)
 {
     BOOST_CHECK(!(is_convertible<matrix22f::const_col_type, matrix22f::col_type>::value));
+}
+
+
+BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
+{
+    float a[] = { 1, 2, 3, 4 };
+    matrix22f m{a};
+    matrix22f const& cm = a;
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, m.data(), m.data() + m.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, cm.data(), cm.data() + cm.size());
 }

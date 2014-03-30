@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <iterator>
 #include <numeric>
 #include <ostream>
 #include <type_traits>
@@ -12,7 +13,9 @@
 
 #include "kismet/core/assert.h"
 #include "kismet/math/math_trait.h"
-#include "kismet/utility.h"
+#include "kismet/enable_if_convertible.h"
+#include "kismet/is_either_convertible.h"
+#include "kismet/strided_iterator.h"
 
 namespace kismet
 {
@@ -80,10 +83,118 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
 }
 
 template<std::size_t S1, std::size_t S2>
-struct is_row : std::false_type {};
+using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
 
-template<>
-struct is_row<1, 1> : std::true_type {};
+template<typename T, std::size_t N, std::size_t S>
+class matrix_vector_ref_base
+{
+    template<typename U, std::size_t N1, std::size_t S1>
+    friend class matrix_vector_ref_base;
+public:
+    using size_type              = std::size_t;
+    using reference              = T&;
+    using const_reference        = T const&;
+    using pointer                = T*;
+    using const_pointer          = T const*;
+    using iterator               = strided_iterator<pointer>;
+    using const_iterator         = strided_iterator<const_pointer>;
+
+    template<typename U>
+    matrix_vector_ref_base(U* start, U* p, U* end)
+        : m_start(start)
+        , m_p(p)
+        , m_end(end)
+    {
+        KISMET_ASSERT(start && p && end);
+    }
+
+    template<typename U>
+    matrix_vector_ref_base(matrix_vector_ref_base<U, N, S> const& v)
+        : matrix_vector_ref_base(v.m_start, v.m_p, v.m_end)
+    {
+    }
+
+    reference operator [](size_type index)
+    {
+        KISMET_ASSERT(index < N);
+        return m_p[index * S];
+    }
+
+    const_reference operator [](size_type index) const
+    {
+        KISMET_ASSERT(index < N);
+        return m_p[index * S];
+    }
+
+    iterator begin() { return {m_start, m_p, m_end, S}; }
+    iterator end()   { return {m_start, m_p, m_end, S}; }
+
+    const_iterator begin() const { return {m_start, m_p, m_end, S}; }
+    const_iterator end()   const { return {m_start, m_p, m_end, S}; }
+protected:
+    pointer m_start; // matrix start
+    pointer m_p;
+    pointer m_end;   // matrix end
+};
+
+// optimization for row vector, no need to store matrix start and end
+// as the iterator is not strided.
+template<typename T, std::size_t N>
+class matrix_vector_ref_base<T, N, 1>
+{
+    template<typename U, std::size_t N1, std::size_t S1>
+    friend class matrix_vector_ref_base;
+public:
+    using size_type              = std::size_t;
+    using reference              = T&;
+    using const_reference        = T const&;
+    using pointer                = T*;
+    using const_pointer          = T const*;
+    using iterator               = pointer;
+    using const_iterator         = const_pointer;
+
+    template<typename U>
+    explicit matrix_vector_ref_base(U* p)
+        : m_p(p)
+    {
+    }
+
+    template<typename U>
+    matrix_vector_ref_base(U* start, U* p, U* end)
+        : m_p(p)
+    {
+    }
+
+    template<typename U>
+    matrix_vector_ref_base(matrix_vector_ref_base<U, N, 1> const& v)
+        : m_p(v.m_p)
+    {
+    }
+
+    reference operator [](size_type index)
+    {
+        KISMET_ASSERT(index < N);
+        return m_p[index];
+    }
+
+    const_reference operator [](size_type index) const
+    {
+        KISMET_ASSERT(index < N);
+        return m_p[index];
+    }
+
+    // only row type has data() as column type storage is not contiguous
+    pointer       data()       { return this->m_p; }
+    const_pointer data() const { return this->m_p; }
+
+    iterator begin() { return m_p; }
+    iterator end()   { return m_p + N; }
+
+    const_iterator begin() const { return m_p; }
+    const_iterator end()   const { return m_p + N; }
+protected:
+    pointer m_p;
+};
 
 } // namespace detail
 
@@ -92,99 +203,143 @@ struct is_row<1, 1> : std::true_type {};
 // N is the size of the row or the column
 // S is the stride between elements.
 template<typename T, std::size_t N, std::size_t S>
-class matrix_vector_ref
+class matrix_vector_ref : public detail::matrix_vector_ref_base<T, N, S>
 {
+    static_assert(S != 0, "stride cannot be 0");
+
+    using base_type = detail::matrix_vector_ref_base<T, N, S>;
 public:
-    enum { rank = 1, num = N };
 
-    using size_type       = std::size_t;
-    using difference_type = std::ptrdiff_t;
-    using value_type      = typename std::remove_const<T>::type;
-    using reference       = T&;
-    using pointer         = T*;
+    enum { rank = 1, num = N, stride = S };
 
-    matrix_vector_ref(pointer p)
-        : m_p(p)
+    using difference_type        = std::ptrdiff_t;
+    using value_type             = typename std::remove_const<T>::type;
+    using pointer                = typename base_type::pointer;
+    using const_pointer          = typename base_type::const_pointer;
+    using size_type              = typename base_type::size_type;
+    using const_iterator         = typename base_type::const_iterator;
+    using reverse_iterator       = std::reverse_iterator<typename base_type::iterator>;
+    using const_reverse_iterator = std::reverse_iterator<typename base_type::const_iterator>;
+
+    template<typename U>
+    explicit matrix_vector_ref(U* p,
+                      typename std::enable_if<
+                            S == 1 &&
+                            std::is_convertible<U*, pointer>::value
+                        >::type* = 0)
+        : base_type(p)
     {
     }
 
-    // convert a row/column type to const row/column type
+    template<typename U>
+    matrix_vector_ref(U* start, U* p, U* end, enable_if_convertible<U*, pointer>* = 0)
+        : base_type(start, p, end)
+    {
+    }
+
     template<typename U>
     matrix_vector_ref(matrix_vector_ref<U, N, S> const& v,
-                      typename std::enable_if<
-                            !std::is_const<U>::value &&
-                            std::is_same<value_type, U>::value>::type* = 0)
-        : m_p(v.m_p)
+                      enable_if_convertible_t<
+                        typename matrix_vector_ref<U, N, S>::pointer, pointer
+                      >* = 0)
+        : base_type(v)
     {
     }
-
-    pointer data() { return m_p; }
-    pointer data() const { return m_p; }
 
     size_type size() const { return N; }
 
-    reference operator [](size_type index)
-    {
-        KISMET_ASSERT(index < N);
-        return m_p[index * S];
-    }
+    const_iterator cbegin() const { return this->begin(); }
+    const_iterator cend()   const { return this->end(); }
 
-    reference const& operator [](size_type index) const
+    reverse_iterator rbegin() { return this->end(); }
+    reverse_iterator rend()   { return this->begin(); }
+
+    const_reverse_iterator rbegin() const { return rbegin(); }
+    const_reverse_iterator rend() const   { return rend(); }
+
+    const_reverse_iterator rcbegin() const { return rbegin(); }
+    const_reverse_iterator rcend() const { return rend(); }
+
+    matrix_vector_ref& operator =(matrix_vector_ref& v)
     {
-        KISMET_ASSERT(index < N);
-        return m_p[index * S];
+        static_assert(!std::is_const<T>::value, "Cannot assign to non-const vector ref");
+        copy_row_row(v, detail::all_row_vectors<S, S>());
+        return *this;
     }
 
     // assign from a row/column
     template<typename U, std::size_t S2>
     typename std::enable_if<
-                !std::is_const<T>::value
-                    && std::is_same<
-                            typename std::remove_const<U>::type
-                          , value_type
-                       >::value
-              , matrix_vector_ref>::type&
-    assign(matrix_vector_ref<U, N, S2> v)
+        std::is_convertible<
+            typename matrix_vector_ref<U, N, S2>::value_type,
+            value_type>::value
+        && !std::is_const<T>::value,
+        matrix_vector_ref>::type&
+    operator =(matrix_vector_ref<U, N, S2> const& v)
     {
-        if (data() != v.data())
-        {
-            copy(v, detail::is_row<S, S2>());
-        }
+        copy_row_row(v, detail::all_row_vectors<S, S2>());
         return *this;
     }
 
-    // assign from an array with size N
-    matrix_vector_ref& assign(value_type const* p)
+    // assign from a sequence
+    template<typename Iter>
+    typename std::enable_if<
+        std::is_convertible<
+            typename std::iterator_traits<Iter>::value_type,
+            value_type>::value
+        && !std::is_const<T>::value,
+        matrix_vector_ref>::type&
+    assign(Iter it)
     {
-        KISMET_ASSERT(p);
-        assign(matrix_vector_ref<value_type const, N, S>{p});
+        using pointer_type = typename std::iterator_traits<Iter>::pointer;
+        using pointer_row_vector
+            = std::integral_constant<
+                bool,
+                S == 1 &&
+                std::is_pointer<pointer_type>::value
+              >;
+        copy_pointer_row(it, pointer_row_vector());
         return *this;
     }
 
     // compare a row/column to a row/column
     template<typename U, std::size_t S2>
     typename std::enable_if<
-                std::is_same<
-                    typename std::remove_const<U>::type
-                  , value_type
-                >::value,
-                bool>::type
-    operator ==(matrix_vector_ref<U, N, S2> v) const
+        is_either_convertible<
+            typename matrix_vector_ref<U, N, S2>::value_type,
+            value_type>::value,
+        bool>::type
+    operator ==(matrix_vector_ref<U, N, S2> const& v) const
     {
-        return data() == v.data() || equal(v, detail::is_row<S, S2>());
+        return equal_row_row(v, detail::all_row_vectors<S, S2>());
     }
 
 private:
-    // copy row to row
-    template<typename U>
-    void copy(matrix_vector_ref<U, N, S> v, std::true_type)
+    template<typename It>
+    void copy_pointer_row(It p, std::true_type)
     {
-        std::copy(v.data(), v.data() + N, data());
+        std::copy(this->data(), this->data() + N, p);
+    }
+
+    // copy from a generic iterator to column/row
+    template<typename It>
+    void copy_pointer_row(It p, std::false_type)
+    {
+        for (size_type i = 0; i < N; ++i)
+        {
+            (*this)[i] = *p++;
+        }
+    }
+
+    template<typename U>
+    void copy_row_row(matrix_vector_ref<U, N, S> const& v, std::true_type)
+    {
+        std::copy(v.data(), v.data() + N, this->data());
     }
 
     // copy row to column, or column to column, or column to row
     template<typename U, std::size_t S2>
-    void copy(matrix_vector_ref<U, N, S2> v, std::false_type)
+    void copy_row_row(matrix_vector_ref<U, N, S2> const& v, std::false_type)
     {
         for (size_type i = 0; i < N; ++i)
         {
@@ -194,14 +349,14 @@ private:
 
     // compare row to row
     template<typename U>
-    bool equal(matrix_vector_ref<U, N, S> v, std::true_type) const
+    bool equal_row_row(matrix_vector_ref<U, N, S> const& v, std::true_type) const
     {
-        return std::equal(data(), data() + N, v.data());
+        return std::equal(this->data(), this->data() + N, v.data());
     }
 
     // compare row to column, or column to column, or column to row
     template<typename U, std::size_t S2>
-    bool equal(matrix_vector_ref<U, N, S2> v, std::false_type) const
+    bool equal_row_row(matrix_vector_ref<U, N, S2> const& v, std::false_type) const
     {
         for (size_type i = 0; i < N; ++i)
         {
@@ -213,7 +368,7 @@ private:
         return true;
     }
 
-    T* m_p;
+    pointer m_p;
 };
 
 template<typename T, std::size_t N1, std::size_t N2>
@@ -232,7 +387,7 @@ std::ostream& operator <<(std::ostream& os, matrix_vector_ref<T, N1, N2> const& 
     return os;
 }
 
-// 2d dimensional array
+// 2d dimensional matrix N1xN2
 template<typename T, std::size_t N1, std::size_t N2>
 class matrix
 {
@@ -241,12 +396,15 @@ public:
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
     using value_type      = T;
-    using reference_type  = T&;
+    using reference       = T&;
+    using const_reference = T const&;
+    using pointer         = T*;
+    using const_pointer   = T const*;
     using iterator        = T*;
     using const_iterator  = T const*;
 
-    using row_type        = matrix_vector_ref<T, N1, 1>;
-    using const_row_type  = matrix_vector_ref<T const, N1, 1>;
+    using row_type        = matrix_vector_ref<T, N2, 1>;
+    using const_row_type  = matrix_vector_ref<T const, N2, 1>;
     using col_type        = matrix_vector_ref<T, N1, N2>;
     using const_col_type  = matrix_vector_ref<T const, N1, N2>;
 
@@ -259,6 +417,7 @@ public:
         detail::insert_flat(data(), mi);
     }
 
+    // initialize from an array
     matrix(T const* p)
     {
         std::copy(p, p + num, &m_a[0][0]);
@@ -310,13 +469,7 @@ public:
         return *this *= inv(k);
     }
 
-    // Return the row object
-    row_type row(size_type index)
-    {
-        KISMET_ASSERT(index < N1);
-        return { m_a[index] };
-    }
-
+    // Return the given row
     row_type operator [](size_type index)
     {
         return row(index);
@@ -328,27 +481,34 @@ public:
     }
 
     // Return the row object
+    row_type row(size_type index)
+    {
+        KISMET_ASSERT(index < N1);
+        return row_type{ m_a[index] };
+    }
+
+    // Return the row object
     const_row_type row(size_type index) const
     {
         KISMET_ASSERT(index < N1);
-        return { m_a[index] };
+        return const_row_type{ m_a[index] };
     }
 
     // Return the column object
     col_type col(size_type index)
     {
         KISMET_ASSERT(index < N2);
-        return { &m_a[0][index] };
+        return col_type{ data(), &m_a[0][index], data() + num };
     }
 
     // Return the column object
     const_col_type col(size_type index) const
     {
         KISMET_ASSERT(index < N2);
-        return { &m_a[0][index] };
+        return const_col_type{ data(), &m_a[0][index], data() + num };
     }
 
-    // Return the dimension of a rank
+    // Return the size of a dimension
     size_type extent(size_type index) const
     {
         KISMET_ASSERT(index < rank);
@@ -358,8 +518,8 @@ public:
     // get the total number of elements
     size_type size() const { return num; }
 
-    T*       data() { return &m_a[0][0];  }
-    T const* data() const { return &m_a[0][0]; }
+    pointer       data() { return &m_a[0][0];  }
+    const_pointer data() const { return &m_a[0][0]; }
 
     iterator       begin() { return { data() }; }
     iterator       end() { return { data() + size() }; }
