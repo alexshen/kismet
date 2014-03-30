@@ -107,10 +107,10 @@ inline void copy(T* data, It start, std::size_t num)
 template<std::size_t S1, std::size_t S2>
 using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
 
-template<typename T, std::size_t N, std::size_t S>
+template<typename Derived, typename T, std::size_t N, std::size_t S>
 class matrix_vector_ref_base
 {
-    template<typename U, std::size_t N1, std::size_t S1>
+    template<typename D, typename U, std::size_t N1, std::size_t S1>
     friend class matrix_vector_ref_base;
 public:
     using size_type              = std::size_t;
@@ -130,8 +130,8 @@ public:
         KISMET_ASSERT(start && p && end);
     }
 
-    template<typename U>
-    matrix_vector_ref_base(matrix_vector_ref_base<U, N, S> const& v)
+    template<typename D, typename U>
+    matrix_vector_ref_base(matrix_vector_ref_base<D, U, N, S> const& v)
         : matrix_vector_ref_base(v.m_start, v.m_p, v.m_end)
     {
     }
@@ -148,6 +148,22 @@ public:
         return m_p[index * S];
     }
 
+    Derived& operator *=(T k)
+    {
+        for (size_type i = 0; i < N; ++i)
+        {
+            (*this)[i] *= k;
+        }
+        return static_cast<Derived&>(*this);
+    }
+
+    Derived& operator /=(T k)
+    {
+        kISMET_ASSERT(!is_zero(k));
+        *this *= inv(k);
+        return static_cast<Derived&>(*this);
+    }
+
     iterator begin() { return {m_start, m_p, m_end, S}; }
     iterator end()   { return {m_start, m_p, m_end, S}; }
 
@@ -161,10 +177,10 @@ protected:
 
 // optimization for row vector, no need to store matrix start and end
 // as the iterator is not strided.
-template<typename T, std::size_t N>
-class matrix_vector_ref_base<T, N, 1>
+template<typename Derived, typename T, std::size_t N>
+class matrix_vector_ref_base<Derived, T, N, 1>
 {
-    template<typename U, std::size_t N1, std::size_t S1>
+    template<typename D, typename U, std::size_t N1, std::size_t S1>
     friend class matrix_vector_ref_base;
 public:
     using size_type              = std::size_t;
@@ -189,8 +205,8 @@ public:
         KISMET_ASSERT(p);
     }
 
-    template<typename U>
-    matrix_vector_ref_base(matrix_vector_ref_base<U, N, 1> const& v)
+    template<typename D, typename U>
+    matrix_vector_ref_base(matrix_vector_ref_base<D, U, N, 1> const& v)
         : m_p(v.m_p)
     {
     }
@@ -205,6 +221,21 @@ public:
     {
         KISMET_ASSERT(index < N);
         return m_p[index];
+    }
+
+    Derived& operator *=(T k)
+    {
+        std::for_each(data(), data() + N, [k](T& v) { v *= k; });
+        return static_cast<Derived&>(*this);
+    }
+
+    Derived& operator /=(T k)
+    {
+        KISMET_ASSERT(!is_zero(k));
+        // TODO: check support for sse, if none, use multiplication
+        // Optimizer can do sse division which is faster than do inverse first and then multiplication.
+        std::for_each(data(), data() + N, [k](T& v) { v /= k; });
+        return static_cast<Derived&>(*this);
     }
 
     // only row type has data() as column type storage is not contiguous
@@ -227,11 +258,12 @@ protected:
 // N is the size of the row or the column
 // S is the stride between elements.
 template<typename T, std::size_t N, std::size_t S>
-class matrix_vector_ref : public detail::matrix_vector_ref_base<T, N, S>
+class matrix_vector_ref
+    : public detail::matrix_vector_ref_base<matrix_vector_ref<T, N, S>, T, N, S>
 {
     static_assert(S != 0, "stride cannot be 0");
 
-    using base_type = detail::matrix_vector_ref_base<T, N, S>;
+    using base_type = detail::matrix_vector_ref_base<matrix_vector_ref, T, N, S>;
 public:
 
     enum { rank = 1, num = N, stride = S };

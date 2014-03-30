@@ -161,7 +161,6 @@ BOOST_AUTO_TEST_CASE(matrix22f_const_col_not_convertible_to_col)
     BOOST_CHECK(!(is_convertible<matrix22f::const_col_type, matrix22f::col_type>::value));
 }
 
-
 BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
 {
     float a[] = { 1, 2, 3, 4 };
@@ -204,4 +203,36 @@ BOOST_AUTO_TEST_CASE(int_matrix_sclale_float_return_float_matrix)
 {
     BOOST_CHECK((std::is_same<matrix22f, decltype(1.0f * matrix<int, 2, 2>{})>::value));
     BOOST_CHECK((std::is_same<matrix22f, decltype(matrix<int, 2, 2>{} * 1.0f)>::value));
+}
+
+BOOST_AUTO_TEST_CASE(matrix_row_mul)
+{
+    matrix<int, 1, 2> m { {1, 1} };
+    float v[] = { 2, 2 };
+    m[0] *= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m[0].begin(), m[0].end(), v, v+2);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_row_div)
+{
+    matrix<int, 1, 2> m { {2, 2} };
+    float v[] = { 1, 1 };
+    m[0] /= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m[0].begin(), m[0].end(), v, v+2);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_col_mul)
+{
+    matrix<int, 2, 1> m{ {1}, {1} };
+    float v[] = { 2, 2 };
+    m.col(0) *= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m.col(0).begin(), m.col(0).end(), v, v+2);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_col_div)
+{
+    matrix<int, 2, 1> m{ {2}, {2} };
+    float v[] = { 1, 1 };
+    m.col(0) /= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m.col(0).begin(), m.col(0).end(), v, v+2);
 }
