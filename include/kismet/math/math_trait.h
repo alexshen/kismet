@@ -14,27 +14,6 @@ namespace math
 template<typename T>
 class math_trait;
 
-#define INT_MATH_TRAIT(T)          \
-    template<> class math_trait<T> \
-    {                              \
-    public:                        \
-        static T zero_tolerance()  \
-        {                          \
-            return (T)0;            \
-        }                          \
-    }
-
-INT_MATH_TRAIT(short);
-INT_MATH_TRAIT(unsigned short);
-INT_MATH_TRAIT(int);
-INT_MATH_TRAIT(unsigned int);
-INT_MATH_TRAIT(long);
-INT_MATH_TRAIT(unsigned long);
-INT_MATH_TRAIT(long long);
-INT_MATH_TRAIT(unsigned long long);
-
-#undef INT_MATH_TRAIT
-
 template<>
 class math_trait<float>
 {
@@ -89,6 +68,38 @@ inline bool is_zero(T v, T tol = math_trait<T>::zero_tolerance())
     using std::abs; // for ADL
     return abs(v) < tol;
 }
+
+// define math traits for integer type.
+// do not allow is_zero(T, T) which can specifiy tolerance and is
+// meaningless for integer type.
+#define INT_MATH_TRAIT(T)          \
+    template<> class math_trait<T> \
+    {                              \
+    public:                        \
+        static T zero_tolerance()  \
+        {                          \
+            return (T)0;           \
+        }                          \
+    };                             \
+                                   \
+    template<>                     \
+    bool is_zero(T, T) = delete;   \
+                                   \
+    inline bool is_zero(T v)       \
+    {                              \
+        return v == (T)0;          \
+    }
+
+INT_MATH_TRAIT(short)
+INT_MATH_TRAIT(unsigned short)
+INT_MATH_TRAIT(int)
+INT_MATH_TRAIT(unsigned int)
+INT_MATH_TRAIT(long)
+INT_MATH_TRAIT(unsigned long)
+INT_MATH_TRAIT(long long)
+INT_MATH_TRAIT(unsigned long long)
+
+#undef INT_MATH_TRAIT
 
 } // namespace math
 
