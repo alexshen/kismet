@@ -157,12 +157,14 @@ public:
     explicit matrix_vector_ref_base(U* p)
         : m_p(p)
     {
+        KISMET_ASSERT(p);
     }
 
     template<typename U>
     matrix_vector_ref_base(U* start, U* p, U* end)
         : m_p(p)
     {
+        KISMET_ASSERT(p);
     }
 
     template<typename U>
