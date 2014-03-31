@@ -1,6 +1,14 @@
+#include "kismet/config.h"
+
+#ifdef KISMET_MSC
+#  pragma warning(push)
+#  pragma warning(disable: 4244)
+#endif
+
 #include <cstddef>
 #include <type_traits>
 #include <boost/test/unit_test.hpp>
+
 #include "kismet/math/matrix.h"
 using namespace kismet::math;
 using namespace std;
