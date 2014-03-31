@@ -1,8 +1,8 @@
 #ifndef KISMET_MATH_TRAIT_H
 #define KISMET_MATH_TRAIT_H
 
-#include <cassert>
 #include <cmath>
+#include "kismet/core/assert.h"
 
 namespace kismet
 {
@@ -25,7 +25,7 @@ public:
 
     static void zero_tolerance(float t)
     {
-        assert(t >= 0);
+        KISMET_ASSERT(t >= 0);
         s_zero_tol = t;
     }
 private:
@@ -43,7 +43,7 @@ public:
 
     static void zero_tolerance(double t)
     {
-        assert(t >= 0);
+        KISMET_ASSERT(t >= 0);
         s_zero_tol = t;
     }
 private:
@@ -52,13 +52,13 @@ private:
 
 inline float inv(float f)
 {
-    assert(f);
+    KISMET_ASSERT(f);
     return 1.0f / f;
 }
 
 inline double inv(double d)
 {
-    assert(d);
+    KISMET_ASSERT(d);
     return 1.0 / d;
 }
 

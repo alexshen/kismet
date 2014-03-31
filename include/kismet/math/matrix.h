@@ -2,7 +2,6 @@
 #define KISMET_MATH_MATRIX_H
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -555,7 +554,7 @@ public:
     // scalar division
     matrix& operator /=(T k)
     {
-        assert(!is_zero(k));
+        KISMET_ASSERT(!is_zero(k));
         return *this *= inv(k);
     }
 
