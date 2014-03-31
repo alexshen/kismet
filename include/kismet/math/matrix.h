@@ -107,10 +107,10 @@ template<std::size_t S1, std::size_t S2>
 using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
 
 template<typename Derived, typename T, std::size_t N, std::size_t S>
-class matrix_vector_ref_base
+class matrix_vector_base
 {
     template<typename D, typename U, std::size_t N1, std::size_t S1>
-    friend class matrix_vector_ref_base;
+    friend class matrix_vector_base;
 public:
     using size_type              = std::size_t;
     using reference              = T&;
@@ -121,7 +121,7 @@ public:
     using const_iterator         = strided_iterator<const_pointer>;
 
     template<typename U>
-    matrix_vector_ref_base(U* start, U* p, U* end)
+    matrix_vector_base(U* start, U* p, U* end)
         : m_start(start)
         , m_p(p)
         , m_end(end)
@@ -130,8 +130,8 @@ public:
     }
 
     template<typename D, typename U>
-    matrix_vector_ref_base(matrix_vector_ref_base<D, U, N, S> const& v)
-        : matrix_vector_ref_base(v.m_start, v.m_p, v.m_end)
+    matrix_vector_base(matrix_vector_base<D, U, N, S> const& v)
+        : matrix_vector_base(v.m_start, v.m_p, v.m_end)
     {
     }
 
@@ -177,10 +177,10 @@ protected:
 // optimization for row vector, no need to store matrix start and end
 // as the iterator is not strided.
 template<typename Derived, typename T, std::size_t N>
-class matrix_vector_ref_base<Derived, T, N, 1>
+class matrix_vector_base<Derived, T, N, 1>
 {
     template<typename D, typename U, std::size_t N1, std::size_t S1>
-    friend class matrix_vector_ref_base;
+    friend class matrix_vector_base;
 public:
     using size_type              = std::size_t;
     using reference              = T&;
@@ -191,21 +191,21 @@ public:
     using const_iterator         = const_pointer;
 
     template<typename U>
-    explicit matrix_vector_ref_base(U* p)
+    explicit matrix_vector_base(U* p)
         : m_p(p)
     {
         KISMET_ASSERT(p);
     }
 
     template<typename U>
-    matrix_vector_ref_base(U* start, U* p, U* end)
+    matrix_vector_base(U* start, U* p, U* end)
         : m_p(p)
     {
         KISMET_ASSERT(p);
     }
 
     template<typename D, typename U>
-    matrix_vector_ref_base(matrix_vector_ref_base<D, U, N, 1> const& v)
+    matrix_vector_base(matrix_vector_base<D, U, N, 1> const& v)
         : m_p(v.m_p)
     {
     }
@@ -257,12 +257,12 @@ protected:
 // N is the size of the row or the column
 // S is the stride between elements.
 template<typename T, std::size_t N, std::size_t S>
-class matrix_vector_ref
-    : public detail::matrix_vector_ref_base<matrix_vector_ref<T, N, S>, T, N, S>
+class matrix_vector
+    : public detail::matrix_vector_base<matrix_vector<T, N, S>, T, N, S>
 {
     static_assert(S != 0, "stride cannot be 0");
 
-    using base_type = detail::matrix_vector_ref_base<matrix_vector_ref, T, N, S>;
+    using base_type = detail::matrix_vector_base<matrix_vector, T, N, S>;
 public:
 
     enum { rank = 1, num = N, stride = S };
@@ -277,7 +277,7 @@ public:
     using const_reverse_iterator = std::reverse_iterator<typename base_type::const_iterator>;
 
     template<typename U>
-    explicit matrix_vector_ref(U* p,
+    explicit matrix_vector(U* p,
                       typename std::enable_if<
                             S == 1 &&
                             std::is_convertible<U*, pointer>::value
@@ -287,15 +287,15 @@ public:
     }
 
     template<typename U>
-    matrix_vector_ref(U* start, U* p, U* end, enable_if_convertible<U*, pointer>* = 0)
+    matrix_vector(U* start, U* p, U* end, enable_if_convertible<U*, pointer>* = 0)
         : base_type(start, p, end)
     {
     }
 
     template<typename U>
-    matrix_vector_ref(matrix_vector_ref<U, N, S> const& v,
+    matrix_vector(matrix_vector<U, N, S> const& v,
                       enable_if_convertible_t<
-                        typename matrix_vector_ref<U, N, S>::pointer, pointer
+                        typename matrix_vector<U, N, S>::pointer, pointer
                       >* = 0)
         : base_type(v)
     {
@@ -315,7 +315,7 @@ public:
     const_reverse_iterator rcbegin() const { return rbegin(); }
     const_reverse_iterator rcend() const { return rend(); }
 
-    matrix_vector_ref& operator =(matrix_vector_ref& v)
+    matrix_vector& operator =(matrix_vector& v)
     {
         static_assert(!std::is_const<T>::value, "Cannot assign to non-const vector ref");
         copy_row_row(v, detail::all_row_vectors<S, S>());
@@ -326,11 +326,11 @@ public:
     template<typename U, std::size_t S2>
     typename std::enable_if<
         std::is_convertible<
-            typename matrix_vector_ref<U, N, S2>::value_type,
+            typename matrix_vector<U, N, S2>::value_type,
             value_type>::value
         && !std::is_const<T>::value,
-        matrix_vector_ref>::type&
-    operator =(matrix_vector_ref<U, N, S2> const& v)
+        matrix_vector>::type&
+    operator =(matrix_vector<U, N, S2> const& v)
     {
         copy_row_row(v, detail::all_row_vectors<S, S2>());
         return *this;
@@ -343,7 +343,7 @@ public:
             typename std::iterator_traits<Iter>::value_type,
             value_type>::value
         && !std::is_const<T>::value,
-        matrix_vector_ref>::type&
+        matrix_vector>::type&
     assign(Iter it)
     {
         using pointer_type = typename std::iterator_traits<Iter>::pointer;
@@ -361,10 +361,10 @@ public:
     template<typename U, std::size_t S2>
     typename std::enable_if<
         is_either_convertible<
-            typename matrix_vector_ref<U, N, S2>::value_type,
+            typename matrix_vector<U, N, S2>::value_type,
             value_type>::value,
         bool>::type
-    operator ==(matrix_vector_ref<U, N, S2> const& v) const
+    operator ==(matrix_vector<U, N, S2> const& v) const
     {
         return equal_row_row(v, detail::all_row_vectors<S, S2>());
     }
@@ -387,14 +387,14 @@ private:
     }
 
     template<typename U>
-    void copy_row_row(matrix_vector_ref<U, N, S> const& v, std::true_type)
+    void copy_row_row(matrix_vector<U, N, S> const& v, std::true_type)
     {
         std::copy(v.data(), v.data() + N, this->data());
     }
 
     // copy row to column, or column to column, or column to row
     template<typename U, std::size_t S2>
-    void copy_row_row(matrix_vector_ref<U, N, S2> const& v, std::false_type)
+    void copy_row_row(matrix_vector<U, N, S2> const& v, std::false_type)
     {
         for (size_type i = 0; i < N; ++i)
         {
@@ -404,14 +404,14 @@ private:
 
     // compare row to row
     template<typename U>
-    bool equal_row_row(matrix_vector_ref<U, N, S> const& v, std::true_type) const
+    bool equal_row_row(matrix_vector<U, N, S> const& v, std::true_type) const
     {
         return std::equal(this->data(), this->data() + N, v.data());
     }
 
     // compare row to column, or column to column, or column to row
     template<typename U, std::size_t S2>
-    bool equal_row_row(matrix_vector_ref<U, N, S2> const& v, std::false_type) const
+    bool equal_row_row(matrix_vector<U, N, S2> const& v, std::false_type) const
     {
         for (size_type i = 0; i < N; ++i)
         {
@@ -427,7 +427,7 @@ private:
 };
 
 template<typename T, std::size_t N1, std::size_t N2>
-std::ostream& operator <<(std::ostream& os, matrix_vector_ref<T, N1, N2> const& v)
+std::ostream& operator <<(std::ostream& os, matrix_vector<T, N1, N2> const& v)
 {
     os << "{ ";
     for (std::size_t i = 0; i < v.size(); ++i)
@@ -458,10 +458,10 @@ public:
     using iterator        = T*;
     using const_iterator  = T const*;
 
-    using row_type        = matrix_vector_ref<T, N2, 1>;
-    using const_row_type  = matrix_vector_ref<T const, N2, 1>;
-    using col_type        = matrix_vector_ref<T, N1, N2>;
-    using const_col_type  = matrix_vector_ref<T const, N1, N2>;
+    using row_type        = matrix_vector<T, N2, 1>;
+    using const_row_type  = matrix_vector<T const, N2, 1>;
+    using col_type        = matrix_vector<T, N1, N2>;
+    using const_col_type  = matrix_vector<T const, N1, N2>;
 
     enum { rank = 2, num = N1 * N2 };
 
