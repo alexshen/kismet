@@ -481,9 +481,13 @@ public:
 
     // initialize from a range which starts by the given iterator
     template<typename Iter>
-    explicit matrix(Iter it,
-           enable_if_convertible_t<
-            typename std::iterator_traits<Iter>::value_type, T>* = 0)
+    explicit matrix(Iter it
+    // vc does not compile, so disable this SFINAE code
+#ifndef KISMET_MSC
+                    , enable_if_convertible_t<
+                        typename std::iterator_traits<Iter>::value_type, T>* = 0
+#endif
+                    )
     {
         assign(it);
     }
