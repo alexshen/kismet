@@ -490,9 +490,11 @@ public:
     }
 
     template<typename Iter>
-    matrix& assign(Iter it,
-                   enable_if_convertible_t<
-                       typename std::iterator_traits<Iter>::value_type, T>* = 0)
+    enable_if_convertible_t<
+        typename std::iterator_traits<Iter>::value_type, 
+        T, 
+        matrix>&
+    assign(Iter it)
     {
         detail::copy(data(), it, num);
         return *this;
