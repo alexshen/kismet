@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
 {
     float a[] = { 1, 2, 3, 4 };
     matrix22f m{a};
-    matrix22f const& cm{a};
+    matrix22f const& cm = m;
 
     BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, m.data(), m.data() + m.size());
     BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, cm.data(), cm.data() + cm.size());
