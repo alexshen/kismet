@@ -244,3 +244,15 @@ BOOST_AUTO_TEST_CASE(matrix_col_div)
     m.col(0) /= 2;
     BOOST_CHECK_EQUAL_COLLECTIONS(m.col(0).begin(), m.col(0).end(), v, v+2);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_identity_return_identity_matrix)
+{
+    matrix22f m1 = matrix22f::identity();
+    matrix22f m2
+    {
+        { 1, 0 },
+        { 0, 1 },
+    };
+
+    BOOST_CHECK_EQUAL(m1, m2);
+}
