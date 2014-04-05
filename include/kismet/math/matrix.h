@@ -250,6 +250,9 @@ protected:
     pointer m_p;
 };
 
+template<typename T, std::size_t N>
+struct identity_impl;
+
 } // namespace detail
 
 // Represents a row or column of a given matrix.
@@ -622,9 +625,38 @@ public:
 
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end();  }
+
+    static matrix const& identity()
+    {
+        static_assert(N1 == N2, "Matrix must be square");
+        static matrix im{ detail::identity_impl<T, N1>::get() };
+        return im;
+    }
 private:
     T m_a[N1][N2];
 };
+
+namespace detail
+{
+
+template<typename T, std::size_t N>
+struct identity_impl
+{
+    static matrix<T, N, N> identity_impl::get()
+    {
+        matrix<T, N, N> m;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            for (std::size_t j = 0; j < N; ++j)
+            {
+                m.data()[i * N + j] = i == j ? (T)1 : (T)0;
+            }
+        }
+        return m;
+    }
+};
+
+} // namespace detail
 
 template<typename T, std::size_t N1, std::size_t N2>
 inline matrix<T, N1, N2> operator +(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
