@@ -468,7 +468,7 @@ public:
 
     enum { rank = 2, num = N1 * N2 };
 
-    matrix() {}
+    matrix() = default;
     
     matrix(detail::matrix_initializer<T, rank> const& mi)
     {
