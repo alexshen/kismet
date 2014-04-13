@@ -116,7 +116,7 @@ bool solve(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T tolerance = math_t
                 a[row][col] += inv_scale * a[i][col];
             }
 
-            b[row][0] += b[i][0] * inv_scale;
+            b[row] += b[i] * inv_scale;
         }
     }
 
@@ -129,10 +129,10 @@ bool solve(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T tolerance = math_t
     {
         for (size_t col = N - 1; col > row; --col)
         {
-            b[row][0] -= a[row][col] * it[col];
+            b[row] -= a[row][col] * it[col];
         }
 
-        *(it + row) = b[row][0];
+        *(it + row) = b[row];
     }
 
     return true;

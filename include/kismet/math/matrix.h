@@ -107,10 +107,10 @@ template<std::size_t S1, std::size_t S2>
 using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
 
 template<typename Derived, typename T, std::size_t N, std::size_t S>
-class matrix_vector_base
+class matrix_vector_base_impl
 {
     template<typename D, typename U, std::size_t N1, std::size_t S1>
-    friend class matrix_vector_base;
+    friend class matrix_vector_base_impl;
 public:
     using size_type              = std::size_t;
     using reference              = T&;
@@ -121,7 +121,7 @@ public:
     using const_iterator         = strided_iterator<const_pointer>;
 
     template<typename U>
-    matrix_vector_base(U* start, U* p, U* end)
+    matrix_vector_base_impl(U* start, U* p, U* end)
         : m_start(start)
         , m_p(p)
         , m_end(end)
@@ -130,8 +130,8 @@ public:
     }
 
     template<typename D, typename U>
-    matrix_vector_base(matrix_vector_base<D, U, N, S> const& v)
-        : matrix_vector_base(v.m_start, v.m_p, v.m_end)
+    matrix_vector_base_impl(matrix_vector_base_impl<D, U, N, S> const& v)
+        : matrix_vector_base_impl(v.m_start, v.m_p, v.m_end)
     {
     }
 
@@ -177,10 +177,10 @@ protected:
 // optimization for row vector, no need to store matrix start and end
 // as the iterator is not strided.
 template<typename Derived, typename T, std::size_t N>
-class matrix_vector_base<Derived, T, N, 1>
+class matrix_vector_base_impl<Derived, T, N, 1>
 {
     template<typename D, typename U, std::size_t N1, std::size_t S1>
-    friend class matrix_vector_base;
+    friend class matrix_vector_base_impl;
 public:
     using size_type              = std::size_t;
     using reference              = T&;
@@ -191,21 +191,21 @@ public:
     using const_iterator         = const_pointer;
 
     template<typename U>
-    explicit matrix_vector_base(U* p)
+    explicit matrix_vector_base_impl(U* p)
         : m_p(p)
     {
         KISMET_ASSERT(p);
     }
 
     template<typename U>
-    matrix_vector_base(U* start, U* p, U* end)
+    matrix_vector_base_impl(U* start, U* p, U* end)
         : m_p(p)
     {
         KISMET_ASSERT(p);
     }
 
     template<typename D, typename U>
-    matrix_vector_base(matrix_vector_base<D, U, N, 1> const& v)
+    matrix_vector_base_impl(matrix_vector_base_impl<D, U, N, 1> const& v)
         : m_p(v.m_p)
     {
     }
@@ -248,6 +248,59 @@ public:
     const_iterator end()   const { return m_p + N; }
 protected:
     pointer m_p;
+};
+
+template<typename Derived, typename T, std::size_t N, std::size_t S>
+class matrix_vector_base : public matrix_vector_base_impl<Derived, T, N, S>
+{
+    using base_type = matrix_vector_base_impl<Derived, T, N, S>;
+public:
+    template<typename U>
+    explicit matrix_vector_base(U* p)
+        : base_type(p)
+    {
+    }
+
+    template<typename U>
+    matrix_vector_base(U* start, U* p, U* end)
+        : base_type(start, p, end)
+    {
+    }
+
+    template<typename D, typename U>
+    matrix_vector_base(matrix_vector_base<D, U, N, S> const& v)
+        : base_type(v)
+    {
+    }
+};
+
+template<typename Derived, typename T>
+class matrix_vector_base<Derived, T, 1, 1> : public matrix_vector_base_impl<Derived, T, 1, 1>
+{
+    using base_type = matrix_vector_base_impl<Derived, T, 1, 1>;
+public:
+    template<typename U>
+    explicit matrix_vector_base(U* p)
+        : base_type(p)
+    {
+    }
+
+    template<typename U>
+    matrix_vector_base(U* start, U* p, U* end)
+        : base_type(start, p, end)
+    {
+    }
+
+    template<typename D, typename U>
+    matrix_vector_base(matrix_vector_base<D, U, 1, 1> const& v)
+        : base_type(v)
+    {
+    }
+
+    operator T&() const
+    {
+        return *this->m_p;
+    }
 };
 
 template<typename T, std::size_t N>
