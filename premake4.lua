@@ -9,6 +9,13 @@ if string.find(_ACTION, 'vs') then
     end
 end
 
+local function disable_lang_ext()
+    if win32 then
+        -- disable language extensions
+        buildoptions { '/Za' }
+    end
+end
+
 solution "kismet"
     -- Need c++11
     if _ACTION == 'gmake' then
@@ -28,7 +35,7 @@ solution "kismet"
     if win32 then
         defines { "WIN32", "_SCL_SECURE_NO_WARNINGS" }
         configuration { "debug" }
-            defines { "_DEBUG" }
+        defines { "_DEBUG" }
     end
 
     configuration { "debug" }
@@ -50,9 +57,11 @@ solution "kismet"
         }
         configuration "debug"
             targetname "commond"
+            disable_lang_ext()
 
         configuration "release"
             targetname "common"
+            disable_lang_ext()
 
     project "math"
         kind "StaticLib"
@@ -66,9 +75,11 @@ solution "kismet"
 
         configuration "debug"
             targetname "mathd"
+            disable_lang_ext()
 
         configuration "release"
             targetname "math"
+            disable_lang_ext()
 
     project "test"
         kind "ConsoleApp"
