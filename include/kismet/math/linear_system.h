@@ -72,11 +72,10 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
 /// b is constant matrix
 /// it is an random access iterator
 template<typename T, std::size_t N, typename RandIt>
-bool solve(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T tolerance = math_trait<T>::zero_tolerance())
+bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T tolerance = math_trait<T>::zero_tolerance())
 {
     using std::size_t;
     using std::abs;
-    using std::swap;
 
     // elimination process
     for (size_t i = 0; i < N - 1; ++i)

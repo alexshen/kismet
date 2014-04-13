@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_identity)
 
     float x[2];
     float expected_x[] { 1, 2 };
-    BOOST_CHECK(solve(a, b, x));
+    BOOST_CHECK(solve_partial_pivoting(a, b, x));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
 }
@@ -80,5 +80,5 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_non_invertible_fail)
     };
 
     float x[2];
-    BOOST_CHECK(!solve(a, b, x));
+    BOOST_CHECK(!solve_partial_pivoting(a, b, x));
 }
