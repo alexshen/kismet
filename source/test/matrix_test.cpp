@@ -256,3 +256,50 @@ BOOST_AUTO_TEST_CASE(matrix_identity_return_identity_matrix)
 
     BOOST_CHECK_EQUAL(m1, m2);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_swap_row)
+{
+    matrix22f m{ matrix22f::identity() };
+    matrix22f expected
+    {
+        { 0, 1 },
+        { 1, 0 }
+    };
+
+    m.row(0).swap(m.row(1));
+
+    BOOST_CHECK_EQUAL(m, expected);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_swap_col)
+{
+    matrix22f m{ matrix22f::identity() };
+    matrix22f expected
+    {
+        { 0, 1 },
+        { 1, 0 }
+    };
+
+    m.col(0).swap(m.col(1));
+
+    BOOST_CHECK_EQUAL(m, expected);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_swap_row_col)
+{
+    matrix22f m
+    {
+        { 1, 2 },
+        { 3, 4 }
+    };
+
+    matrix22f expected
+    {
+        { 1, 3 },
+        { 2, 4 }
+    };
+
+    m.row(0).swap(m.col(0));
+
+    BOOST_CHECK_EQUAL(m, expected);
+}
