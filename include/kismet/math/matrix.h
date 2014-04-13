@@ -440,6 +440,12 @@ public:
             swap((*this)[i], v[i]);
         }
     }
+
+    template<std::size_t S2>
+    void swap(matrix_vector<T, N, S2>&& v)
+    {
+        swap(v);
+    }
 private:
     template<typename It>
     void copy_pointer_row(It p, std::true_type)
@@ -496,7 +502,25 @@ private:
 };
 
 template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
-void swap(matrix_vector<T, N, S1>&& v1, matrix_vector<T, N, S2>&& v2)
+inline void swap(matrix_vector<T, N, S1>& v1, matrix_vector<T, N, S2>& v2)
+{
+    v1.swap(v2);
+}
+
+template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
+inline void swap(matrix_vector<T, N, S1>&& v1, matrix_vector<T, N, S2>&& v2)
+{
+    v1.swap(v2);
+}
+
+template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
+inline void swap(matrix_vector<T, N, S1>& v1, matrix_vector<T, N, S2>&& v2)
+{
+    v1.swap(v2);
+}
+
+template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
+inline void swap(matrix_vector<T, N, S1>&& v1, matrix_vector<T, N, S2>& v2)
 {
     v1.swap(v2);
 }
