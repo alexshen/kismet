@@ -491,7 +491,7 @@ private:
 };
 
 template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
-void swap(matrix_vector<T, N, S1>& v1, matrix_vector<T, N, S2>& v2)
+void swap(matrix_vector<T, N, S1>&& v1, matrix_vector<T, N, S2>&& v2)
 {
     v1.swap(v2);
 }
