@@ -435,8 +435,6 @@ private:
         }
         return true;
     }
-
-    pointer m_p;
 };
 
 template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
