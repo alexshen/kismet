@@ -297,7 +297,12 @@ public:
     {
     }
 
-    operator T&() const
+    operator typename base_type::reference()
+    {
+        return *this->m_p;
+    }
+
+    operator typename base_type::const_reference() const
     {
         return *this->m_p;
     }
