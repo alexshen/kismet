@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <utility>
 #include <boost/test/unit_test.hpp>
 #include "kismet/math/linear_system.h"
 using namespace std;
@@ -47,4 +48,37 @@ BOOST_AUTO_TEST_CASE(linear_system_solve3x3_identity_all_one)
     float c[3];
     BOOST_CHECK(solve(a, b, c));
     BOOST_CHECK(equal(b, b + 3, c));
+}
+
+BOOST_AUTO_TEST_CASE(linear_system_GE_solve_identity)
+{
+    matrix22f a{ matrix22f::identity() };
+    matrix<float, 2, 1> b
+    {
+        { 1 },
+        { 2 }
+    };
+
+    float x[2];
+    float expected_x[] { 1, 2 };
+    BOOST_CHECK(solve(a, b, x));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
+}
+
+BOOST_AUTO_TEST_CASE(linear_system_GE_solve_non_invertible_fail)
+{
+    matrix22f a
+    {
+        { 1, 0 },
+        { 0, 0 }
+    };
+    matrix<float, 2, 1> b
+    {
+        { 1 },
+        { 2 }
+    };
+
+    float x[2];
+    BOOST_CHECK(!solve(a, b, x));
 }
