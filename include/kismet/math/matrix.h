@@ -738,7 +738,7 @@ namespace detail
 template<typename T, std::size_t N>
 struct identity_impl
 {
-    static matrix<T, N, N> identity_impl::get()
+    static matrix<T, N, N> get()
     {
         matrix<T, N, N> m;
         for (std::size_t i = 0; i < N; ++i)
