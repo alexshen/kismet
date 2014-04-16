@@ -5,15 +5,19 @@
 
 #ifndef KISMET_INSTANTIATE_TEMPLATE
 #  ifndef KISMET_NO_EXTERN_TEMPLATE
-#    define KISMET_CLASS_TEMPLATE_API(T, ...)   extern template class T<__VA_ARGS__>;
-#    define KISMET_FUNC_TEMPLATE_API(F, R, ...) extern template R F(__VA_ARGS__);
+#    define KISMET_CLASS_TEMPLATE_API(CLS_TEMPLATE_NAME_, ...) \
+        extern template class CLS_TEMPLATE_NAME_<__VA_ARGS__>;
+#    define KISMET_FUNC_TEMPLATE_API(FUNC_TEMPLATE_NAME_, FUNC_TEMPLATE_RETURN_TYPE_, ...) \
+        extern template FUNC_TEMPLATE_RETURN_TYPE_ FUNC_TEMPLATE_NAME_(__VA_ARGS__);
 #  else
-#    define KISMET_CLASS_TEMPLATE_API(T, ...)
-#    define KISMET_FUNC_TEMPLATE_API(F, R, ...)
+#    define KISMET_CLASS_TEMPLATE_API(CLS_TEMPLATE_NAME_, ...)
+#    define KISMET_FUNC_TEMPLATE_API(FUNC_TEMPLATE_NAME_, FUNC_TEMPLATE_RETURN_TYPE_, ...)
 #  endif
 #else
-#  define KISMET_CLASS_TEMPLATE_API(T, ...)   template class T<__VA_ARGS__>;
-#  define KISMET_FUNC_TEMPLATE_API(F, R, ...) template R F(__VA_ARGS__);
+#  define KISMET_CLASS_TEMPLATE_API(CLS_TEMPLATE_NAME_, ...) \
+        template class CLS_TEMPLATE_NAME_<__VA_ARGS__>;
+#  define KISMET_FUNC_TEMPLATE_API(FUNC_TEMPLATE_NAME_, FUNC_TEMPLATE_RETURN_TYPE_, ...) \
+        template FUNC_TEMPLATE_RETURN_TYPE_ FUNC_TEMPLATE_NAME_(__VA_ARGS__);
 #endif
 
 #endif // KISMET_UTILITY_UTILITY_H
