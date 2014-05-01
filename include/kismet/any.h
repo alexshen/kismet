@@ -7,7 +7,6 @@
 #include <typeinfo>
 #include <type_traits>
 #include <utility>
-#include <boost/integer/static_min_max.hpp>
 #include "kismet/core/assert.h"
 
 namespace kismet
@@ -239,9 +238,7 @@ public:
 
     void swap(any& rhs)
     {
-        any tmp{ std::move(*this) };
-        *this = std::move(rhs);
-        rhs = std::move(tmp);
+        std::swap(*this, rhs);
     }
 
     std::type_info const* type() const
