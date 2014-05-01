@@ -64,3 +64,14 @@ BOOST_AUTO_TEST_CASE(any_unsafe_cast_const)
     any const a(1);
     BOOST_CHECK_EQUAL(unsafe_any_cast<int>(a), 1);
 }
+
+BOOST_AUTO_TEST_CASE(any_swap)
+{
+    any a(1);
+    any b(string("aaa"));
+
+    swap(a, b);
+
+    BOOST_CHECK_EQUAL(unsafe_any_cast<int>(b), 1);
+    BOOST_CHECK_EQUAL(unsafe_any_cast<string>(a), string("aaa"));
+}
