@@ -49,7 +49,7 @@ class any
     struct storage
     {
         small_buffer buffer;
-        vtable*      table;
+        vtable*      vtbl;
     };
 
     // get buffer pointer depend on the whether small buffer optimization is enabled
@@ -181,7 +181,7 @@ class any
 public:
     any()
     {
-        m_storage.table = nullptr;
+        m_storage.vtbl = nullptr;
     }
 
     any(any const& rhs)
@@ -221,10 +221,10 @@ public:
 
     void clear()
     {
-        if (m_storage.table)
+        if (m_storage.vtbl)
         {
-            m_storage.table->destroy(m_storage.buffer);
-            m_storage.table = nullptr;
+            m_storage.vtbl->destroy(m_storage.buffer);
+            m_storage.vtbl = nullptr;
         }
     }
 
@@ -243,7 +243,7 @@ public:
 
     bool empty() const
     {
-        return m_storage.table == nullptr;
+        return m_storage.vtbl == nullptr;
     }
 
     void swap(any& rhs)
@@ -255,34 +255,34 @@ public:
 
     std::type_info const* type() const
     {
-        return m_storage.table ? &m_storage.table->get_type_info() : nullptr;
+        return m_storage.vtbl ? &m_storage.vtbl->get_type_info() : nullptr;
     }
 
 private:
     void copy(any const& rhs)
     {
-        if (rhs.m_storage.table)
+        if (rhs.m_storage.vtbl)
         {
-            rhs.m_storage.table->copy(rhs.m_storage.buffer, m_storage.buffer);
-            m_storage.table = rhs.m_storage.table;
+            rhs.m_storage.vtbl->copy(rhs.m_storage.buffer, m_storage.buffer);
+            m_storage.vtbl = rhs.m_storage.vtbl;
         }
         else
         {
-            m_storage.table = nullptr;
+            m_storage.vtbl = nullptr;
         }
     }
 
     void move(any&& rhs)
     {
-        if (rhs.m_storage.table)
+        if (rhs.m_storage.vtbl)
         {
-            rhs.m_storage.table->move(rhs.m_storage.buffer, m_storage.buffer);
-            m_storage.table = rhs.m_storage.table;
-            rhs.m_storage.table = nullptr;
+            rhs.m_storage.vtbl->move(rhs.m_storage.buffer, m_storage.buffer);
+            m_storage.vtbl = rhs.m_storage.vtbl;
+            rhs.m_storage.vtbl = nullptr;
         }
         else
         {
-            m_storage.table = nullptr;
+            m_storage.vtbl = nullptr;
         }
     }
 
@@ -300,12 +300,12 @@ private:
         };
 
         manager_type::create(m_storage.buffer, std::forward<T>(v));
-        m_storage.table = &vtbl;
+        m_storage.vtbl = &vtbl;
     }
 
     void* get_pointer()
     {
-        return m_storage.table ? m_storage.table->get_pointer(m_storage.buffer) : nullptr;
+        return m_storage.vtbl ? m_storage.vtbl->get_pointer(m_storage.buffer) : nullptr;
     }
 
     template<typename T>
