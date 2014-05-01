@@ -234,7 +234,7 @@ public:
 
     bool empty() const
     {
-        return m_storage.vtbl == nullptr;
+        return !m_storage.vtbl;
     }
 
     void swap(any& rhs)
