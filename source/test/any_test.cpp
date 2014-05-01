@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(any_move)
 BOOST_AUTO_TEST_CASE(any_cast_throw)
 {
     any a(1);
-    BOOST_CHECK_EXCEPTION(any_cast<double>(a), bad_any_cast, [](bad_any_cast const&) { return true; });
+    BOOST_CHECK_THROW(any_cast<double>(a), bad_any_cast);
 }
 
 BOOST_AUTO_TEST_CASE(any_unsafe_cast_const)
