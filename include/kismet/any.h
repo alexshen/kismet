@@ -334,10 +334,10 @@ struct any_cast_impl
     {
         KISMET_ASSERT(!a.empty());
         using const_pointer = typename std::add_pointer<
-                            typename std::add_const<
-                                typename std::remove_reference<T>::type
-                            >::type
-                        >::type;
+                                  typename std::add_const<
+                                      typename std::remove_reference<T>::type
+                                  >::type
+                              >::type;
         return static_cast<T>(
                     *static_cast<const_pointer>(
                         const_cast<void const*>(
