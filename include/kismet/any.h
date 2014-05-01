@@ -43,7 +43,7 @@ class any
         void  (* move)(small_buffer& source, small_buffer& target);
         void  (* destroy)(small_buffer& source);
         void* (* get_pointer)(small_buffer& source);
-        std::type_info const& (* get_type_info)(small_buffer const& source);
+        std::type_info const& (* get_type_info)();
     };
 
     struct storage
@@ -74,7 +74,7 @@ class any
     template<typename T>
     struct get_type_info
     {
-        static std::type_info const& get(small_buffer const& source)
+        static std::type_info const& get()
         {
             return typeid(T);
         }
@@ -255,7 +255,7 @@ public:
 
     std::type_info const* type() const
     {
-        return m_storage.table ? &m_storage.table->get_type_info(m_storage.buffer) : nullptr;
+        return m_storage.table ? &m_storage.table->get_type_info() : nullptr;
     }
 
 private:
