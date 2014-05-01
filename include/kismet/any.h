@@ -13,7 +13,7 @@
 namespace kismet
 {
 
-class bad_any_cast : std::exception
+class bad_any_cast : public std::exception
 {
     char const* what() const throw() override
     {
