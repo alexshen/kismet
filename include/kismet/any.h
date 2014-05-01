@@ -25,7 +25,7 @@ namespace detail
 {
 template<typename T>
 struct any_cast_impl;
-}
+} // namespace detail
 
 class any
 {
@@ -59,15 +59,6 @@ class any
         static void* get(small_buffer& source)
         {
             return source.p;
-        }
-    };
-
-    template<>
-    struct get_buffer_pointer<true>
-    {
-        static void* get(small_buffer& source)
-        {
-            return &source.alias;
         }
     };
 
@@ -312,6 +303,16 @@ private:
     friend struct detail::any_cast_impl;
 
     storage m_storage;
+};
+
+// explicit specialization must be in namespace scope
+template<>
+struct any::get_buffer_pointer<true>
+{
+    static void* get(small_buffer& source)
+    {
+        return &source.alias;
+    }
 };
 
 namespace detail
