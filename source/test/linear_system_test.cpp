@@ -82,3 +82,23 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_non_invertible_fail)
     float x[2];
     BOOST_CHECK(!solve_partial_pivoting(a, b, x));
 }
+
+BOOST_AUTO_TEST_CASE(linear_system_GE_solve_with_permuation)
+{
+    matrix22f a
+    {
+        { 1, 0 },
+        { 2, 1 }
+    };
+    matrix<float, 2, 1> b
+    {
+        { 1 },
+        { 2 }
+    };
+
+    float x[2];
+    float expected_x[] = { 1.f, 0.f };
+    BOOST_CHECK(solve_partial_pivoting(a, b, x));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
+}
