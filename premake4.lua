@@ -63,6 +63,23 @@ solution "kismet"
             targetname "common"
             disable_lang_ext()
 
+    project "ai"
+        kind "StaticLib"
+        language "C++"
+        targetdir "lib"
+        files
+        {
+            "include/kismet/ai/**.h",
+            "source/ai/**.cpp",
+        }
+        configuration "debug"
+            targetname "aid"
+            disable_lang_ext()
+
+        configuration "release"
+            targetname "ai"
+            disable_lang_ext()
+
     project "math"
         kind "StaticLib"
         language "C++"
