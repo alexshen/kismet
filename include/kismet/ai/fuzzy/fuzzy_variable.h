@@ -24,15 +24,15 @@ public:
     fuzzy_variable(fuzzy_variable&& rhs);
     fuzzy_variable& operator =(fuzzy_variable rhs);
 
-    void add_traiangle_set(float min, float mid, float max);
+    fuzzy_set& add_traiangle_set(float min, float mid, float max);
 
-    void add_trapezoid_set(float m1, float m2, float m3, float m4);
+    fuzzy_set& add_trapezoid_set(float m1, float m2, float m3, float m4);
 
-    void add_left_trapezoid_set(float min, float mid, float max);
+    fuzzy_set& add_left_trapezoid_set(float min, float mid, float max);
 
-    void add_right_trapezoid_set(float min, float mid, float max);
+    fuzzy_set& add_right_trapezoid_set(float min, float mid, float max);
 
-    void add_singleton_set(float m);
+    fuzzy_set& add_singleton_set(float m);
 
     void reset_dom();
 

@@ -37,34 +37,39 @@ fuzzy_variable& fuzzy_variable::operator =(fuzzy_variable rhs)
     return *this;
 }
 
-void fuzzy_variable::add_traiangle_set(float min, float mid, float max)
+fuzzy_set& fuzzy_variable::add_traiangle_set(float min, float mid, float max)
 {
     m_sets.emplace_back(new fuzzy_set_triangle(min, mid, max));
     update_range(min, max);
+    return *m_sets.back();
 }
 
-void fuzzy_variable::add_trapezoid_set(float m1, float m2, float m3, float m4)
+fuzzy_set& fuzzy_variable::add_trapezoid_set(float m1, float m2, float m3, float m4)
 {
     m_sets.emplace_back(new fuzzy_set_trapezoid(m1, m2, m3, m4));
     update_range(m1, m4);
+    return *m_sets.back();
 }
 
-void fuzzy_variable::add_left_trapezoid_set(float min, float mid, float max)
+fuzzy_set& fuzzy_variable::add_left_trapezoid_set(float min, float mid, float max)
 {
     m_sets.emplace_back(new fuzzy_set_left_trapezoid(min, mid, max));
     update_range(min, max);
+    return *m_sets.back();
 }
 
-void fuzzy_variable::add_right_trapezoid_set(float min, float mid, float max)
+fuzzy_set& fuzzy_variable::add_right_trapezoid_set(float min, float mid, float max)
 {
     m_sets.emplace_back(new fuzzy_set_right_trapezoid(min, mid, max));
     update_range(min, max);
+    return *m_sets.back();
 }
 
-void fuzzy_variable::add_singleton_set(float m)
+fuzzy_set& fuzzy_variable::add_singleton_set(float m)
 {
     m_sets.emplace_back(new fuzzy_set_singleton(m));
     update_range(m, m);
+    return *m_sets.back();
 }
 
 void fuzzy_variable::reset_dom()
