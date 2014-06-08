@@ -157,7 +157,7 @@ public:
 
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
-        : base_type{ list }
+        : base_type(list)
     {
     }
 };
@@ -178,7 +178,7 @@ public:
 
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
-        : base_type{ list }
+        : base_type(list)
     {
     }
 
@@ -205,7 +205,7 @@ public:
 
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
-        : base_type{ list }
+        : base_type(list)
     {
     }
 
@@ -234,7 +234,7 @@ public:
 
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
-        : base_type{ list }
+        : base_type(list)
     {
     }
 
