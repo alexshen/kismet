@@ -19,7 +19,7 @@ fuzzy_composite::fuzzy_composite(fuzzy_composite const& rhs)
             break;
         }
 
-        m_terms[i] = move(rhs.m_terms[i]->clone());
+        m_terms[i] = rhs.m_terms[i]->clone();
     }
 }
 

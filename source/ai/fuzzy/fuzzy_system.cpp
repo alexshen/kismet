@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <utility>
 #include "kismet/ai/fuzzy/fuzzy_system.h"
+#include "kismet/ai/fuzzy/fuzzy_set_wrapper.h"
+#include "kismet/utility.h"
 #include "kismet/core/assert.h"
 
 using namespace std;
@@ -28,6 +30,22 @@ fuzzy_variable& fuzzy_system::get_variable(fuzzy_id const& id)
 void fuzzy_system::add_rule(fuzzy_term_ptr antecedent, fuzzy_term_ptr consequent)
 {
     m_rules.emplace_back(move(antecedent), move(consequent));
+}
+
+void fuzzy_system::add_rule(fuzzy_term_ptr antecedent, fuzzy_set& consequent)
+{
+    add_rule(move(antecedent), make_unique<fuzzy_set_wrapper>(consequent));
+}
+
+void fuzzy_system::add_rule(fuzzy_set& antecedent, fuzzy_term_ptr consequent)
+{
+    add_rule(make_unique<fuzzy_set_wrapper>(antecedent), move(consequent));
+}
+
+void fuzzy_system::add_rule(fuzzy_set& antecedent, fuzzy_set& consequent)
+{
+    add_rule(make_unique<fuzzy_set_wrapper>(antecedent),
+             make_unique<fuzzy_set_wrapper>(consequent));
 }
 
 bool fuzzy_system::has_variable(fuzzy_id const& id) const

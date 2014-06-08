@@ -45,6 +45,10 @@ public:
 
     void add_rule(fuzzy_term_ptr antecedent, fuzzy_term_ptr consequent);
 
+    void add_rule(fuzzy_term_ptr antecedent, fuzzy_set& consequent);
+    void add_rule(fuzzy_set& antecedent, fuzzy_term_ptr consequent);
+    void add_rule(fuzzy_set& antecedent, fuzzy_set& consequent);
+
     /**
      * Fuzzify input of the specified variable
      */
