@@ -29,6 +29,8 @@ fuzzy_variable::fuzzy_variable(fuzzy_variable&& rhs)
 {
 }
 
+fuzzy_variable::~fuzzy_variable() = default;
+
 fuzzy_variable& fuzzy_variable::operator =(fuzzy_variable rhs)
 {
     swap(rhs);

@@ -22,9 +22,7 @@ fuzzy_rule::fuzzy_rule(fuzzy_rule&& rhs)
 {
 }
 
-fuzzy_rule::~fuzzy_rule()
-{
-}
+fuzzy_rule::~fuzzy_rule() = default;
 
 fuzzy_rule& fuzzy_rule::operator =(fuzzy_rule rhs)
 {

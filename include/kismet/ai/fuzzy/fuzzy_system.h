@@ -27,6 +27,8 @@ class fuzzy_system
 public:
     using fuzzy_id = std::string;
 
+    fuzzy_system() = default;
+
     fuzzy_system(fuzzy_system const&) = delete;
     fuzzy_system& operator =(fuzzy_system const&) = delete;
 

@@ -18,6 +18,13 @@ fuzzy_variable& fuzzy_system::add_variable(fuzzy_id const& id)
     return (*it.first).second;
 }
 
+fuzzy_variable& fuzzy_system::get_variable(fuzzy_id const& id)
+{
+    KISMET_ASSERT(!id.empty() && has_variable(id));
+
+    return m_vars.find(id)->second;
+}
+
 void fuzzy_system::add_rule(fuzzy_term_ptr antecedent, fuzzy_term_ptr consequent)
 {
     m_rules.emplace_back(move(antecedent), move(consequent));

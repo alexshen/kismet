@@ -10,9 +10,7 @@ fuzzy_set::fuzzy_set(float mean)
 {
 }
 
-fuzzy_set::~fuzzy_set()
-{
-}
+fuzzy_set::~fuzzy_set() = default;
 
 } // namespace fuzzy
 } // namespace kismet
