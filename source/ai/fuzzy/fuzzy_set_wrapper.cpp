@@ -9,7 +9,7 @@ namespace fuzzy
 {
 
 fuzzy_set_wrapper::fuzzy_set_wrapper(fuzzy_set& s)
-    : m_set{ s }
+    : m_set(s)
 {
 }
 
