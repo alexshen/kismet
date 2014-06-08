@@ -23,6 +23,7 @@ public:
     
     std::size_t size() const;
 protected:
+    fuzzy_composite() = default;
     fuzzy_composite(fuzzy_composite const& rhs);
 
     template<typename F>
