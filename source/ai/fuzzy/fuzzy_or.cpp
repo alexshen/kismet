@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <limits>
 #include "kismet/ai/fuzzy/fuzzy_or.h"
+#include "kismet/utility.h"
 using namespace std;
 
 namespace kismet
