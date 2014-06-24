@@ -101,8 +101,8 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
         // pivoting
         if (pivot_row != i)
         {
-            a[pivot_row].swap(a[pivot_row]);
-            b[pivot_row].swap(b[pivot_row]);
+            a[pivot_row].swap(a[i]);
+            b[pivot_row].swap(b[i]);
         }
 
         T neg_inv_pivot = -inv(a[i][i]);
@@ -134,7 +134,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
             b[row] -= a[row][col] * it[col];
         }
 
-        *(it + row) = b[row];
+        *(it + row) = b[row] * inv(a[row][row]);
     }
 
     return true;
