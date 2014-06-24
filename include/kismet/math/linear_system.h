@@ -94,7 +94,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
         }
 
         // a is non-invertible, fail
-        if (is_zero(pivot))
+        if (is_zero(pivot, tolerance))
             return false;
 
         // pivoting
@@ -120,7 +120,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
     }
 
     // non-invertible, fail
-    if (is_zero(a[N - 1][N - 1]))
+    if (is_zero(a[N - 1][N - 1], tolerance))
         return false;
 
     // back substitution
