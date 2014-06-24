@@ -31,7 +31,7 @@ public:
     using difference_type = typename std::iterator_traits<BaseIter>::difference_type;
 
     // as we can move back, it's valid to provide a default constructor
-    // BaseIter must be default construtible and copy construtible
+    // BaseIter must be default constructible and copy constructible
     strided_iterator_impl()
         : m_end()
         , m_stride()
@@ -79,7 +79,12 @@ class strided_iterator_impl<BaseIter, std::bidirectional_iterator_tag>
 public:
     using difference_type = typename std::iterator_traits<BaseIter>::difference_type;
 
-    // BaseIter must be default construtible and copy construtible
+    strided_iterator_impl()
+        : strided_iterator_impl(0)
+    {
+    }
+
+    // BaseIter must be default constructible and copy constructible
     strided_iterator_impl(difference_type s)
         : strided_iterator_impl(BaseIter(), BaseIter(), BaseIter(), s)
     {
@@ -137,7 +142,12 @@ class strided_iterator_impl<BaseIter, std::random_access_iterator_tag>
 public:
     using difference_type = typename std::iterator_traits<BaseIter>::difference_type;
 
-    // BaseIter must be default construtible and copy construtible
+    strided_iterator_impl()
+        : strided_iterator_impl(0)
+    {
+    }
+
+    // BaseIter must be default constructible and copy constructible
     strided_iterator_impl(difference_type s)
         : strided_iterator_impl(BaseIter(), BaseIter(), BaseIter(), s)
     {
