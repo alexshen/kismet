@@ -70,8 +70,7 @@ inline bool is_zero(T v, T tol = math_trait<T>::zero_tolerance())
 }
 
 // define math traits for integer type.
-// do not allow is_zero(T, T) which can specifiy tolerance and is
-// meaningless for integer type.
+// do not use tolerance in is_zero(T, T) which is meaningless for integer type.
 #define INT_MATH_TRAIT(T)          \
     template<> class math_trait<T> \
     {                              \
@@ -82,10 +81,7 @@ inline bool is_zero(T v, T tol = math_trait<T>::zero_tolerance())
         }                          \
     };                             \
                                    \
-    template<>                     \
-    bool is_zero(T, T) = delete;   \
-                                   \
-    inline bool is_zero(T v)       \
+    inline bool is_zero(T v, T)    \
     {                              \
         return v == (T)0;          \
     }
