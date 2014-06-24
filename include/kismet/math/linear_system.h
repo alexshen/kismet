@@ -200,9 +200,8 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
         }
     }
 
-    // non-invertible, fail
-    if (is_zero(u[N - 1][N - 1], tolerance))
-        return false;
+    return true;
+}
 
     return true;
 }
