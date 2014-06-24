@@ -164,10 +164,15 @@ public:
     }
 
     iterator begin() { return {m_start, m_p, m_end, S}; }
-    iterator end()   { return {m_start, m_p, m_end, S}; }
+    iterator end()   { return {m_start, m_end, end_offset(), S}; }
 
     const_iterator begin() const { return {m_start, m_p, m_end, S}; }
-    const_iterator end()   const { return {m_start, m_p, m_end, S}; }
+    const_iterator end()   const { return {m_start, m_end, end_offset(), S}; }
+private:
+    typename iterator::difference_type end_offset() const
+    {
+        return (m_end - m_p) % N;
+    }
 protected:
     pointer m_start; // matrix start
     pointer m_p;
