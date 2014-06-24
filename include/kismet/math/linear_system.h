@@ -163,9 +163,21 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
         // no pivoting
         T pivot = u[i][i];
 
-        // cannot continue as the pivot is 0, and we don't do pivoting.
+        // check if any other elements in this column is non-zero
+        // if so, then we cannot continue decomposing, otherwise
+        // we can continue without problems
         if (is_zero(pivot, tolerance))
-            return false;
+        {
+            auto colv = u.col(i);
+            if (!std::all_of(
+                    colv.begin() + (i + 1), colv.end(),
+                    [tolerance](T const& v) { return is_zero(v, tolerance); }))
+            {
+                return false;
+            }
+
+            continue;
+        }
 
         T neg_inv_pivot = -inv(pivot);
 
