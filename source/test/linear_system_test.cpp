@@ -102,3 +102,56 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_with_permuation)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
 }
+
+BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_succeeds)
+{
+    matrix33f a
+    {
+        { 1, -2, 3 },
+        { 2, -5, 12 },
+        { 0, 2, -10 }
+    };
+
+    matrix33f exp_l
+    {
+        { 1, 0, 0 },
+        { 2, 1, 0 },
+        { 0, -2, 1 }
+    };
+
+    matrix33f exp_u
+    {
+        { 1, -2, 3 },
+        { 0, -1, 6 },
+        { 0, 0, 2 }
+    };
+
+    matrix33f l, u;
+    BOOST_CHECK(lu_decompose(a, l, u));
+
+    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+
+    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+}
+
+BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
+{
+    matrix22f a
+    {
+        { 1, 2 },
+        { 0, 0 },
+    };
+
+    matrix22f l, u;
+    BOOST_CHECK(!lu_decompose(a, l, u));
+}

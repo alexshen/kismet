@@ -69,6 +69,15 @@ inline bool is_zero(T v, T tol = math_trait<T>::zero_tolerance())
     return abs(v) < tol;
 }
 
+/// Return true if lhs is approximately equal to rhs
+// TODO: more accuracy
+template<typename T>
+inline bool approx(T lhs, T rhs, T tol = math_trait<T>::zero_tolerance())
+{
+    using std::abs;
+    return abs(lhs - rhs) <= tol;
+}
+
 // define math traits for integer type.
 // do not use tolerance in is_zero(T, T) which is meaningless for integer type.
 #define INT_MATH_TRAIT(T)          \

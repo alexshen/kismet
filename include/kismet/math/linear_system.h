@@ -137,6 +137,60 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
     return true;
 }
 
+/// LU decompose a matrix with Gaussian Elimination.
+/// The matrix A is decomposed as
+///     A = L*U
+/// where L is a lower triangular matrix, U is a upper triangular matrix
+/// Return true if decomposition succeeds
+template<typename T, std::size_t N>
+bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance = math_trait<T>::zero_tolerance())
+{
+    using std::size_t;
+    using std::abs;
+
+    // we do Gaussian Elimination on u, so make a copy first
+    u = a;
+
+    // l starts with a identity matrix
+    l = matrix<T, N, N>::identity();
+
+    // elimination process
+    for (size_t i = 0; i < N - 1; ++i)
+    {
+        // no pivoting
+        T pivot = u[i][i];
+
+        // cannot continue as the pivot is 0, and we don't do pivoting.
+        if (is_zero(pivot, tolerance))
+            return false;
+
+        T neg_inv_pivot = -inv(pivot);
+
+        // eliminate c[i + 1..N][i].
+        // we need to set u[row][i] to 0, as we do Gaussian Elimination on u.
+        for (size_t row = i + 1; row < N; ++row)
+        {
+            T inv_scale = neg_inv_pivot * u[row][i];
+
+            // zero, as it's eliminated.
+            u[row][i] = (T)0;
+
+            // set the corresponding entry in lower triangular matrix
+            l[row][i] = -inv_scale;
+
+            for (size_t col = i + 1; col < N; ++col)
+            {
+                u[row][col] += inv_scale * u[i][col];
+            }
+        }
+    }
+
+    // non-invertible, fail
+    if (is_zero(u[N - 1][N - 1], tolerance))
+        return false;
+
+    return true;
+}
 KISMET_FUNC_TEMPLATE_API(solve, bool, float const a[2][2], float const b[2], float* it, float tol)
 KISMET_FUNC_TEMPLATE_API(solve, bool, double const a[2][2], double const b[2], double* it, double tol)
 
