@@ -82,6 +82,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
     {
         // find the pivot in column i
         T pivot = abs(a[i][i]);
+
         size_t pivot_row = i;
         for (size_t j = i + 1; j < N; ++j)
         {
@@ -104,12 +105,14 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
             b[pivot_row].swap(b[pivot_row]);
         }
 
+        T neg_inv_pivot = -inv(a[i][i]);
+
         // eliminate c[i + 1..N][i].
         // actually, we don't bother setting a[row][i] to 0,
         // as we will never use this element in back substitution.
         for (size_t row = i + 1; row < N; ++row)
         {
-            T inv_scale = -inv(a[i][i]) * a[row][i];
+            T inv_scale = neg_inv_pivot * a[row][i];
             for (size_t col = i + 1; col < N; ++col)
             {
                 a[row][col] += inv_scale * a[i][col];
