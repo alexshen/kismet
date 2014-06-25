@@ -818,6 +818,12 @@ public:
         return const_col_type{ data(), &m_a[0][index], data() + num };
     }
 
+    // reset all elements to 0
+    void clear()
+    {
+        std::fill_n(begin(), size(), (T)0);
+    }
+
     // Return the size of a dimension
     size_type extent(size_type index) const
     {
