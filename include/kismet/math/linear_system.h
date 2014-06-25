@@ -203,8 +203,123 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
     return true;
 }
 
+/// PLU decompose a matrix with Gaussian Elimination.
+/// The matrix A is decomposed as
+///     A = P*L*U
+/// where P is a permutation matrix, L is a lower triangular matrix, U is a upper triangular matrix
+/// Return true if decomposition succeeds
+template<typename T, std::size_t N>
+bool plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance = math_trait<T>::zero_tolerance())
+{
+    using std::size_t;
+    using std::abs;
+    using std::swap;
+
+    // array form of permutation
+    // the identity element's index is (i, perm[i])
+    size_t perms[N];
+    for (size_t i = 0; i < N; ++i)
+    {
+        perms[i] = i;
+    }
+
+    // we do Gaussian Elimination on u, so make a copy first
+    u = a;
+
+    // lower triangular matrix starts with identity
+    l = matrix<T, N, N>::identity();
+    p.clear();
+
+    // elimination process
+    for (size_t i = 0; i < N - 1; ++i)
+    {
+        // find the pivot in column i
+        T pivot = abs(u[i][i]);
+
+        size_t pivot_row = i;
+        for (size_t j = i + 1; j < N; ++j)
+        {
+            T value = abs(u[j][i]);
+            if (value > pivot)
+            {
+                pivot = value;
+                pivot_row = j;
+            }
+        }
+
+        // pivot is 0, no need to eliminate for this column
+        if (is_zero(pivot, tolerance))
+        {
+            continue;
+        }
+
+        // pivoting
+        if (pivot_row != i)
+        {
+            u[pivot_row].swap(u[i]);
+
+            // L'*A = U
+            // where L' = Mn-1*Pn-1*...*M1*P1
+            // so A = L'^-1*U
+            // L'^-1 = P1^-1*M^-1*...*Pn-1^-1*Mn-1^-1
+            // as Pi is the an elementary matrix of row operation, so its
+            // inverse is an elementary matrix of column operation.
+            // Also we have L'^-1 = P1^T*M^-1*...*Pn-1^T*Mn-1^-1
+
+            // swap columns which indices are `i' and `pivot_row'
+            // we only need to swap the corresponding identity elements of elementary operation
+
+            // the column of the identity elements on the left side
+            size_t icol = perms[i];
+            size_t pivot_col = perms[pivot_row];
+
+            // permutation matrix's inverse equals to its transpose
+            swap(l[icol][i], l[icol][pivot_row]);
+            swap(l[pivot_col][i], l[pivot_col][pivot_row]);
+
+            // save the permutation
+            swap(perms[i], perms[pivot_row]);
+        }
+
+        T neg_inv_pivot = -inv(u[i][i]);
+
+        // eliminate c[i + 1..N][i].
+        // we need to set u[row][i] to 0, as we do Gaussian Elimination on u.
+        for (size_t row = i + 1; row < N; ++row)
+        {
+            T inv_scale = neg_inv_pivot * u[row][i];
+
+            // zero, as it's eliminated.
+            u[row][i] = T(0);
+
+            // apply the column operation to i-th column of the lower triangular matrix
+            // there's only one identity element in the row-th column of the lower triangular matrix
+            l[perms[row]][i] -= inv_scale;
+
+            for (size_t col = i + 1; col < N; ++col)
+            {
+                u[row][col] += inv_scale * u[i][col];
+            }
+        }
+    }
+
+    // update the permutation matrix
+    // for now, p is on the left side
+    // P*A = L'*U
+    // to get the correct permutation matrix, we need to transpose,
+    // as P^-1 = P^T
+    for (int i = 0; i < N; ++i)
+    {
+        p[perms[i]][i] = T(1);
+    }
+
+    // apply permutation to the almost lower triangular matrix 
+    // to get the real lower triangular matrix
+    reorder(l.row_begin(), l.row_end(), perms);
+
     return true;
 }
+
 KISMET_FUNC_TEMPLATE_API(solve, bool, float const a[2][2], float const b[2], float* it, float tol)
 KISMET_FUNC_TEMPLATE_API(solve, bool, double const a[2][2], double const b[2], double* it, double tol)
 

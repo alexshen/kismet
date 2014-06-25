@@ -144,6 +144,47 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_succeeds)
     });
 }
 
+BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_with_zero_pivot_all_zero_elements_below_pivot_succeeds)
+{
+    matrix33f a
+    {
+        { 0, -2, 3 },
+        { 0, -5, 12 },
+        { 0, 2, -10 }
+    };
+
+    matrix33f exp_l
+    {
+        { 1, 0, 0 },
+        { 0, 1, 0 },
+        { 0, -0.4f, 1 }
+    };
+
+    matrix33f exp_u
+    {
+        { 0, -2, 3 },
+        { 0, -5, 12 },
+        { 0, 0, -5.2f }
+    };
+
+    matrix33f l, u;
+    BOOST_CHECK(lu_decompose(a, l, u));
+
+    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+
+    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+}
+
 BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
 {
     matrix22f a
@@ -154,4 +195,59 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
 
     matrix22f l, u;
     BOOST_CHECK(!lu_decompose(a, l, u));
+}
+
+BOOST_AUTO_TEST_CASE(linear_system_plu_decompose_succeeds)
+{
+    matrix33f a
+    {
+        { 1, -2, 3 },
+        { 2, -5, 12 },
+        { 0, 2, -10 }
+    };
+
+    matrix33f exp_p
+    {
+        { 0, 0, 1 },
+        { 1, 0, 0 },
+        { 0, 1, 0 }
+    };
+
+    matrix33f exp_l
+    {
+        { 1, 0, 0 },
+        { 0, 1, 0 },
+        { 0.5f, 0.25f, 1 }
+    };
+
+    matrix33f exp_u
+    {
+        { 2, -5, 12 },
+        { 0, 2, -10 },
+        { 0, 0, -0.5 }
+    };
+
+    matrix33f p, l, u;
+    BOOST_CHECK(plu_decompose(a, p, l, u));
+
+    equal(begin(p), end(p), begin(exp_p), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+
+    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
+
+    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
+    {
+        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
+        BOOST_CHECK(e);
+        return e;
+    });
 }
