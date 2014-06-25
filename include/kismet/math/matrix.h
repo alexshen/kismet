@@ -9,6 +9,7 @@
 #include <ostream>
 #include <type_traits>
 #include <utility>
+#include <boost/iterator/iterator_facade.hpp>
 
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
@@ -546,6 +547,116 @@ std::ostream& operator <<(std::ostream& os, matrix_vector<T, N1, N2> const& v)
     return os;
 }
 
+namespace detail
+{
+template<typename From, typename To, typename T=void>
+struct enable_if_same_type_and_convertible
+{
+    using type = typename 
+                    std::enable_if<
+                        std::is_same<
+                            typename std::decay<From>::type
+                          , typename std::decay<To>::type
+                        >::value
+                     && std::is_convertible<From, To>::value
+                     , T
+                    >::type;
+};
+}
+
+/// Matrix row iterator
+/// N is the number of elements per row
+template<typename T, std::size_t N>
+class matrix_row_iterator
+    : public boost::iterator_facade<
+        matrix_row_iterator<T, N>,
+        matrix_vector<T, N, 1>,
+        std::random_access_iterator_tag,
+        matrix_vector<T, N, 1>
+      >
+{
+    static_assert(N > 0, "N must be positive");
+
+    using base_type = boost::iterator_facade<
+        matrix_row_iterator<T, N>,
+        matrix_vector<T, N, 1>,
+        std::random_access_iterator_tag,
+        matrix_vector<T, N, 1>
+    >;
+
+    using vector_type = matrix_vector<T, N, 1>;
+public:
+    using difference_type = typename base_type::difference_type;
+    using reference       = typename base_type::reference;
+
+    matrix_row_iterator()
+        : m_data(nullptr)
+    {
+    }
+
+    matrix_row_iterator(T* p)
+        : m_data(p)
+    {
+        KISMET_ASSERT(p);
+    }
+
+    // for converting from non-const row_iterator
+    template<typename U>
+    matrix_row_iterator(
+        matrix_row_iterator<U, N> const& rhs,
+        typename detail::enable_if_same_type_and_convertible<U, T>::type* = 0)
+        : m_data(rhs.m_data)
+    {
+    }
+
+    // for converting from non-const row_iterator
+    template<typename U>
+    typename detail::enable_if_same_type_and_convertible<
+        U, T, matrix_row_iterator&> operator =(matrix_row_iterator<U, N> const& rhs)
+    {
+        m_data = rhs.m_data;
+        return *this;
+    }
+private:
+    friend class boost::iterator_core_access;
+
+    reference dereference() const
+    {
+        return vector_type(m_data);
+    }
+
+    template<typename T2>
+    bool equal(matrix_row_iterator<T2, N> const& rhs) const
+    {
+        return m_data == rhs.m_data;
+    }
+
+    void increment()
+    {
+        m_data += N;
+    }
+
+    void decrement()
+    {
+        m_data -= N;
+    }
+
+    void advance(difference_type n)
+    {
+        m_data += n * N;
+    }
+
+    template<typename T2>
+    difference_type distance_to(matrix_row_iterator<T2, N> const& rhs) const
+    {
+        auto dist = rhs.m_data - m_data;
+        KISMET_ASSERT(std::abs(dist) % N == 0);
+        return dist / static_cast<difference_type>(N);
+    }
+
+    T* m_data;
+};
+
 // 2d dimensional matrix N1xN2
 template<typename T, std::size_t N1, std::size_t N2>
 class matrix
@@ -566,6 +677,8 @@ public:
     using const_row_type  = matrix_vector<T const, N2, 1>;
     using col_type        = matrix_vector<T, N1, N2>;
     using const_col_type  = matrix_vector<T const, N1, N2>;
+    using row_iterator    = matrix_row_iterator<T, N2>;
+    using const_row_iterator = matrix_row_iterator<T const, N2>;
 
     enum { rank = 2, num = N1 * N2 };
 
@@ -726,6 +839,12 @@ public:
 
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end();  }
+
+    row_iterator row_begin() { return { &m_a[0][0] }; }
+    row_iterator row_end() { return { &m_a[0][0] + size() }; }
+
+    const_row_iterator row_begin() const { return { &m_a[0][0] }; }
+    const_row_iterator row_end() const { return { &m_a[0][0] + size() }; }
 
     static matrix const& identity()
     {
