@@ -148,8 +148,8 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
 {
     matrix22f a
     {
-        { 1, 2 },
-        { 0, 0 },
+        { 0, 2 },
+        { 1, 0 },
     };
 
     matrix22f l, u;
