@@ -549,18 +549,22 @@ std::ostream& operator <<(std::ostream& os, matrix_vector<T, N1, N2> const& v)
 
 namespace detail
 {
+// Enable if From is non const and To is const and
+// From* is convertible to To*
 template<typename From, typename To, typename T=void>
-struct enable_if_same_type_and_convertible
+struct enable_if_non_const_to_const :
+    std::enable_if<
+        std::is_same<
+            typename std::decay<From>::type
+          , typename std::decay<To>::type
+        >::value
+     && std::is_convertible<
+            typename std::add_pointer<From>::type
+          , typename std::add_pointer<To>::type
+        >::value
+     , T
+    >
 {
-    using type = typename 
-                    std::enable_if<
-                        std::is_same<
-                            typename std::decay<From>::type
-                          , typename std::decay<To>::type
-                        >::value
-                     && std::is_convertible<From, To>::value
-                     , T
-                    >::type;
 };
 }
 
@@ -585,6 +589,9 @@ class matrix_row_iterator
     >;
 
     using vector_type = matrix_vector<T, N, 1>;
+
+    template<typename U, std::size_t S>
+    friend class matrix_row_iterator;
 public:
     using difference_type = typename base_type::difference_type;
     using reference       = typename base_type::reference;
@@ -604,14 +611,14 @@ public:
     template<typename U>
     matrix_row_iterator(
         matrix_row_iterator<U, N> const& rhs,
-        typename detail::enable_if_same_type_and_convertible<U, T>::type* = 0)
+        typename detail::enable_if_non_const_to_const<U, T>::type* = 0)
         : m_data(rhs.m_data)
     {
     }
 
     // for converting from non-const row_iterator
     template<typename U>
-    typename detail::enable_if_same_type_and_convertible<
+    typename detail::enable_if_non_const_to_const<
         U, T, matrix_row_iterator&> operator =(matrix_row_iterator<U, N> const& rhs)
     {
         m_data = rhs.m_data;

@@ -303,3 +303,11 @@ BOOST_AUTO_TEST_CASE(matrix_swap_row_col)
 
     BOOST_CHECK_EQUAL(m, expected);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_row_iterator_conversion)
+{
+    BOOST_CHECK((is_convertible<matrix22f::row_iterator, matrix22f::const_row_iterator>::value));
+    BOOST_CHECK((is_convertible<matrix22f::row_iterator, matrix22f::row_iterator>::value));
+    BOOST_CHECK((is_convertible<matrix22f::const_row_iterator, matrix22f::const_row_iterator>::value));
+    BOOST_CHECK((!is_convertible<matrix22f::const_row_iterator, matrix22f::row_iterator>::value));
+}
