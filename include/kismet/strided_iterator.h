@@ -44,7 +44,6 @@ public:
 
     strided_iterator_impl(BaseIter const& start, BaseIter const& end, difference_type offset, difference_type s)
         : base_type(end)
-        , m_start(start)
         , m_end(end)
         , m_stride(s)
     {
@@ -140,7 +139,7 @@ private:
         auto offset = m_offset != 0 ? m_offset : m_stride;
         while (this->base_reference() != m_start && offset--)
         {
-            --it;
+            --this->base_reference();
         }
 
         if (offset > 0)
