@@ -954,11 +954,11 @@ public:
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end();  }
 
-    row_iterator row_begin() { return { &m_a[0][0] }; }
-    row_iterator row_end() { return { &m_a[0][0] + size() }; }
+    row_iterator row_begin() { return { data() }; }
+    row_iterator row_end() { return { data() + size() }; }
 
-    const_row_iterator row_begin() const { return { &m_a[0][0] }; }
-    const_row_iterator row_end() const { return { &m_a[0][0] + size() }; }
+    const_row_iterator row_begin() const { return { data() }; }
+    const_row_iterator row_end() const { return { data() + size() }; }
 
     column_iterator column_begin() { return { data(), data() + size() }; }
     column_iterator column_end() { return { data() + N2, data() + size() }; }
