@@ -335,3 +335,35 @@ BOOST_AUTO_TEST_CASE(matrix_row_iterator_dereference)
     ++beg;
     BOOST_CHECK_EQUAL(*beg, m[1]);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_column_iterator_conversion)
+{
+    BOOST_CHECK((is_convertible<matrix22f::column_iterator, matrix22f::const_column_iterator>::value));
+    BOOST_CHECK((is_convertible<matrix22f::column_iterator, matrix22f::column_iterator>::value));
+    BOOST_CHECK((is_convertible<matrix22f::const_column_iterator, matrix22f::const_column_iterator>::value));
+    BOOST_CHECK((!is_convertible<matrix22f::const_column_iterator, matrix22f::column_iterator>::value));
+}
+
+BOOST_AUTO_TEST_CASE(matrix_column_iterator_difference)
+{
+    matrix22f m;
+
+    auto beg = m.column_begin();
+    auto end = m.column_end();
+
+    BOOST_CHECK_EQUAL(end - beg, 2);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_column_iterator_dereference)
+{
+    matrix22f m
+    {
+        { 1, 2 },
+        { 3, 4 }
+    };
+
+    auto beg = m.column_begin();
+    BOOST_CHECK_EQUAL(*beg, m.col(0));
+    ++beg;
+    BOOST_CHECK_EQUAL(*beg, m.col(1));
+}

@@ -662,6 +662,107 @@ private:
     T* m_data;
 };
 
+/// Matrix column iterator
+/// N1 is the number of rows
+/// N2 is the number of columns
+template<typename T, std::size_t N1, std::size_t N2>
+class matrix_column_iterator
+    : public boost::iterator_facade<
+        matrix_column_iterator<T, N1, N2>,
+        matrix_vector<T, N1, N2>,
+        std::random_access_iterator_tag,
+        matrix_vector<T, N1, N2>
+      >
+{
+    static_assert(N1 > 0 && N2 > 0, "N1 and N2 must be positive");
+
+    using base_type = boost::iterator_facade<
+        matrix_column_iterator<T, N1, N2>,
+        matrix_vector<T, N1, N2>,
+        std::random_access_iterator_tag,
+        matrix_vector<T, N1, N2>
+    >;
+
+    using vector_type = matrix_vector<T, N1, N2>;
+
+    template<typename U, std::size_t S1, std::size_t S2>
+    friend class matrix_column_iterator;
+public:
+    using difference_type = typename base_type::difference_type;
+    using reference       = typename base_type::reference;
+
+    matrix_column_iterator()
+        : m_data(nullptr)
+        , m_end(nullptr)
+    {
+    }
+
+    matrix_column_iterator(T* p, T* end)
+        : m_data(p)
+        , m_end(end)
+    {
+        KISMET_ASSERT(p && end);
+        KISMET_ASSERT(end - p >= N1);
+    }
+
+    // for converting from non-const row_iterator
+    template<typename U>
+    matrix_column_iterator(
+        matrix_column_iterator<U, N1, N2> const& rhs,
+        typename detail::enable_if_non_const_to_const<U, T>::type* = 0)
+        : m_data(rhs.m_data)
+        , m_end(rhs.m_end)
+    {
+    }
+
+    // for converting from non-const row_iterator
+    template<typename U>
+    typename detail::enable_if_non_const_to_const<
+        U, T, matrix_column_iterator&> operator =(matrix_column_iterator<U, N1, N2> const& rhs)
+    {
+        m_data = rhs.m_data;
+        m_end = rhs.m_end;
+        return *this;
+    }
+private:
+    friend class boost::iterator_core_access;
+
+    reference dereference() const
+    {
+        return vector_type(m_data, m_end);
+    }
+
+    template<typename T2>
+    bool equal(matrix_column_iterator<T2, N1, N2> const& rhs) const
+    {
+        return m_data == rhs.m_data && m_end == rhs.m_end;
+    }
+
+    void increment()
+    {
+        ++m_data;
+    }
+
+    void decrement()
+    {
+        --m_data;
+    }
+
+    void advance(difference_type n)
+    {
+        m_data += n;
+    }
+
+    template<typename T2>
+    difference_type distance_to(matrix_column_iterator<T2, N1, N2> const& rhs) const
+    {
+        return rhs.m_data - m_data;
+    }
+
+    T* m_data;
+    T* m_end; // matrix end
+};
+
 // 2d dimensional matrix N1xN2
 template<typename T, std::size_t N1, std::size_t N2>
 class matrix
@@ -678,12 +779,14 @@ public:
     using iterator        = T*;
     using const_iterator  = T const*;
 
-    using row_type        = matrix_vector<T, N2, 1>;
-    using const_row_type  = matrix_vector<T const, N2, 1>;
-    using col_type        = matrix_vector<T, N1, N2>;
-    using const_col_type  = matrix_vector<T const, N1, N2>;
-    using row_iterator    = matrix_row_iterator<T, N2>;
-    using const_row_iterator = matrix_row_iterator<T const, N2>;
+    using row_type              = matrix_vector<T, N2, 1>;
+    using const_row_type        = matrix_vector<T const, N2, 1>;
+    using col_type              = matrix_vector<T, N1, N2>;
+    using const_col_type        = matrix_vector<T const, N1, N2>;
+    using row_iterator          = matrix_row_iterator<T, N2>;
+    using const_row_iterator    = matrix_row_iterator<T const, N2>;
+    using column_iterator       = matrix_column_iterator<T, N1, N2>;
+    using const_column_iterator = matrix_column_iterator<T const, N1, N2>;
 
     enum { rank = 2, num = N1 * N2 };
 
@@ -856,6 +959,12 @@ public:
 
     const_row_iterator row_begin() const { return { &m_a[0][0] }; }
     const_row_iterator row_end() const { return { &m_a[0][0] + size() }; }
+
+    column_iterator column_begin() { return { data(), data() + size() }; }
+    column_iterator column_end() { return { data() + N2, data() + size() }; }
+
+    const_column_iterator column_begin() const { return { data(), data() + size() }; }
+    const_column_iterator column_end() const { return { data() + N2, data() + size() }; }
 
     static matrix const& identity()
     {
