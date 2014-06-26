@@ -141,8 +141,8 @@ BOOST_AUTO_TEST_CASE(matrix22f_col_equal_self)
     matrix22f const& cm = m;
     for (size_t i = 0; i < 2; ++i)
     {
-        BOOST_CHECK_EQUAL(m.col(i), m.col(i));
-        BOOST_CHECK_EQUAL(cm.col(i), cm.col(i));
+        BOOST_CHECK_EQUAL(m.column(i), m.column(i));
+        BOOST_CHECK_EQUAL(cm.column(i), cm.column(i));
     }
 }
 
@@ -155,18 +155,18 @@ BOOST_AUTO_TEST_CASE(matrix22f_col_equal)
     };
 
     matrix22f const& cm = m;
-    BOOST_CHECK_EQUAL(m.col(0), m.col(1));
-    BOOST_CHECK_EQUAL(cm.col(0), cm.col(1));
+    BOOST_CHECK_EQUAL(m.column(0), m.column(1));
+    BOOST_CHECK_EQUAL(cm.column(0), cm.column(1));
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_col_convertible_to_const_col)
 {
-    BOOST_CHECK((is_convertible<matrix22f::col_type, matrix22f::const_col_type>::value));
+    BOOST_CHECK((is_convertible<matrix22f::column_type, matrix22f::const_column_type>::value));
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_const_col_not_convertible_to_col)
 {
-    BOOST_CHECK(!(is_convertible<matrix22f::const_col_type, matrix22f::col_type>::value));
+    BOOST_CHECK(!(is_convertible<matrix22f::const_column_type, matrix22f::column_type>::value));
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
@@ -233,16 +233,16 @@ BOOST_AUTO_TEST_CASE(matrix_col_mul)
 {
     matrix<int, 2, 1> m{ {1}, {1} };
     float v[] = { 2, 2 };
-    m.col(0) *= 2;
-    BOOST_CHECK_EQUAL_COLLECTIONS(m.col(0).begin(), m.col(0).end(), v, v+2);
+    m.column(0) *= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m.column(0).begin(), m.column(0).end(), v, v+2);
 }
 
 BOOST_AUTO_TEST_CASE(matrix_col_div)
 {
     matrix<int, 2, 1> m{ {2}, {2} };
     float v[] = { 1, 1 };
-    m.col(0) /= 2;
-    BOOST_CHECK_EQUAL_COLLECTIONS(m.col(0).begin(), m.col(0).end(), v, v+2);
+    m.column(0) /= 2;
+    BOOST_CHECK_EQUAL_COLLECTIONS(m.column(0).begin(), m.column(0).end(), v, v+2);
 }
 
 BOOST_AUTO_TEST_CASE(matrix_identity_return_identity_matrix)
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(matrix_swap_col)
         { 1, 0 }
     };
 
-    m.col(0).swap(m.col(1));
+    m.column(0).swap(m.column(1));
 
     BOOST_CHECK_EQUAL(m, expected);
 }
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(matrix_swap_row_col)
         { 2, 4 }
     };
 
-    m.row(0).swap(m.col(0));
+    m.row(0).swap(m.column(0));
 
     BOOST_CHECK_EQUAL(m, expected);
 }
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE(matrix_column_iterator_dereference)
     };
 
     auto beg = m.column_begin();
-    BOOST_CHECK_EQUAL(*beg, m.col(0));
+    BOOST_CHECK_EQUAL(*beg, m.column(0));
     ++beg;
-    BOOST_CHECK_EQUAL(*beg, m.col(1));
+    BOOST_CHECK_EQUAL(*beg, m.column(1));
 }

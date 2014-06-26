@@ -781,8 +781,8 @@ public:
 
     using row_type              = matrix_vector<T, N2, 1>;
     using const_row_type        = matrix_vector<T const, N2, 1>;
-    using col_type              = matrix_vector<T, N1, N2>;
-    using const_col_type        = matrix_vector<T const, N1, N2>;
+    using column_type           = matrix_vector<T, N1, N2>;
+    using const_column_type     = matrix_vector<T const, N1, N2>;
     using row_iterator          = matrix_row_iterator<T, N2>;
     using const_row_iterator    = matrix_row_iterator<T const, N2>;
     using column_iterator       = matrix_column_iterator<T, N1, N2>;
@@ -913,17 +913,17 @@ public:
     }
 
     // Return the column object
-    col_type col(size_type index)
+    column_type column(size_type index)
     {
         KISMET_ASSERT(index < N2);
-        return col_type{ &m_a[0][index], data() + num };
+        return column_type{ &m_a[0][index], data() + num };
     }
 
     // Return the column object
-    const_col_type col(size_type index) const
+    const_column_type column(size_type index) const
     {
         KISMET_ASSERT(index < N2);
-        return const_col_type{ &m_a[0][index], data() + num };
+        return const_column_type{ &m_a[0][index], data() + num };
     }
 
     // reset all elements to 0

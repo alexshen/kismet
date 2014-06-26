@@ -168,7 +168,7 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
         // we can continue without problems
         if (is_zero(pivot, tolerance))
         {
-            auto colv = u.col(i);
+            auto colv = u.column(i);
             if (!std::all_of(
                     colv.begin() + (i + 1), colv.end(),
                     [tolerance](T const& v) { return is_zero(v, tolerance); }))
