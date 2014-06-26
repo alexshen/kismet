@@ -122,17 +122,16 @@ public:
     using const_iterator         = strided_iterator<const_pointer>;
 
     template<typename U>
-    matrix_vector_base_impl(U* start, U* p, U* end)
-        : m_start(start)
-        , m_p(p)
+    matrix_vector_base_impl(U* p, U* end)
+        : m_p(p)
         , m_end(end)
     {
-        KISMET_ASSERT(start && p && end);
+        KISMET_ASSERT(p && end);
     }
 
     template<typename D, typename U>
     matrix_vector_base_impl(matrix_vector_base_impl<D, U, N, S> const& v)
-        : matrix_vector_base_impl(v.m_start, v.m_p, v.m_end)
+        : matrix_vector_base_impl(v.m_p, v.m_end)
     {
     }
 
@@ -164,19 +163,18 @@ public:
         return static_cast<Derived&>(*this);
     }
 
-    iterator begin() { return {m_start, m_p, m_end, S}; }
-    iterator end()   { return {m_start, m_end, end_offset(), S}; }
+    iterator begin() { return {m_p, m_p, m_end, S}; }
+    iterator end()   { return {m_p, m_end, end_offset(), S}; }
 
-    const_iterator begin() const { return {m_start, m_p, m_end, S}; }
-    const_iterator end()   const { return {m_start, m_end, end_offset(), S}; }
+    const_iterator begin() const { return {m_p, m_p, m_end, S}; }
+    const_iterator end()   const { return {m_p, m_end, end_offset(), S}; }
 private:
     typename iterator::difference_type end_offset() const
     {
         return (m_end - m_p) % N;
     }
 protected:
-    pointer m_start; // matrix start
-    pointer m_p;
+    pointer m_p;     // point to the start address of the column
     pointer m_end;   // matrix end
 };
 
@@ -204,7 +202,7 @@ public:
     }
 
     template<typename U>
-    matrix_vector_base_impl(U* start, U* p, U* end)
+    matrix_vector_base_impl(U* p, U* end)
         : m_p(p)
     {
         KISMET_ASSERT(p);
@@ -268,8 +266,8 @@ public:
     }
 
     template<typename U>
-    matrix_vector_base(U* start, U* p, U* end)
-        : base_type(start, p, end)
+    matrix_vector_base(U* p, U* end)
+        : base_type(p, end)
     {
     }
 
@@ -354,8 +352,8 @@ public:
     }
 
     template<typename U>
-    matrix_vector(U* start, U* p, U* end, enable_if_convertible<U*, pointer>* = 0)
-        : base_type(start, p, end)
+    matrix_vector(U* p, U* end, enable_if_convertible<U*, pointer>* = 0)
+        : base_type(p, end)
     {
     }
 
@@ -815,14 +813,14 @@ public:
     col_type col(size_type index)
     {
         KISMET_ASSERT(index < N2);
-        return col_type{ data(), &m_a[0][index], data() + num };
+        return col_type{ &m_a[0][index], data() + num };
     }
 
     // Return the column object
     const_col_type col(size_type index) const
     {
         KISMET_ASSERT(index < N2);
-        return const_col_type{ data(), &m_a[0][index], data() + num };
+        return const_col_type{ &m_a[0][index], data() + num };
     }
 
     // reset all elements to 0
