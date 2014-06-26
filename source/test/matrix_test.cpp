@@ -311,3 +311,27 @@ BOOST_AUTO_TEST_CASE(matrix_row_iterator_conversion)
     BOOST_CHECK((is_convertible<matrix22f::const_row_iterator, matrix22f::const_row_iterator>::value));
     BOOST_CHECK((!is_convertible<matrix22f::const_row_iterator, matrix22f::row_iterator>::value));
 }
+
+BOOST_AUTO_TEST_CASE(matrix_row_iterator_difference)
+{
+    matrix22f m;
+
+    auto beg = m.row_begin();
+    auto end = m.row_end();
+
+    BOOST_CHECK_EQUAL(end - beg, matrix22f::rank);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_row_iterator_dereference)
+{
+    matrix22f m
+    {
+        { 1, 2 },
+        { 3, 4 }
+    };
+
+    auto beg = m.row_begin();
+    BOOST_CHECK_EQUAL(*beg, m[0]);
+    ++beg;
+    BOOST_CHECK_EQUAL(*beg, m[1]);
+}
