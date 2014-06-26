@@ -188,7 +188,7 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
             T inv_scale = neg_inv_pivot * u[row][i];
 
             // zero, as it's eliminated.
-            u[row][i] = (T)0;
+            u[row][i] = T(0);
 
             // set the corresponding entry in lower triangular matrix
             l[row][i] = -inv_scale;

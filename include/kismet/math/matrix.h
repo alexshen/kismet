@@ -929,7 +929,7 @@ public:
     // reset all elements to 0
     void clear()
     {
-        std::fill_n(begin(), size(), (T)0);
+        std::fill_n(begin(), size(), T(0));
     }
 
     // Return the size of a dimension
@@ -989,7 +989,7 @@ struct identity_impl
         {
             for (std::size_t j = 0; j < N; ++j)
             {
-                m.data()[i * N + j] = i == j ? (T)1 : (T)0;
+                m.data()[i * N + j] = i == j ? T(1) : T(0);
             }
         }
         return m;
