@@ -112,9 +112,9 @@ solution "kismet"
 
         flags { "SEH" }
         configuration "debug"
-            links { "mathd" }
+            links { "mathd", "aid" }
             targetname "testd"
 
         configuration "release"
-            links { "math" }
+            links { "math", "ai" }
             targetname "test"
