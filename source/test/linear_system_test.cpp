@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
     BOOST_CHECK(!lu_decompose(a, l, u));
 }
 
-BOOST_AUTO_TEST_CASE(linear_system_plu_decompose_succeeds)
+BOOST_AUTO_TEST_CASE(linear_system_plu_decompose)
 {
     matrix33f a
     {
@@ -213,4 +213,10 @@ BOOST_AUTO_TEST_CASE(linear_system_plu_decompose_succeeds)
     KISMET_CHECK_EQUAL_COLLECTIONS(p, exp_p);
     KISMET_CHECK_APPROX_COLLECTIONS(l, exp_l);
     KISMET_CHECK_APPROX_COLLECTIONS(u, exp_u);
+
+    size_t exp_p_array[] = { 2, 0, 1 };
+    size_t p_array[3];
+    plu_decompose(a, p_array, l, u);
+
+    KISMET_CHECK_EQUAL_COLLECTIONS(p_array, exp_p_array);
 }
