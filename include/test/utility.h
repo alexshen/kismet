@@ -32,7 +32,7 @@ inline bool approx(InputIt1 start0, InputIt1 end0, InputIt2 start1)
 
 /// Check two collections are approximately equal
 #define KISMET_CHECK_APPROX_COLLECTIONS(a, b) \
-    BOOST_CHECK((kismet::test::approx(begin(a), end(a), begin(b))))
+    BOOST_CHECK((::kismet::test::approx(begin(a), end(a), begin(b))))
 
 #define KISMET_CHECK_EQUAL_COLLECTIONS(a, b) \
     BOOST_CHECK_EQUAL_COLLECTIONS(begin(a), end(a), begin(b), end(b))

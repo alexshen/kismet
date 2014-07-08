@@ -70,8 +70,8 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
 namespace detail
 {
 
-template<bool CheckZero, typename T, std::size_t N>
-bool backward_substitute_impl(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, matrix<T, N, 1>& x, T tolerance)
+template<bool CheckZero, typename T, std::size_t N, typename RandIt>
+bool backward_substitute_impl(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, RandIt x, T tolerance)
 {
     // back substitution
     for (std::size_t row = N; row--;)
@@ -107,7 +107,49 @@ bool backward_substitute_impl(matrix<T, N, N> const& a, matrix<T, N, 1> const& b
 template<typename T, std::size_t N>
 bool backward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, matrix<T, N, 1>& x, T tolerance = math_trait<T>::zero_tolerance())
 {
+    return detail::backward_substitute_impl<true>(a, b, x.data(), tolerance);
+}
+
+template<typename T, std::size_t N, typename RandIt>
+bool backward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, RandIt x, T tolerance = math_trait<T>::zero_tolerance())
+{
     return detail::backward_substitute_impl<true>(a, b, x, tolerance);
+}
+
+/// Backward substitution
+///   A*x=b
+/// A is a lower triangular matrix
+/// Return false if substitution failure
+template<typename T, std::size_t N, typename RandIt>
+bool forward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, RandIt x, T tolerance = math_trait<T>::zero_tolerance())
+{
+    for (std::size_t row = 0; row < N; ++row)
+    {
+        T coff = a[row][row];
+
+        // If the lower triangular matrix is non invertible
+        // return false
+        if (is_zero(coff, tolerance))
+        {
+            return false;
+        }
+
+        T v(b[row]);
+        for (std::size_t col = 0; col < row; ++col)
+        {
+            v -= a[row][col] * x[col];
+        }
+
+        x[row] = v * inv(coff);
+    }
+
+    return true;
+}
+
+template<typename T, std::size_t N>
+bool forward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, matrix<T, N, 1>& x, T tolerance = math_trait<T>::zero_tolerance())
+{
+    return forward_substitute(a, b, x.data(), tolerance);
 }
 
 /// solve a linear system ax = b using Gaussian elimination with partial pivoting
@@ -170,7 +212,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, matrix<T, N, 1
 
     // back substitution
     // No check for convertibility, as we have check in the above.
-    detail::backward_substitute_impl<false>(a, b, x, tolerance);
+    detail::backward_substitute_impl<false>(a, b, x.data(), tolerance);
 
     return true;
 }

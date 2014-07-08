@@ -387,3 +387,33 @@ BOOST_AUTO_TEST_CASE(matrix_transpose)
     auto t = transpose(m);
     KISMET_CHECK_EQUAL_COLLECTIONS(t, exp_t);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_inverse_general_succeeds)
+{
+    matrix22f m
+    {
+        { 1, 2 },
+        { 4, 4 }
+    };
+
+    matrix22f exp_m
+    {
+        { -1, 0.5f },
+        { 1, -0.25f }
+    };
+
+    auto inverse = inv(m);
+    KISMET_CHECK_APPROX_COLLECTIONS(inverse, exp_m);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_inverse_general_fails)
+{
+    matrix22f m
+    {
+        { 1, 2 },
+        { 1, 2 }
+    };
+
+    auto inverse = inv(m);
+    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
+}

@@ -1143,4 +1143,73 @@ using matrix44d = matrix<double, 4, 4>;
 } // namespace math
 } // namespace kismet
 
+#include "kismet/math/linear_system.h"
+
+namespace kismet
+{
+namespace math
+{
+
+/// Calculate the inverse of the matrix using PLU decomposition
+/// If the matrix is not invertible, original matrix is returned
+template<typename T, std::size_t N>
+matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
+{
+    using matrix_type = matrix<T, N, N>;
+
+    matrix_type inverse, l, u;
+    std::size_t perm[N];
+
+    plu_decompose(a, perm, l, u, tolerance);
+    inverse.clear();
+    // To calculate the inverse matrix A^-1, we can solve N linear systems which are of form
+    //    A*xi = ei
+    // where xi is the i-th column of the inverse matrix,
+    // ei is the i-th column of the identity matrix.
+    // Since
+    //    A = PLU
+    // we need to solve
+    //    PLU*xi = ei
+    matrix<T, N, 1> solution;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        auto col = inverse.column(i);
+        auto col_beg = col.begin();
+        solution.assign(col_beg);
+
+        using std::begin;
+        using std::end;
+        // let zi = LU*xi
+        // solve P*zi = ei
+        // we need to find the position of e[i][i] after permutation
+        // we have zi = P^-1 * ei = P^T * ei
+        // since the we know p[m][p[m]] = 1, so to find j where
+        // P^T[i][j] = 1, we can simply find j where
+        // P[j][i] = 1, which means i = p[j].
+        auto it = std::find(begin(perm), end(perm), i);
+        KISMET_ASSERT(it != end(perm));
+        solution[it - begin(perm)] = T(1);
+
+        // let yi = U*xi
+        // solve L*yi = zi
+        if (!forward_substitute(l, solution, solution, tolerance))
+        {
+            return inverse = a;
+        }
+
+        // solve U*xi = yi
+        if (!backward_substitute(u, solution, solution, tolerance))
+        {
+            return inverse = a;
+        }
+
+        col.assign(solution.data());
+    }
+
+    return inverse;
+}
+
+} // namespace math
+} // namespace kismet
+
 #endif // KISMET_MATH_matrix_H
