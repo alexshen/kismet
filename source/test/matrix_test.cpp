@@ -1,4 +1,5 @@
 #include "kismet/config.h"
+#include "test/utility.h"
 
 #ifdef KISMET_MSC
 #  pragma warning(push)
@@ -366,4 +367,23 @@ BOOST_AUTO_TEST_CASE(matrix_column_iterator_dereference)
     BOOST_CHECK_EQUAL(*beg, m.column(0));
     ++beg;
     BOOST_CHECK_EQUAL(*beg, m.column(1));
+}
+
+BOOST_AUTO_TEST_CASE(matrix_transpose)
+{
+    matrix<float, 2, 3> m
+    {
+        { 1, 2, 3 },
+        { 4, 5, 6 }
+    };
+
+    matrix<float, 3, 2> exp_t
+    {
+        { 1, 4 },
+        { 2, 5 },
+        { 3, 6 }
+    };
+
+    auto t = transpose(m);
+    KISMET_CHECK_EQUAL_COLLECTIONS(t, exp_t);
 }

@@ -998,6 +998,20 @@ struct identity_impl
 
 } // namespace detail
 
+/// Return the transpose of the given matrix
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N2, N1> transpose(matrix<T, N1, N2> const& m)
+{
+    matrix<T, N2, N1> t;
+
+    for (std::size_t i = 0; i < N2; ++i)
+    {
+        t[i] = m.column(i);
+    }
+
+    return t;
+}
+
 template<typename T, std::size_t N1, std::size_t N2>
 inline matrix<T, N1, N2> operator +(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
 {
