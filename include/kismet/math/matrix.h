@@ -324,6 +324,10 @@ struct identity_impl;
 
 } // namespace detail
 
+// forward declaration
+template<typename T, std::size_t N1, std::size_t N2>
+class matrix;
+
 // Represents a row or column of a given matrix.
 // The reference must not outlive the referenced matrix.
 // N is the size of the row or the column
@@ -396,8 +400,21 @@ public:
 
     matrix_vector& operator =(matrix_vector const& v)
     {
-        static_assert(!std::is_const<T>::value, "Cannot assign to non-const vector ref");
+        static_assert(!std::is_const<T>::value, "Cannot assign to const vector ref");
         copy_row_row(v, detail::all_row_vectors<S, S>());
+        return *this;
+    }
+
+    // assign from a row/column matrix
+    template<typename U, std::size_t N2, std::size_t S2>
+    typename std::enable_if<
+        std::is_convertible<U, T>::value &&
+        N2 == 1 || S2 == 1 && N2 * S2 == N,
+        matrix_vector&
+    >::type
+    operator =(matrix<U, N2, S2> const& m)
+    {
+        copy_pointer_row(m.data(), std::integral_constant<bool, S == 1>());
         return *this;
     }
 
@@ -465,13 +482,14 @@ public:
         swap(v);
     }
 private:
+    // copy from a generic iterator to row vector
     template<typename It>
     void copy_pointer_row(It p, std::true_type)
     {
         std::copy(this->data(), this->data() + N, p);
     }
 
-    // copy from a generic iterator to column/row
+    // copy from a generic iterator to column vector
     template<typename It>
     void copy_pointer_row(It p, std::false_type)
     {
@@ -481,6 +499,7 @@ private:
         }
     }
 
+    // copy row vector to row vector
     template<typename U>
     void copy_row_row(matrix_vector<U, N, S> const& v, std::true_type)
     {
@@ -855,6 +874,18 @@ public:
         return *this;
     }
 
+    // assign a row/column vector to row/column matrix
+    template<typename U, std::size_t S>
+    typename std::enable_if<
+        std::is_convertible<U, T>::value &&
+        N1 == 1 || N2 == 1,
+        matrix&>::type
+    operator =(matrix_vector<U, num, S> const& v)
+    {
+        copy_row_row(v, std::integral_constant<bool, N1 == 1>());
+        return *this;
+    }
+
     // element-wise addition
     matrix& operator +=(matrix const& m)
     {
@@ -987,6 +1018,20 @@ public:
         return im;
     }
 private:
+    // copy row vector to row matrix
+    template<typename T>
+    void copy_row_row(T const& v, std::true_type)
+    {
+        row(0) = v;
+    }
+
+    // copy row/column vector to column matrix
+    template<typename T>
+    void copy_row_row(T const& v, std::false_type)
+    {
+        column(0) = v;
+    }
+
     T m_a[N1][N2];
 };
 
@@ -1177,8 +1222,7 @@ struct inv_impl
         for (std::size_t i = 0; i < N; ++i)
         {
             auto col = inverse.column(i);
-            auto col_beg = col.begin();
-            solution.assign(col_beg);
+            solution = col;
 
             using std::begin;
             using std::end;
@@ -1204,7 +1248,7 @@ struct inv_impl
                 return inverse = a;
             }
 
-            col.assign(solution.data());
+            col = solution;
         }
 
         return inverse;
