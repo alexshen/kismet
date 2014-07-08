@@ -2,6 +2,8 @@
 #include <utility>
 #include <boost/test/unit_test.hpp>
 #include "kismet/math/linear_system.h"
+#include "test/utility.h"
+
 using namespace std;
 using namespace kismet::math;
 
@@ -63,7 +65,7 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_identity)
     float expected_x[] { 1, 2 };
     BOOST_CHECK(solve_partial_pivoting(a, b, x));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
+    KISMET_CHECK_EQUAL_COLLECTIONS(x, expected_x);
 }
 
 BOOST_AUTO_TEST_CASE(linear_system_GE_solve_non_invertible_fail)
@@ -100,7 +102,7 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_with_permuation)
     float expected_x[] = { 1.f, 0.f };
     BOOST_CHECK(solve_partial_pivoting(a, b, x));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(x), end(x), begin(expected_x), end(expected_x));
+    KISMET_CHECK_EQUAL_COLLECTIONS(x, expected_x);
 }
 
 BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_succeeds)
@@ -129,19 +131,8 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_succeeds)
     matrix33f l, u;
     BOOST_CHECK(lu_decompose(a, l, u));
 
-    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
-
-    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
+    KISMET_CHECK_APPROX_COLLECTIONS(l, exp_l);
+    KISMET_CHECK_APPROX_COLLECTIONS(u, exp_u);
 }
 
 BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_with_zero_pivot_all_zero_elements_below_pivot_succeeds)
@@ -170,19 +161,8 @@ BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_with_zero_pivot_all_zero_element
     matrix33f l, u;
     BOOST_CHECK(lu_decompose(a, l, u));
 
-    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
-
-    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
+    KISMET_CHECK_APPROX_COLLECTIONS(l, exp_l);
+    KISMET_CHECK_APPROX_COLLECTIONS(u, exp_u);
 }
 
 BOOST_AUTO_TEST_CASE(linear_system_lu_decompose_fails)
@@ -230,24 +210,7 @@ BOOST_AUTO_TEST_CASE(linear_system_plu_decompose_succeeds)
     matrix33f p, l, u;
     plu_decompose(a, p, l, u);
 
-    equal(begin(p), end(p), begin(exp_p), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
-
-    equal(begin(l), end(l), begin(exp_l), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
-
-    equal(begin(u), end(u), begin(exp_u), [](float actual, float exp)
-    {
-        bool e = approx(actual, exp, math_trait<float>::zero_tolerance());
-        BOOST_CHECK(e);
-        return e;
-    });
+    KISMET_CHECK_EQUAL_COLLECTIONS(p, exp_p);
+    KISMET_CHECK_APPROX_COLLECTIONS(l, exp_l);
+    KISMET_CHECK_APPROX_COLLECTIONS(u, exp_u);
 }
