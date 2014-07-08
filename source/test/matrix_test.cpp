@@ -446,3 +446,27 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_fails)
     auto inverse = inv(m);
     KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
 }
+
+BOOST_AUTO_TEST_CASE(matrix_inverse_5x5_succeeds)
+{
+    matrix<float, 5, 5> m
+    {
+        { 1,   2,  4,  8, 16 },
+        { 2,   2,  4,  8, 16 },
+        { 4,   4,  4,  8, 16 },
+        { 8,   8,  8,  8, 16 },
+        { 16, 16, 16, 16, 16 }
+    };
+
+    matrix<float, 5, 5> exp_inv
+    {
+        { -1,     1,      0,       0,        0 },
+        {  1, -1.5f,   0.5f,       0,        0 },
+        {  0,  0.5f, -0.75f,   0.25f,        0 }, 
+        {  0,     0,  0.25f, -0.375f,   0.125f },
+        {  0,     0,      0,  0.125f, -0.0625f }
+    };
+
+    auto inverse = inv(m);
+    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, exp_inv);
+}

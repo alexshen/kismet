@@ -1186,12 +1186,10 @@ struct inv_impl
             // solve P*zi = ei
             // we need to find the position of e[i][i] after permutation
             // we have zi = P^-1 * ei = P^T * ei
-            // since the we know p[m][p[m]] = 1, so to find j where
-            // P^T[i][j] = 1, we can simply find j where
-            // P[j][i] = 1, which means i = p[j].
-            auto it = std::find(begin(perm), end(perm), i);
-            KISMET_ASSERT(it != end(perm));
-            solution[it - begin(perm)] = T(1);
+            // since we know p[m][p[m]] = 1, so to find j where
+            // P^T[j][i] = 1, we can simply find j where
+            // P[i][j] = 1, which means j = p[i].
+            solution[perm[i]] = T(1);
 
             // let yi = U*xi
             // solve L*yi = zi
