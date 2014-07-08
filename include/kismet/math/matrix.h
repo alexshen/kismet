@@ -1019,15 +1019,15 @@ public:
     }
 private:
     // copy row vector to row matrix
-    template<typename T>
-    void copy_row_row(T const& v, std::true_type)
+    template<typename U>
+    void copy_row_row(U const& v, std::true_type)
     {
         row(0) = v;
     }
 
     // copy row/column vector to column matrix
-    template<typename T>
-    void copy_row_row(T const& v, std::false_type)
+    template<typename U>
+    void copy_row_row(U const& v, std::false_type)
     {
         column(0) = v;
     }
