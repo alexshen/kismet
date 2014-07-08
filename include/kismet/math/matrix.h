@@ -1240,10 +1240,10 @@ struct inv_impl<T, 2>
         }
 
         T inv_det = inv(det);
-        inverse[0][0] = a[1][1] * inv_det;
-        inverse[0][1] = a[1][0] * inv_det;
-        inverse[1][0] = a[0][1] * inv_det;
-        inverse[1][1] = a[0][0] * inv_det;
+        inverse[0][0] =  a[1][1] * inv_det;
+        inverse[0][1] = -a[0][1] * inv_det;
+        inverse[1][0] = -a[1][0] * inv_det;
+        inverse[1][1] =  a[0][0] * inv_det;
         return inverse;
     }
 };
@@ -1263,16 +1263,16 @@ struct inv_impl<T, 3>
         inverse[1][2] = a[0][2] * a[1][0] - a[0][0] * a[1][2];
         inverse[2][0] = a[1][0] * a[2][1] - a[1][1] * a[2][0];
         inverse[2][1] = a[0][1] * a[2][0] - a[0][0] * a[2][1];
-        inverse[2][2] = a[0][0] * a[1][1] - a[0][1] * a[2][0];
+        inverse[2][2] = a[0][0] * a[1][1] - a[0][1] * a[1][0];
 
         // Calculate the determinant of a
-        T det = a[0][0] * inv_mat[0][0] + a[0][1] * inv_mat[1][0] + a[0][2] * inv_mat[2][0];
+        T det = a[0][0] * inverse[0][0] + a[0][1] * inverse[1][0] + a[0][2] * inverse[2][0];
         if (is_zero(det, tolerance))
         {
             return inverse = a;
         }
 
-        return inverse /= det;
+        return inverse *= inv(det);
     }
 };
 }

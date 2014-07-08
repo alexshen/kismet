@@ -49,7 +49,7 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
     inv_mat[1][2] = a[0][2] * a[1][0] - a[0][0] * a[1][2];
     inv_mat[2][0] = a[1][0] * a[2][1] - a[1][1] * a[2][0];
     inv_mat[2][1] = a[0][1] * a[2][0] - a[0][0] * a[2][1];
-    inv_mat[2][2] = a[0][0] * a[1][1] - a[0][1] * a[2][0];
+    inv_mat[2][2] = a[0][0] * a[1][1] - a[0][1] * a[1][0];
 
     // Calculate the determinant of a
     T det = a[0][0] * inv_mat[0][0] + a[0][1] * inv_mat[1][0] + a[0][2] * inv_mat[2][0];

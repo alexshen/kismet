@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(matrix_transpose)
     KISMET_CHECK_EQUAL_COLLECTIONS(t, exp_t);
 }
 
-BOOST_AUTO_TEST_CASE(matrix_inverse_general_succeeds)
+BOOST_AUTO_TEST_CASE(matrix_inverse_2x2_succeeds)
 {
     matrix22f m
     {
@@ -406,13 +406,42 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_general_succeeds)
     KISMET_CHECK_APPROX_COLLECTIONS(inverse, exp_m);
 }
 
-BOOST_AUTO_TEST_CASE(matrix_inverse_general_fails)
+BOOST_AUTO_TEST_CASE(matrix_inverse_2x2_fails)
 {
     matrix22f m
     {
         { 1, 2 },
         { 1, 2 }
     };
+
+    auto inverse = inv(m);
+    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_succeeds)
+{
+    matrix33f m
+    {
+        { 1, 2, 4 },
+        { 2, 2, 4 },
+        { 4, 4, 4 }
+    };
+
+    matrix33f exp_inv
+    {
+        { -1, 1, 0 },
+        { 1, -1.5f, 0.5f },
+        { 0, 0.5f, -0.25f }
+    };
+
+    auto inverse = inv(m);
+    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, exp_inv);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_fails)
+{
+    matrix33f m;
+    m.clear();
 
     auto inverse = inv(m);
     KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
