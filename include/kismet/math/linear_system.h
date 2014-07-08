@@ -203,21 +203,24 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
     return true;
 }
 
-/// PLU decompose a matrix with Gaussian Elimination.
-/// The matrix A is decomposed as
-///     A = P*L*U
-/// where P is a permutation matrix, L is a lower triangular matrix, U is a upper triangular matrix
-/// Return true if decomposition succeeds
+namespace detail
+{
+
+// Decompose the matrix as
+//   A = L'*U
+// Record all permutations when doing Gaussian Elimination in P
+// The lower triangular matrix should be constructed as
+//   L = P * L'
 template<typename T, std::size_t N>
-bool plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance = math_trait<T>::zero_tolerance())
+void plu_decompose_helper(matrix<T, N, N> const& a, std::size_t (&perms) [N], matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance)
 {
     using std::size_t;
     using std::abs;
     using std::swap;
 
-    // array form of permutation
-    // the identity element's index is (i, perm[i])
-    size_t perms[N];
+    // array form of permutation which records the permutation
+    // when doing Gaussian Elimination.
+    // the identity element's index is (i, p[i])
     for (size_t i = 0; i < N; ++i)
     {
         perms[i] = i;
@@ -228,7 +231,6 @@ bool plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>
 
     // lower triangular matrix starts with identity
     l = matrix<T, N, N>::identity();
-    p.clear();
 
     // elimination process
     for (size_t i = 0; i < N - 1; ++i)
@@ -302,12 +304,27 @@ bool plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>
             }
         }
     }
+}
+
+} // namespace detail
+
+/// PLU decompose a matrix with Gaussian Elimination.
+/// The matrix A is decomposed as
+///     A = P*L*U
+/// where P is a permutation matrix, L is a lower triangular matrix, U is a upper triangular matrix
+template<typename T, std::size_t N>
+void plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance = math_trait<T>::zero_tolerance())
+{
+    std::size_t perms[N];
+
+    detail::plu_decompose_helper(a, perms, l, u, tolerance);
 
     // update the permutation matrix
     // for now, p is on the left side
     // P*A = L'*U
     // to get the correct permutation matrix, we need to transpose,
     // as P^-1 = P^T
+    p.clear();
     for (int i = 0; i < N; ++i)
     {
         p[perms[i]][i] = T(1);
@@ -316,8 +333,32 @@ bool plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>
     // apply permutation to the almost lower triangular matrix 
     // to get the real lower triangular matrix
     reorder(l.row_begin(), l.row_end(), perms);
+}
 
-    return true;
+/// PLU decompose a matrix with Gaussian Elimination.
+/// The matrix A is decomposed as
+///     A = P*L*U
+/// where P is an array which represents a permutation matrix, L is a lower triangular matrix, U is a upper triangular matrix
+template<typename T, std::size_t N>
+void plu_decompose(matrix<T, N, N> const& a, std::size_t (&p) [N], matrix<T, N, N>& l, matrix<T, N, N>& u, T tolerance = math_trait<T>::zero_tolerance())
+{
+    std::size_t perms[N];
+
+    detail::plu_decompose_helper(a, perms, l, u, tolerance);
+
+    // update the permutation matrix
+    // for now, p is on the left side
+    // P*A = L'*U
+    // to get the correct permutation matrix, we need to transpose,
+    // as P^-1 = P^T
+    for (int i = 0; i < N; ++i)
+    {
+        p[perms[i]] = i;
+    }
+
+    // apply permutation to the almost lower triangular matrix 
+    // to get the real lower triangular matrix
+    reorder(l.row_begin(), l.row_end(), perms);
 }
 
 KISMET_FUNC_TEMPLATE_API(solve, bool, float const a[2][2], float const b[2], float* it, float tol)

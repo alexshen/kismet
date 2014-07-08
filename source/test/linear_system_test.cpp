@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(linear_system_plu_decompose_succeeds)
     };
 
     matrix33f p, l, u;
-    BOOST_CHECK(plu_decompose(a, p, l, u));
+    plu_decompose(a, p, l, u);
 
     equal(begin(p), end(p), begin(exp_p), [](float actual, float exp)
     {
