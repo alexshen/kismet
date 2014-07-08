@@ -310,6 +310,13 @@ public:
     {
         return *this->m_p;
     }
+
+    // For direct assignment, conversion operator does not work in this case
+    Derived& operator =(T v)
+    {
+        *this->m_p = v;
+        return static_cast<Derived&>(*this);
+    }
 };
 
 template<typename T, std::size_t N>
@@ -380,7 +387,14 @@ public:
     const_reverse_iterator rcbegin() const { return rbegin(); }
     const_reverse_iterator rcend() const { return rend(); }
 
-    matrix_vector& operator =(matrix_vector& v)
+    // scalar assignment operator only intended for matrix_vector<T, 1, 1>
+    matrix_vector& operator =(T v)
+    {
+        static_assert(N == 1 && N == S, "Scalar assignment operator is only intended for matrix_vector<T, 1, 1>");
+        return base_type::operator =(v);
+    }
+
+    matrix_vector& operator =(matrix_vector const& v)
     {
         static_assert(!std::is_const<T>::value, "Cannot assign to non-const vector ref");
         copy_row_row(v, detail::all_row_vectors<S, S>());

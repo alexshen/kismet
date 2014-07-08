@@ -67,12 +67,54 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
     return true;
 }
 
+namespace detail
+{
+
+template<bool CheckZero, typename T, std::size_t N>
+bool backward_substitute_impl(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, matrix<T, N, 1>& x, T tolerance)
+{
+    // back substitution
+    for (std::size_t row = N; row--;)
+    {
+        T coff = a[row][row];
+        // If the upper triangular matrix is non invertible
+        // return false
+        if (CheckZero && is_zero(coff, tolerance))
+        {
+            return false;
+        }
+
+        KISMET_ASSERT(!is_zero(coff, tolerance));
+
+        T v(b[row]);
+        for (std::size_t col = N - 1; col > row; --col)
+        {
+            v -= a[row][col] * x[col];
+        }
+
+        x[row] = v * inv(coff);
+    }
+
+    return true;
+}
+
+} // namespace detail
+
+/// Backward substitution
+///   A*x=b
+/// A is a upper triangular matrix
+/// Return false if substitution failure
+template<typename T, std::size_t N>
+bool backward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, matrix<T, N, 1>& x, T tolerance = math_trait<T>::zero_tolerance())
+{
+    return detail::backward_substitute_impl<true>(a, b, x, tolerance);
+}
+
 /// solve a linear system ax = b using Gaussian elimination with partial pivoting
 /// a is coefficient matrix
 /// b is constant matrix
-/// it is an random access iterator
-template<typename T, std::size_t N, typename RandIt>
-bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T tolerance = math_trait<T>::zero_tolerance())
+template<typename T, std::size_t N>
+bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, matrix<T, N, 1>& x, T tolerance = math_trait<T>::zero_tolerance())
 {
     using std::size_t;
     using std::abs;
@@ -127,15 +169,8 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, RandIt it, T t
         return false;
 
     // back substitution
-    for (size_t row = N; row--;)
-    {
-        for (size_t col = N - 1; col > row; --col)
-        {
-            b[row] -= a[row][col] * it[col];
-        }
-
-        *(it + row) = b[row] * inv(a[row][row]);
-    }
+    // No check for convertibility, as we have check in the above.
+    detail::backward_substitute_impl<false>(a, b, x, tolerance);
 
     return true;
 }

@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_identity)
         { 2 }
     };
 
-    float x[2];
-    float expected_x[] { 1, 2 };
+    matrix<float, 2, 1> x;
+    matrix<float, 2, 1> expected_x{ { 1 }, { 2 } };
     BOOST_CHECK(solve_partial_pivoting(a, b, x));
 
     KISMET_CHECK_EQUAL_COLLECTIONS(x, expected_x);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_non_invertible_fail)
         { 2 }
     };
 
-    float x[2];
+    matrix<float, 2, 1> x;
     BOOST_CHECK(!solve_partial_pivoting(a, b, x));
 }
 
@@ -98,8 +98,8 @@ BOOST_AUTO_TEST_CASE(linear_system_GE_solve_with_permuation)
         { 2 }
     };
 
-    float x[2];
-    float expected_x[] = { 1.f, 0.f };
+    matrix<float, 2, 1> x;
+    matrix<float, 2, 1> expected_x = { { 1.f }, { 0.f } };
     BOOST_CHECK(solve_partial_pivoting(a, b, x));
 
     KISMET_CHECK_EQUAL_COLLECTIONS(x, expected_x);
