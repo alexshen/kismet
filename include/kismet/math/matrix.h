@@ -1150,63 +1150,139 @@ namespace kismet
 namespace math
 {
 
+namespace detail
+{
+
+template<typename T, std::size_t N>
+struct inv_impl
+{
+    static matrix<T, N, N> calc(matrix<T, N, N> const& a, T tolerance)
+    {
+        using matrix_type = matrix<T, N, N>;
+
+        matrix_type inverse, l, u;
+        std::size_t perm[N];
+
+        plu_decompose(a, perm, l, u, tolerance);
+        inverse.clear();
+        // To calculate the inverse matrix A^-1, we can solve N linear systems which are of form
+        //    A*xi = ei
+        // where xi is the i-th column of the inverse matrix,
+        // ei is the i-th column of the identity matrix.
+        // Since
+        //    A = PLU
+        // we need to solve
+        //    PLU*xi = ei
+        matrix<T, N, 1> solution;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            auto col = inverse.column(i);
+            auto col_beg = col.begin();
+            solution.assign(col_beg);
+
+            using std::begin;
+            using std::end;
+            // let zi = LU*xi
+            // solve P*zi = ei
+            // we need to find the position of e[i][i] after permutation
+            // we have zi = P^-1 * ei = P^T * ei
+            // since the we know p[m][p[m]] = 1, so to find j where
+            // P^T[i][j] = 1, we can simply find j where
+            // P[j][i] = 1, which means i = p[j].
+            auto it = std::find(begin(perm), end(perm), i);
+            KISMET_ASSERT(it != end(perm));
+            solution[it - begin(perm)] = T(1);
+
+            // let yi = U*xi
+            // solve L*yi = zi
+            if (!forward_substitute(l, solution, solution, tolerance))
+            {
+                return inverse = a;
+            }
+
+            // solve U*xi = yi
+            if (!backward_substitute(u, solution, solution, tolerance))
+            {
+                return inverse = a;
+            }
+
+            col.assign(solution.data());
+        }
+
+        return inverse;
+    }
+};
+
+template<typename T>
+struct inv_impl<T, 1>
+{
+    static matrix<T, 1, 1> calc(matrix<T, 1, 1> a, T tolerance)
+    {
+        if (!is_zero(a[0], tolerance))
+        {
+            a[0] = inv(a[0]);
+        }
+        return a;
+    }
+};
+
+template<typename T>
+struct inv_impl<T, 2>
+{
+    static matrix<T, 2, 2> calc(matrix<T, 2, 2> const& a, T tolerance)
+    {
+        matrix<T, 2, 2> inverse;
+
+        T det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
+        if (is_zero(det, tolerance))
+        {
+            return inverse = a;
+        }
+
+        T inv_det = inv(det);
+        inverse[0][0] = a[1][1] * inv_det;
+        inverse[0][1] = a[1][0] * inv_det;
+        inverse[1][0] = a[0][1] * inv_det;
+        inverse[1][1] = a[0][0] * inv_det;
+        return inverse;
+    }
+};
+
+template<typename T>
+struct inv_impl<T, 3>
+{
+    static matrix<T, 3, 3> calc(matrix<T, 3, 3> const& a, T tolerance)
+    {
+        matrix<T, 3, 3> inverse;
+        // Calculate the adjoint matrix
+        inverse[0][0] = a[1][1] * a[2][2] - a[1][2] * a[2][1];
+        inverse[0][1] = a[0][2] * a[2][1] - a[0][1] * a[2][2];
+        inverse[0][2] = a[0][1] * a[1][2] - a[0][2] * a[1][1];
+        inverse[1][0] = a[1][2] * a[2][0] - a[1][0] * a[2][2];
+        inverse[1][1] = a[0][0] * a[2][2] - a[0][2] * a[2][0];
+        inverse[1][2] = a[0][2] * a[1][0] - a[0][0] * a[1][2];
+        inverse[2][0] = a[1][0] * a[2][1] - a[1][1] * a[2][0];
+        inverse[2][1] = a[0][1] * a[2][0] - a[0][0] * a[2][1];
+        inverse[2][2] = a[0][0] * a[1][1] - a[0][1] * a[2][0];
+
+        // Calculate the determinant of a
+        T det = a[0][0] * inv_mat[0][0] + a[0][1] * inv_mat[1][0] + a[0][2] * inv_mat[2][0];
+        if (is_zero(det, tolerance))
+        {
+            return inverse = a;
+        }
+
+        return inverse /= det;
+    }
+};
+}
+
 /// Calculate the inverse of the matrix using PLU decomposition
 /// If the matrix is not invertible, original matrix is returned
 template<typename T, std::size_t N>
-matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
+inline matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
 {
-    using matrix_type = matrix<T, N, N>;
-
-    matrix_type inverse, l, u;
-    std::size_t perm[N];
-
-    plu_decompose(a, perm, l, u, tolerance);
-    inverse.clear();
-    // To calculate the inverse matrix A^-1, we can solve N linear systems which are of form
-    //    A*xi = ei
-    // where xi is the i-th column of the inverse matrix,
-    // ei is the i-th column of the identity matrix.
-    // Since
-    //    A = PLU
-    // we need to solve
-    //    PLU*xi = ei
-    matrix<T, N, 1> solution;
-    for (std::size_t i = 0; i < N; ++i)
-    {
-        auto col = inverse.column(i);
-        auto col_beg = col.begin();
-        solution.assign(col_beg);
-
-        using std::begin;
-        using std::end;
-        // let zi = LU*xi
-        // solve P*zi = ei
-        // we need to find the position of e[i][i] after permutation
-        // we have zi = P^-1 * ei = P^T * ei
-        // since the we know p[m][p[m]] = 1, so to find j where
-        // P^T[i][j] = 1, we can simply find j where
-        // P[j][i] = 1, which means i = p[j].
-        auto it = std::find(begin(perm), end(perm), i);
-        KISMET_ASSERT(it != end(perm));
-        solution[it - begin(perm)] = T(1);
-
-        // let yi = U*xi
-        // solve L*yi = zi
-        if (!forward_substitute(l, solution, solution, tolerance))
-        {
-            return inverse = a;
-        }
-
-        // solve U*xi = yi
-        if (!backward_substitute(u, solution, solution, tolerance))
-        {
-            return inverse = a;
-        }
-
-        col.assign(solution.data());
-    }
-
-    return inverse;
+    return detail::inv_impl<T, N>::calc(a, tolerance);
 }
 
 } // namespace math
