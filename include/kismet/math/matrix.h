@@ -15,6 +15,7 @@
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_either_convertible.h"
 #include "kismet/math/math_trait.h"
+#include "kismet/math/linear_system.h"
 #include "kismet/strided_iterator.h"
 #include "kismet/utility.h"
 
@@ -1071,130 +1072,6 @@ inline matrix<T, N2, N1> transpose(matrix<T, N1, N2> const& m)
     return t;
 }
 
-template<typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator +(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
-{
-    return m1 += m2;
-}
-
-template<typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator -(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
-{
-    return m1 -= m2;
-}
-
-// return a matrix with element is common type of scalar and matrix's element type
-template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(U k, matrix<T, N1, N2> const& m)
-{
-    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
-    res *= k;
-    return res;
-}
-
-// TODO: do we need this for performance reason, in case that generic scalar multiplication version
-// cannot optimize for rvalue ?
-template<typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator *(T k, matrix<T, N1, N2> m)
-{
-    m *= k;
-    return m;
-}
-
-// return a matrix with element is common type of scalar and matrix's element type
-template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(matrix<T, N1, N2> const& m, U k)
-{
-    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
-    res *= k;
-    return res;
-}
-
-// TODO: do we need this for performance reason, in case that generic scalar multiplication version
-// cannot optimize for rvalue ?
-template<typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator *(matrix<T, N1, N2> m, T k)
-{
-    m *= k;
-    return m;
-}
-
-template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<typename std::common_type<U, T>::type, N1, N2> operator /(matrix<T, N1, N2> const& m, U k)
-{
-    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
-    res /= k;
-    return res;
-}
-
-// TODO: do we need this for performance reason, in case that generic scalar multiplication version
-// cannot optimize for rvalue ?
-template<typename T, std::size_t N1, std::size_t N2>
-inline matrix<T, N1, N2> operator /(matrix<T, N1, N2> m, T k)
-{
-    m /= k;
-    return m;
-}
-
-template<typename T, typename U, std::size_t N1, std::size_t N2>
-inline bool operator ==(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
-{
-    return std::equal(m1.begin(), m1.end(), m2.begin());
-}
-
-template<typename T, typename U, std::size_t N1, std::size_t N2>
-inline bool operator !=(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
-{
-    return !(m1 == m2);
-}
-
-template<typename T, std::size_t N1, std::size_t N2>
-std::ostream& operator <<(std::ostream& os, matrix<T, N1, N2> const& m)
-{
-    os << "{\n";
-    for (std::size_t i = 0; i < N1; ++i)
-    {
-        os << " { ";
-        for (std::size_t j = 0; j < N2; ++j)
-        {
-            if (j != 0)
-            {
-                os << ", ";
-            }
-            os << m[i][j];
-        }
-        os << " }\n";
-    }
-    os << "}";
-    return os;
-}
-
-KISMET_CLASS_TEMPLATE_API(matrix, float, 2, 2)
-KISMET_CLASS_TEMPLATE_API(matrix, float, 3, 3)
-KISMET_CLASS_TEMPLATE_API(matrix, float, 4, 4)
-
-KISMET_CLASS_TEMPLATE_API(matrix, double, 2, 2)
-KISMET_CLASS_TEMPLATE_API(matrix, double, 3, 3)
-KISMET_CLASS_TEMPLATE_API(matrix, double, 4, 4)
-
-using matrix22f = matrix<float, 2, 2>;
-using matrix33f = matrix<float, 3, 3>;
-using matrix44f = matrix<float, 4, 4>;
-
-using matrix22d = matrix<double, 2, 2>;
-using matrix33d = matrix<double, 3, 3>;
-using matrix44d = matrix<double, 4, 4>;
-
-} // namespace math
-} // namespace kismet
-
-#include "kismet/math/linear_system.h"
-
-namespace kismet
-{
-namespace math
-{
-
 namespace detail
 {
 
@@ -1317,7 +1194,8 @@ struct inv_impl<T, 3>
         return inverse *= inv(det);
     }
 };
-}
+
+} // namespace detail
 
 /// Calculate the inverse of the matrix using PLU decomposition
 /// If the matrix is not invertible, original matrix is returned
@@ -1326,6 +1204,120 @@ inline matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>
 {
     return detail::inv_impl<T, N>::calc(a, tolerance);
 }
+
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator +(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
+{
+    return m1 += m2;
+}
+
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator -(matrix<T, N1, N2> m1, matrix<T, N1, N2> const& m2)
+{
+    return m1 -= m2;
+}
+
+// return a matrix with element is common type of scalar and matrix's element type
+template<typename U, typename T, std::size_t N1, std::size_t N2>
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(U k, matrix<T, N1, N2> const& m)
+{
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res *= k;
+    return res;
+}
+
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator *(T k, matrix<T, N1, N2> m)
+{
+    m *= k;
+    return m;
+}
+
+// return a matrix with element is common type of scalar and matrix's element type
+template<typename U, typename T, std::size_t N1, std::size_t N2>
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator *(matrix<T, N1, N2> const& m, U k)
+{
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res *= k;
+    return res;
+}
+
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator *(matrix<T, N1, N2> m, T k)
+{
+    m *= k;
+    return m;
+}
+
+template<typename U, typename T, std::size_t N1, std::size_t N2>
+inline matrix<typename std::common_type<U, T>::type, N1, N2> operator /(matrix<T, N1, N2> const& m, U k)
+{
+    matrix<typename std::common_type<U, T>::type, N1, N2> res{m};
+    res /= k;
+    return res;
+}
+
+// TODO: do we need this for performance reason, in case that generic scalar multiplication version
+// cannot optimize for rvalue ?
+template<typename T, std::size_t N1, std::size_t N2>
+inline matrix<T, N1, N2> operator /(matrix<T, N1, N2> m, T k)
+{
+    m /= k;
+    return m;
+}
+
+template<typename T, typename U, std::size_t N1, std::size_t N2>
+inline bool operator ==(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
+{
+    return std::equal(m1.begin(), m1.end(), m2.begin());
+}
+
+template<typename T, typename U, std::size_t N1, std::size_t N2>
+inline bool operator !=(matrix<T, N1, N2> const& m1, matrix<U, N1, N2> const& m2)
+{
+    return !(m1 == m2);
+}
+
+template<typename T, std::size_t N1, std::size_t N2>
+std::ostream& operator <<(std::ostream& os, matrix<T, N1, N2> const& m)
+{
+    os << "{\n";
+    for (std::size_t i = 0; i < N1; ++i)
+    {
+        os << " { ";
+        for (std::size_t j = 0; j < N2; ++j)
+        {
+            if (j != 0)
+            {
+                os << ", ";
+            }
+            os << m[i][j];
+        }
+        os << " }\n";
+    }
+    os << "}";
+    return os;
+}
+
+KISMET_CLASS_TEMPLATE_API(matrix, float, 2, 2)
+KISMET_CLASS_TEMPLATE_API(matrix, float, 3, 3)
+KISMET_CLASS_TEMPLATE_API(matrix, float, 4, 4)
+
+KISMET_CLASS_TEMPLATE_API(matrix, double, 2, 2)
+KISMET_CLASS_TEMPLATE_API(matrix, double, 3, 3)
+KISMET_CLASS_TEMPLATE_API(matrix, double, 4, 4)
+
+using matrix22f = matrix<float, 2, 2>;
+using matrix33f = matrix<float, 3, 3>;
+using matrix44f = matrix<float, 4, 4>;
+
+using matrix22d = matrix<double, 2, 2>;
+using matrix33d = matrix<double, 3, 3>;
+using matrix44d = matrix<double, 4, 4>;
 
 } // namespace math
 } // namespace kismet

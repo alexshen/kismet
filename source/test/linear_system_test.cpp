@@ -2,6 +2,7 @@
 #include <utility>
 #include <boost/test/unit_test.hpp>
 #include "kismet/math/linear_system.h"
+#include "kismet/math/matrix.h"
 #include "test/utility.h"
 
 using namespace std;

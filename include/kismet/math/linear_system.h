@@ -5,13 +5,16 @@
 #include "kismet/config.h"
 #include "kismet/utility.h"
 #include "kismet/math/math_trait.h"
-#include "kismet/math/matrix.h"
 
 namespace kismet
 {
 
 namespace math
 {
+
+// forward declaration
+template<typename T, std::size_t N1, std::size_t N2>
+class matrix;
 
 /// Solve a 2x2 linear system, output the result to it
 /// ax = b, x is output to it
