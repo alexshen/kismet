@@ -3,8 +3,8 @@
 
 #include <cmath>
 #include "kismet/config.h"
-#include "kismet/utility.h"
 #include "kismet/math/math_trait.h"
+#include "kismet/utility.h"
 
 namespace kismet
 {

@@ -14,8 +14,8 @@
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_either_convertible.h"
-#include "kismet/math/math_trait.h"
 #include "kismet/math/linear_system.h"
+#include "kismet/math/math_trait.h"
 #include "kismet/strided_iterator.h"
 #include "kismet/utility.h"
 

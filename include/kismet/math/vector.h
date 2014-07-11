@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <cstddef>
 #include <initializer_list>
-#include <ostream>
 #include <iterator>
+#include <ostream>
 #include <utility>
-#include "kismet/core/assert.h"
 #include "kismet/common_type.h"
+#include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/utility.h"
 
