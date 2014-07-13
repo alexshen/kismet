@@ -2,6 +2,7 @@
 #define KISMET_MATH_TRAIT_H
 
 #include <cmath>
+#include <cstdint>
 #include "kismet/core/assert.h"
 
 namespace kismet
@@ -105,6 +106,57 @@ INT_MATH_TRAIT(long long)
 INT_MATH_TRAIT(unsigned long long)
 
 #undef INT_MATH_TRAIT
+
+// floating point integer conversion
+template<typename T>
+union float_int;
+
+// two-way specializations, so that we can instantiate
+// using either floating point type or integer type to
+// do conversion.
+#define FLOAT_INT_SPECIALIZATION(F, I) \
+    template<>                         \
+    union float_int<F>                 \
+    {                                  \
+        using float_type = F;          \
+        using int_type   = I;          \
+                                       \
+        float_type f;                  \
+        int_type   i;                  \
+    };                                 \
+                                       \
+    template<>                         \
+    union float_int<I>                 \
+    {                                  \
+        using float_type = F;          \
+        using int_type   = I;          \
+                                       \
+        float_type f;                  \
+        int_type   i;                  \
+    };
+
+FLOAT_INT_SPECIALIZATION(float, std::int32_t)
+FLOAT_INT_SPECIALIZATION(double, std::int64_t)
+
+#undef FLOAT_INT_SPECIALIZATION
+
+// Return the integer representation of the floating point number
+template<typename T>
+inline typename float_int<T>::int_type float_to_int_bits(T f)
+{
+    float_int<T> fi;
+    fi.f = f;
+    return fi.i;
+}
+
+// Return the float point number from the integer representation
+template<typename T>
+inline typename float_int<T>::float_type float_from_int_bits(T i)
+{
+    float_int<T> fi;
+    fi.i = i;
+    return fi.f;
+}
 
 } // namespace math
 
