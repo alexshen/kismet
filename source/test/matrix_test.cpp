@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(matrix_col_div)
 
 BOOST_AUTO_TEST_CASE(matrix_identity_return_identity_matrix)
 {
-    matrix22f m1 = matrix22f::identity();
+    matrix22f m1 = matrix22f::identity;
     matrix22f m2
     {
         { 1, 0 },
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(matrix_identity_return_identity_matrix)
 
 BOOST_AUTO_TEST_CASE(matrix_swap_row)
 {
-    matrix22f m{ matrix22f::identity() };
+    matrix22f m{ matrix22f::identity };
     matrix22f expected
     {
         { 0, 1 },
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(matrix_swap_row)
 
 BOOST_AUTO_TEST_CASE(matrix_swap_col)
 {
-    matrix22f m{ matrix22f::identity() };
+    matrix22f m{ matrix22f::identity };
     matrix22f expected
     {
         { 0, 1 },

@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(linear_system_solve3x3_identity_all_one)
 
 BOOST_AUTO_TEST_CASE(linear_system_GE_solve_identity)
 {
-    matrix22f a{ matrix22f::identity() };
+    matrix22f a{ matrix22f::identity };
     matrix<float, 2, 1> b
     {
         { 1 },

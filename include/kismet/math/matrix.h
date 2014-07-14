@@ -320,9 +320,6 @@ public:
     }
 };
 
-template<typename T, std::size_t N>
-struct identity_impl;
-
 } // namespace detail
 
 // forward declaration
@@ -1012,12 +1009,7 @@ public:
     const_column_iterator column_begin() const { return { data(), data() + size() }; }
     const_column_iterator column_end() const { return { data() + N2, data() + size() }; }
 
-    static matrix const& identity()
-    {
-        static_assert(N1 == N2, "Matrix must be square");
-        static matrix im{ detail::identity_impl<T, N1>::get() };
-        return im;
-    }
+    static matrix const identity;
 private:
     // copy row vector to row matrix
     template<typename U>
@@ -1039,17 +1031,18 @@ private:
 namespace detail
 {
 
-template<typename T, std::size_t N>
+template<typename T, std::size_t N1, std::size_t N2>
 struct identity_impl
 {
-    static matrix<T, N, N> get()
+    static_assert(N1 == N2, "identity only available for square matrix");
+    static matrix<T, N1, N2> get()
     {
-        matrix<T, N, N> m;
-        for (std::size_t i = 0; i < N; ++i)
+        matrix<T, N1, N2> m;
+        for (std::size_t i = 0; i < N1; ++i)
         {
-            for (std::size_t j = 0; j < N; ++j)
+            for (std::size_t j = 0; j < N2; ++j)
             {
-                m.data()[i * N + j] = i == j ? T(1) : T(0);
+                m.data()[i * N2 + j] = i == j ? T(1) : T(0);
             }
         }
         return m;
@@ -1057,6 +1050,9 @@ struct identity_impl
 };
 
 } // namespace detail
+
+template<typename T, std::size_t N1, std::size_t N2>
+matrix<T, N1, N2> const matrix<T, N1, N2>::identity = detail::identity_impl<T, N1, N2>::get();
 
 /// Return the transpose of the given matrix
 template<typename T, std::size_t N1, std::size_t N2>

@@ -235,7 +235,7 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
     u = a;
 
     // l starts with a identity matrix
-    l = matrix<T, N, N>::identity();
+    l = matrix<T, N, N>::identity;
 
     // elimination process
     for (size_t i = 0; i < N - 1; ++i)
@@ -310,7 +310,7 @@ void plu_decompose_helper(matrix<T, N, N> const& a, std::size_t (&perms) [N], ma
     u = a;
 
     // lower triangular matrix starts with identity
-    l = matrix<T, N, N>::identity();
+    l = matrix<T, N, N>::identity;
 
     // elimination process
     for (size_t i = 0; i < N - 1; ++i)
