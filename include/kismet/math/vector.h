@@ -177,7 +177,7 @@ protected:
 };
 
 template<typename Derived, typename T, std::size_t N>
-Derived const vector_base<Derived, T, N>::zero = {};
+Derived const vector_base<Derived, T, N>::zero = { T(0) }; // non-empty initializer list, force filling zero.
 
 } // namespace detail
 
