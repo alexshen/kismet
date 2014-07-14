@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <type_traits>
+#include "kismet/math/matrix.h"
 #include "kismet/math/vector.h"
 using namespace kismet::math;
 using namespace std;
@@ -62,4 +63,34 @@ BOOST_AUTO_TEST_CASE(vector_cross)
 
         BOOST_CHECK_EQUAL((cross(v1, v2)), exp);
     }
+}
+
+BOOST_AUTO_TEST_CASE(vector_left_mul)
+{
+    vector3f v(1, 0, 0);
+    matrix33f m
+    {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 }
+    };
+    vector3f exp(1, 2, 3);
+
+    auto u = v * m;
+    BOOST_CHECK_EQUAL(u, exp);
+}
+
+BOOST_AUTO_TEST_CASE(vector_right_mul)
+{
+    vector3f v(1, 0, 0);
+    matrix33f m
+    {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 }
+    };
+    vector3f exp(1, 4, 7);
+
+    auto u = m * v;
+    BOOST_CHECK_EQUAL(u, exp);
 }

@@ -10,6 +10,7 @@
 #include <utility>
 #include "kismet/common_type.h"
 #include "kismet/core.h"
+#include "kismet/math/detail/matrix_mul.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/utility.h"
 
@@ -474,6 +475,26 @@ inline vector<common_type_t<T, U>, N> operator /(vector<T, N> const& a, U k)
     return v;
 }
 #endif
+
+/// Left multiply a vector with a matrix
+/// Returns v * M
+template<typename T, std::size_t N1, std::size_t N2>
+inline vector<T, N1> operator *(vector<T, N1> const& v, matrix<T, N1, N2> const& m)
+{
+    vector<T, N1> u;
+    detail::mul(v.data(), m, u.data());
+    return u;
+}
+
+/// Right multiply a vector with a matrix
+/// Returns M * v
+template<typename T, std::size_t N1, std::size_t N2>
+inline vector<T, N2> operator *(matrix<T, N1, N2> const& m, vector<T, N2> const& v)
+{
+    vector<T, N2> u;
+    detail::mul(m, v.data(), u.data());
+    return u;
+}
 
 template<typename T, typename U, std::size_t N>
 inline bool operator ==(vector<T, N> const& a, vector<U, N> const& b)
