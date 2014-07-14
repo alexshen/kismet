@@ -42,3 +42,22 @@ BOOST_AUTO_TEST_CASE(vector_dot)
 
     BOOST_CHECK_EQUAL((dot(v1, v2)), exp);
 }
+
+BOOST_AUTO_TEST_CASE(vector_cross)
+{
+    {
+        vector3f v1(1, 2, 3);
+        vector3f v2(4, 5, 6);
+        vector3f exp(-3, 6, -3);
+
+        BOOST_CHECK_EQUAL((cross(v1, v2)), exp);
+    }
+
+    {
+        vector4f v1(1, 2, 3, 0);
+        vector4f v2(4, 5, 6, 0);
+        vector4f exp(-3, 6, -3, 0);
+
+        BOOST_CHECK_EQUAL((cross(v1, v2)), exp);
+    }
+}

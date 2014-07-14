@@ -354,6 +354,46 @@ inline T dot(vector<T, N> const& a, vector<T, N> const& b)
     return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
 }
 
+namespace detail
+{
+
+template<typename T>
+inline void cross(T const* a, T const* b, T* c)
+{
+    // mnemonics xyzzy, see http://en.wikipedia.org/wiki/Cross_product 
+    c[0] = a[1] * b[2] - a[2] * b[1];
+    c[1] = a[2] * b[0] - a[0] * b[2];
+    c[2] = a[0] * b[1] - a[1] * b[0];
+}
+
+}
+
+// Return the cross product of two 3-d vectors
+template<typename T>
+inline vector<T, 3> cross(vector<T, 3> const& a, vector<T, 3> const& b)
+{
+    vector<T, 3> res;
+    detail::cross(a.data(), b.data(), res.data());
+    return res;
+}
+
+// Return the cross product of two augmented 3-d vectors, 
+// the w components of two vectors must be 0
+// 
+// NOTE: Cross product is only defined in 3d/7d spaces, this is
+// only meant to be used as convenience function for calculating
+// cross product of two augmented 3d vectors whose w components
+// are 0.
+template<typename T>
+inline vector<T, 4> cross(vector<T, 4> const& a, vector<T, 4> const& b)
+{
+    KISMET_ASSERT(a.w() == T(0) && b.w() == T(0));
+    vector<T, 4> res;
+    detail::cross(a.data(), b.data(), res.data());
+    res[3] = T(0);
+    return res;
+}
+
 template<typename T, std::size_t N>
 inline vector<T, N> operator +(vector<T, N> a, vector<T, N> const& b)
 {
