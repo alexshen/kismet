@@ -8,7 +8,7 @@
 #include <ostream>
 #include <utility>
 #include "kismet/common_type.h"
-#include "kismet/core/assert.h"
+#include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/utility.h"
 
@@ -41,7 +41,7 @@ struct vector_base
     template<typename U>
     vector_base(std::initializer_list<U> list)
     {
-        *this = list;
+        assign(list.begin(), list.end());
     }
 
     template<typename U>
@@ -60,9 +60,16 @@ struct vector_base
     template<typename U>
     enable_if_convertible_t<U, T, Derived&> operator =(std::initializer_list<U> list)
     {
-        KISMET_ASSERT(list.size() == N);
-        std::copy(list.begin(), list.end(), v);
+        assign(list.begin(), list.end());
         return static_cast<Derived&>(*this);
+    }
+
+    // assign from a sequence, number of elements must be <= N
+    // if size of sequence is less than N, remaining elements are zero filled
+    template<typename InputIt>
+    void assign(InputIt start, InputIt end)
+    {
+        assign(start, end, typename std::iterator_traits<InputIt>::iterator_category());
     }
 
     pointer data() { return v; }
@@ -132,7 +139,40 @@ struct vector_base
 
     // return the zero vector
     static Derived const zero;
+private:
+    template<typename InputIt>
+    void assign(InputIt start, InputIt end, std::input_iterator_tag)
+    {
+#ifdef KISMET_DEBUG
+        std::size_t n = 0;
+#endif
+        auto p = v;
+        while (start != end)
+        {
+#ifdef KISMET_DEBUG
+            KISMET_ASSERT(n < N);
+#endif
+            *p++ = *start++;
+        }
 
+        while (p != this->end())
+        {
+            *p++ = T(0);
+        }
+    }
+
+    template<typename InputIt>
+    void assign(InputIt first, InputIt last, std::bidirectional_iterator_tag)
+    {
+        KISMET_ASSERT(std::distance(first, last) <= N);
+        auto it = std::copy(first, last, data());
+        auto remaining_size = std::distance(it, end());
+        if (remaining_size > 0)
+        {
+            std::fill_n(it, remaining_size, T(0));
+        }
+    }
+protected:
     value_type v[N];
 };
 
