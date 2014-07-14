@@ -11,6 +11,7 @@ BOOST_AUTO_TEST_CASE(vector_scale)
     BOOST_CHECK_EQUAL(v * 2.f, doubled);
 }
 
+#ifndef KISMET_MSC
 BOOST_AUTO_TEST_CASE(vector_float_scale_double_get_vector_double)
 {
     BOOST_CHECK((is_same<decltype(vector2f{} *double{}), vector2d>::value));
@@ -20,6 +21,7 @@ BOOST_AUTO_TEST_CASE(vector_float_add_vector_double_get_vector_double)
 {
     BOOST_CHECK((is_same<decltype(vector2f{} + vector2d{}), vector2d>::value));
 }
+#endif
 
 BOOST_AUTO_TEST_CASE(vector_add)
 {

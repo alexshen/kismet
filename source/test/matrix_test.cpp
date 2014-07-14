@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_add_self_equal_double_self)
         { 0, 1 },
     };
     
-    BOOST_CHECK_EQUAL(m + m, 2 * m);
+    BOOST_CHECK_EQUAL(m + m, 2.0f * m);
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_sub_self_equal_zero)
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_sub_self_equal_zero)
         { 0, 1 },
     };
     
-    BOOST_CHECK_EQUAL(m - m, 0 * m);
+    BOOST_CHECK_EQUAL(m - m, 0.0f * m);
 }
 
 BOOST_AUTO_TEST_CASE(matrix22f_row_equal_self)
@@ -208,11 +208,13 @@ BOOST_AUTO_TEST_CASE(matrix22f_not_equal_to_matrix22i)
     BOOST_CHECK(fm != im);
 }
 
+#ifndef KISMET_MSC
 BOOST_AUTO_TEST_CASE(int_matrix_sclale_float_return_float_matrix)
 {
     BOOST_CHECK((std::is_same<matrix22f, decltype(1.0f * matrix<int, 2, 2>{})>::value));
     BOOST_CHECK((std::is_same<matrix22f, decltype(matrix<int, 2, 2>{} * 1.0f)>::value));
 }
+#endif
 
 BOOST_AUTO_TEST_CASE(matrix_row_mul)
 {

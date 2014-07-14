@@ -401,6 +401,7 @@ inline vector<T, N> operator +(vector<T, N> a, vector<T, N> const& b)
     return a;
 }
 
+#ifndef KISMET_MSC
 template<typename T, typename U, std::size_t N>
 inline vector<common_type_t<T, U>, N> operator +(vector<T, N> const& a, vector<U, N> const& b)
 {
@@ -408,6 +409,7 @@ inline vector<common_type_t<T, U>, N> operator +(vector<T, N> const& a, vector<U
     res += b;
     return res;
 }
+#endif
 
 template<typename T, std::size_t N>
 inline vector<T, N> operator -(vector<T, N> a, vector<T, N> const& b)
@@ -416,6 +418,7 @@ inline vector<T, N> operator -(vector<T, N> a, vector<T, N> const& b)
     return a;
 }
 
+#ifndef KISMET_MSC
 template<typename T, typename U, std::size_t N>
 inline vector<common_type_t<T, U>, N> operator -(vector<T, N> const& a, vector<U, N> const& b)
 {
@@ -423,6 +426,7 @@ inline vector<common_type_t<T, U>, N> operator -(vector<T, N> const& a, vector<U
     res -= b;
     return res;
 }
+#endif
 
 template<typename T, std::size_t N>
 inline vector<T, N> operator *(vector<T, N> a, T k)
@@ -445,6 +449,7 @@ inline vector<T, N> operator /(vector<T, N> a, T k)
     return a;
 }
 
+#ifndef KISMET_MSC
 template<typename T, std::size_t N, typename U>
 inline vector<common_type_t<T, U>, N> operator *(vector<T, N> const& a, U k)
 {
@@ -468,6 +473,7 @@ inline vector<common_type_t<T, U>, N> operator /(vector<T, N> const& a, U k)
     v /= k;
     return v;
 }
+#endif
 
 template<typename T, typename U, std::size_t N>
 inline bool operator ==(vector<T, N> const& a, vector<U, N> const& b)
