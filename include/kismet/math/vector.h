@@ -169,6 +169,11 @@ class vector<T, 2> : public detail::vector_base<vector<T, 2>, T, 2>
 public:
     vector() = default;
 
+    vector(T x, T y)
+    {
+        this->x(x).y(y);
+    }
+
     template<typename U>
     vector(vector<U, 2> const& rhs,
            enable_if_convertible_t<U, T>* = 0)
@@ -187,7 +192,24 @@ public:
 
     T x() const { return this->v[0]; }
     T y() const { return this->v[1]; }
+
+    static vector const left;
+    static vector const right;
+    static vector const up;
+    static vector const down;
 };
+
+template<typename T>
+vector<T, 2> const vector<T, 2>::left(T(-1), T(0));
+
+template<typename T>
+vector<T, 2> const vector<T, 2>::right(T(1), T(0));
+
+template<typename T>
+vector<T, 2> const vector<T, 2>::up(T(0), T(1));
+
+template<typename T>
+vector<T, 2> const vector<T, 2>::down(T(0), T(-1));
 
 template<typename T>
 class vector<T, 3> : public detail::vector_base<vector<T, 3>, T, 3>
@@ -195,6 +217,11 @@ class vector<T, 3> : public detail::vector_base<vector<T, 3>, T, 3>
     using base_type = detail::vector_base<vector<T, 3>, T, 3>;
 public:
     vector() = default;
+
+    vector(T x, T y, T z)
+    {
+        this->x(x).y(y).z(z);
+    }
 
     template<typename U>
     vector(vector<U, 3> const& rhs,
@@ -216,7 +243,32 @@ public:
     T x() const { return this->v[0]; }
     T y() const { return this->v[1]; }
     T z() const { return this->v[2]; }
+
+    static vector const left; 
+    static vector const right;
+    static vector const up;
+    static vector const down;
+    static vector const forward;
+    static vector const back;
 };
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::left(T(-1), T(0), T(0));
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::right(T(1), T(0), T(0));
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::up(T(0), T(1), T(0));
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::down(T(0), T(-1), T(0));
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::forward(T(0), T(0), T(1));
+
+template<typename T>
+vector<T, 3> const vector<T, 3>::back(T(0), T(0), T(-1));
 
 template<typename T>
 class vector<T, 4> : public detail::vector_base<vector<T, 4>, T, 4>
@@ -224,6 +276,11 @@ class vector<T, 4> : public detail::vector_base<vector<T, 4>, T, 4>
     using base_type = detail::vector_base<vector<T, 4>, T, 4>;
 public:
     vector() = default;
+
+    vector(T x, T y, T z, T w)
+    {
+        this->x(x).y(y).z(z).w(w);
+    }
 
     template<typename U>
     vector(vector<U, 4> const& rhs,
