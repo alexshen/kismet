@@ -487,7 +487,7 @@ private:
     template<typename It>
     void copy_pointer_row(It p, std::true_type)
     {
-        std::copy(this->data(), this->data() + N, p);
+        std::copy(p, std::next(p, N), this->data());
     }
 
     // copy from a generic iterator to column vector
