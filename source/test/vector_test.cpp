@@ -33,3 +33,12 @@ BOOST_AUTO_TEST_CASE(vector_minus)
     vector2f v = { 1.f, 2.f };
     BOOST_CHECK_EQUAL(v - v, vector2f::zero);
 }
+
+BOOST_AUTO_TEST_CASE(vector_dot)
+{
+    vector2f v1(1, 2);
+    vector2f v2(2, 3);
+    float exp = v1[0] * v2[0] + v1[1] * v2[1];
+
+    BOOST_CHECK_EQUAL((dot(v1, v2)), exp);
+}

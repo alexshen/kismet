@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <numeric>
 #include <ostream>
 #include <utility>
 #include "kismet/common_type.h"
@@ -78,22 +79,22 @@ struct vector_base
     size_type size() const { return N; }
 
     iterator begin() { return v; }
-    iterator end() { return v; }
+    iterator end() { return v + N; }
 
     const_iterator begin() const { return v; }
-    const_iterator end() const { return v; }
+    const_iterator end() const { return v + N; }
 
     const_iterator cbegin() const { return v; }
-    const_iterator cend() const { return v; }
+    const_iterator cend() const { return v + N; }
 
-    reverse_iterator rbegin() { return { v + N }; }
-    reverse_iterator rend() { return { v }; }
+    reverse_iterator rbegin() { return reverse_iterator{ end() }; }
+    reverse_iterator rend() { return reverse_iterator{ begin() } };
 
-    const_reverse_iterator rbegin() const { return { v + N }; }
-    const_reverse_iterator rend() const { return { v }; }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator{ end() }; }
+    const_reverse_iterator rend() const { return const_reverse_iterator{ begin() }; }
 
-    const_reverse_iterator crbegin() const { return { v + N }; }
-    const_reverse_iterator crend() const { return { v }; }
+    const_reverse_iterator crbegin() const { return rbegin(); }
+    const_reverse_iterator crend() const { return rend(); }
 
     Derived& operator +=(Derived const& rhs)
     {
@@ -345,6 +346,13 @@ public:
     T z() const { return this->v[2]; }
     T w() const { return this->v[3]; }
 };
+
+// Return the dot product of two vectors
+template<typename T, std::size_t N>
+inline T dot(vector<T, N> const& a, vector<T, N> const& b)
+{
+    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
+}
 
 template<typename T, std::size_t N>
 inline vector<T, N> operator +(vector<T, N> a, vector<T, N> const& b)
