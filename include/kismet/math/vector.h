@@ -89,7 +89,7 @@ struct vector_base
     const_iterator cend() const { return v + N; }
 
     reverse_iterator rbegin() { return reverse_iterator{ end() }; }
-    reverse_iterator rend() { return reverse_iterator{ begin() } };
+    reverse_iterator rend() { return reverse_iterator{ begin() }; };
 
     const_reverse_iterator rbegin() const { return const_reverse_iterator{ end() }; }
     const_reverse_iterator rend() const { return const_reverse_iterator{ begin() }; }
@@ -520,14 +520,6 @@ inline std::ostream& operator <<(std::ostream& os, vector<T, N> const& v)
     os << " }";
     return os;
 }
-
-KISMET_CLASS_TEMPLATE_API(vector, float, 2)
-KISMET_CLASS_TEMPLATE_API(vector, float, 3)
-KISMET_CLASS_TEMPLATE_API(vector, float, 4)
-
-KISMET_CLASS_TEMPLATE_API(vector, double, 2)
-KISMET_CLASS_TEMPLATE_API(vector, double, 3)
-KISMET_CLASS_TEMPLATE_API(vector, double, 4)
 
 using vector2f = vector<float, 2>;
 using vector3f = vector<float, 3>;

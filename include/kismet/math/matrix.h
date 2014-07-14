@@ -1306,14 +1306,6 @@ std::ostream& operator <<(std::ostream& os, matrix<T, N1, N2> const& m)
     return os;
 }
 
-KISMET_CLASS_TEMPLATE_API(matrix, float, 2, 2)
-KISMET_CLASS_TEMPLATE_API(matrix, float, 3, 3)
-KISMET_CLASS_TEMPLATE_API(matrix, float, 4, 4)
-
-KISMET_CLASS_TEMPLATE_API(matrix, double, 2, 2)
-KISMET_CLASS_TEMPLATE_API(matrix, double, 3, 3)
-KISMET_CLASS_TEMPLATE_API(matrix, double, 4, 4)
-
 using matrix22f = matrix<float, 2, 2>;
 using matrix33f = matrix<float, 3, 3>;
 using matrix44f = matrix<float, 4, 4>;
