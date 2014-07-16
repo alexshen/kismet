@@ -10,7 +10,6 @@
 #include <utility>
 #include "kismet/common_type.h"
 #include "kismet/core.h"
-#include "kismet/math/detail/vector_mul.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/utility.h"
 
@@ -482,7 +481,14 @@ template<typename T, std::size_t N1, std::size_t N2>
 inline vector<T, N1> operator *(vector<T, N1> const& v, matrix<T, N1, N2> const& m)
 {
     vector<T, N1> u;
-    detail::mul(v.data(), m, u.data());
+    for (std::size_t i = 0; i < N1; ++i)
+    {
+        u[i] = T(0);
+        for (std::size_t j = 0; j < N2; ++j)
+        {
+            u[i] += v[j] * m[j][i];
+        }
+    }
     return u;
 }
 
@@ -492,7 +498,14 @@ template<typename T, std::size_t N1, std::size_t N2>
 inline vector<T, N2> operator *(matrix<T, N1, N2> const& m, vector<T, N2> const& v)
 {
     vector<T, N2> u;
-    detail::mul(m, v.data(), u.data());
+    for (std::size_t i = 0; i < N1; ++i)
+    {
+        u[i] = T(0);
+        for (std::size_t j = 0; j < N2; ++j)
+        {
+            u[i] += m[i][j] * v[j];
+        }
+    }
     return u;
 }
 
