@@ -15,7 +15,6 @@
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_either_convertible.h"
-#include "kismet/math/detail/matrix_mul.h"
 #include "kismet/math/linear_system.h"
 #include "kismet/math/math_trait.h"
 #include "kismet/strided_iterator.h"
@@ -1279,9 +1278,21 @@ inline matrix<T, N1, N2> operator /(matrix<T, N1, N2> m, T k)
 /// M1 which is N1 by N2
 /// M2 which is N2 by N3
 template<typename T, std::size_t N1, std::size_t N2, std::size_t N3>
-matrix<T, N1, N3> operator *(matrix<T, N1, N2> const& m1, matrix<T, N2, N3> const& m2)
+inline matrix<T, N1, N3> operator *(matrix<T, N1, N2> const& m1, matrix<T, N2, N3> const& m2)
 {
-    return detail::matrix_mul(m1, m2);
+    matrix<T, N1, N3> res;
+    for (std::size_t i = 0; i < N1; ++i)
+    {
+        for (std::size_t j = 0; j < N3; ++j)
+        {
+            res[i][j] = T(0);
+            for (std::size_t k = 0; k < N2; ++k)
+            {
+                res[i][j] += m1[i][k] * m2[k][j];
+            }
+        }
+    }
+    return res;
 }
 
 template<typename T, typename U, std::size_t N1, std::size_t N2>

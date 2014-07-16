@@ -489,51 +489,13 @@ void random_matrix(T& m)
 }
 
 }
+
 BOOST_AUTO_TEST_CASE(matrix_mul_no_outer_inner_loop_unroll)
 {
-    using matrix_t = matrix<float, detail::loop_unroll_limit + 1, detail::loop_unroll_limit + 1>;
-    matrix_t m1(matrix_t::identity);
-    matrix_t m2;
+    matrix33f m1(matrix33f::identity);
+    matrix33f m2;
     random_matrix(m2);
 
     auto m3 = m1 * m2;
     BOOST_CHECK_EQUAL(m3, m2);
-}
-
-BOOST_AUTO_TEST_CASE(matrix_mul_outer_loop_unroll_no_inner_loop_unroll)
-{
-    matrix<float, detail::loop_unroll_limit - 1, detail::loop_unroll_limit + 1> m1;
-    fill(m1.begin(), m1.end(), 0.0f);
-
-    matrix<float, detail::loop_unroll_limit + 1, detail::loop_unroll_limit + 1> m2;
-    random_matrix(m2);
-
-    auto m3 = m1 * m2;
-    decltype(m1 * m2) exp_m;
-    fill(exp_m.begin(), exp_m.end(), 0.0f);
-    BOOST_CHECK_EQUAL(m3, exp_m);
-}
-
-BOOST_AUTO_TEST_CASE(matrix_mul_no_outer_loop_unroll_inner_loop_unroll)
-{
-    matrix<float, detail::loop_unroll_limit + 1, detail::loop_unroll_limit + 1> m1;
-    fill(m1.begin(), m1.end(), 0.0f);
-
-    matrix<float, detail::loop_unroll_limit + 1, detail::loop_unroll_limit - 1> m2;
-    random_matrix(m2);
-
-    auto m3 = m1 * m2;
-    decltype(m1 * m2) exp_m;
-    fill(exp_m.begin(), exp_m.end(), 0.0f);
-    BOOST_CHECK_EQUAL(m3, exp_m);
-}
-
-BOOST_AUTO_TEST_CASE(matrix_mul_outer_loop_unroll_inner_loop_unroll)
-{
-    using matrix_t = matrix<float, detail::loop_unroll_limit - 1, detail::loop_unroll_limit - 1>;
-    matrix_t m1 = matrix_t::identity;
-    matrix_t m2 = matrix_t::identity;
-
-    auto m3 = m1 * m2;
-    BOOST_CHECK_EQUAL(m3, m1);
 }
