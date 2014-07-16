@@ -1,5 +1,5 @@
-#ifndef KISMET_MATH_MATRIX_MUL_H
-#define KISMET_MATH_MATRIX_MUL_H
+#ifndef KISMET_MATH_VECTOR_MUL_H
+#define KISMET_MATH_VECTOR_MUL_H
 
 #include <cstddef>
 #include <numeric>
@@ -69,4 +69,4 @@ inline void mul(matrix<T, N1, N2> const& m, T const* v, T* u)
 } // namespace math
 } // namespace kismet
 
-#endif // KISMET_MATH_MATRIX_MUL_H
+#endif // KISMET_MATH_VECTOR_MUL_H

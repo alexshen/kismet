@@ -10,7 +10,7 @@
 #include <utility>
 #include "kismet/common_type.h"
 #include "kismet/core.h"
-#include "kismet/math/detail/matrix_mul.h"
+#include "kismet/math/detail/vector_mul.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/utility.h"
 
