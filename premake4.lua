@@ -43,7 +43,7 @@ solution "kismet"
         defines { "DEBUG" }
 
     configuration { "release" }
-        flags { "OptimizeSpeed" }
+        flags { "OptimizeSpeed", "Symbols" }
         defines { "NDEBUG" }
 
     project "common"
