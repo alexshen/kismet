@@ -45,7 +45,7 @@ inline enable_if_convertible_t<T, tag, std::unique_ptr<fuzzy_term>> get_term(T&&
  * Check if T is of tag or of fuzzy_term or of fuzzy_set
  */
 template<typename T>
-using is_tag_or_fuzzy_term = std::integral_constant<bool,
+using is_tag_or_fuzzy_term = boolean_constant_t<
                                 std::is_convertible<T, fuzzy_term const&>::value
                              || std::is_convertible<T, fuzzy_set const&>::value
                              || std::is_convertible<T, tag>::value>;

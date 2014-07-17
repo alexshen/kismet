@@ -87,12 +87,12 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
 
 template<std::size_t S, std::size_t... S2>
 struct all_row_vectors
-    : std::integral_constant<bool, S == 1 && all_row_vectors<S2...>::value>
+    : boolean_constant_t<S == 1 && all_row_vectors<S2...>::value>
 {
 };
 
 template<std::size_t S>
-struct all_row_vectors<S> : std::integral_constant<bool, S == 1> {};
+struct all_row_vectors<S> : boolean_constant_t<S == 1> {};
 
 template<typename Derived, typename T, std::size_t N, std::size_t S>
 class matrix_vector_base_impl
@@ -856,7 +856,7 @@ public:
         matrix&>::type
     operator =(matrix_vector<U, num, S> const& v)
     {
-        copy_row_row(v, std::integral_constant<bool, N1 == 1>());
+        copy_row_row(v, boolean_constant_t<N1 == 1>());
         return *this;
     }
 

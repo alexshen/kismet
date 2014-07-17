@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <type_traits>
 
 #ifndef KISMET_INSTANTIATE_TEMPLATE
 #  ifndef KISMET_NO_EXTERN_TEMPLATE
@@ -107,6 +108,9 @@ inline OutIt checked_copy(It beg, It end,
     using iterator_category = typename std::iterator_traits<It>::iterator_category;
     return detail::checked_copy(beg, end, N, dest, val, iterator_category());
 }
+
+template<bool value>
+using boolean_constant_t = std::integral_constant<bool, value>;
 
 } // namespace kismet
 
