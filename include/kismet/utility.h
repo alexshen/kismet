@@ -3,8 +3,9 @@
 
 #include "kismet/config.h"
 #include "kismet/core/assert.h"
-#include <memory>
 #include <algorithm>
+#include <iterator>
+#include <memory>
 
 #ifndef KISMET_INSTANTIATE_TEMPLATE
 #  ifndef KISMET_NO_EXTERN_TEMPLATE
@@ -60,6 +61,51 @@ void reorder(RandIt start, RandIt end, IndexRandIt index_start)
             *it = *index_start;
         }
     }
+}
+
+template<typename It>
+using iterator_value_t = typename std::iterator_traits<It>::value_type;
+
+namespace detail
+{
+template<typename It, typename OutIt>
+inline OutIt checked_copy(It beg, It end,
+                         std::size_t N, OutIt dest, 
+                         iterator_value_t<OutIt> val,
+                         std::input_iterator_tag)
+{
+    std::size_t size = 0;
+    while (beg != end)
+    {
+        KISMET_ASSERT(size < N);
+        *dest++ = *beg++;
+    }
+    return std::fill_n(dest, N - size, val);
+}
+
+template<typename It, typename OutIt>
+inline OutIt checked_copy(It beg, It end,
+                         std::size_t N, OutIt dest, 
+                         iterator_value_t<OutIt> val,
+                         std::random_access_iterator_tag)
+{
+    auto size = std::distance(beg, end);
+    KISMET_ASSERT(size <= N);
+    dest = std::copy(beg, end, dest);
+    return std::fill_n(dest, N - size, val);
+}
+}
+
+/// Copy [beg, end) to OutIt
+/// The size of the source range must be <= N
+/// If size is < N, then N - size elements with val will be output to OutIt
+template<typename It, typename OutIt>
+inline OutIt checked_copy(It beg, It end,
+                         std::size_t N, OutIt dest, 
+                         iterator_value_t<OutIt> val)
+{
+    using iterator_category = typename std::iterator_traits<It>::iterator_category;
+    return detail::checked_copy(beg, end, N, dest, val, iterator_category());
 }
 
 } // namespace kismet

@@ -433,22 +433,16 @@ public:
         return *this;
     }
 
-    // assign from a sequence
+    // assign from a sequence, if size of sequence is less than N
+    // remaining elements are fill with 0
     template<typename Iter>
     detail::enable_if_assignable_t<
         typename std::iterator_traits<Iter>::value_type
       , T
       , matrix_vector&>
-    assign(Iter it)
+    assign(Iter beg, Iter end)
     {
-        using pointer_type = typename std::iterator_traits<Iter>::pointer;
-        using pointer_row_vector
-            = std::integral_constant<
-                bool,
-                S == 1 &&
-                std::is_pointer<pointer_type>::value
-              >;
-        copy_pointer_row(it, pointer_row_vector());
+        checked_copy(beg, end, N, this->begin(), T(0));
         return *this;
     }
 
@@ -838,7 +832,7 @@ public:
 
     // initialize from a range which starts by the given iterator
     template<typename Iter>
-    explicit matrix(Iter it
+    explicit matrix(Iter beg, Iter end
     // vc does not compile, so disable this SFINAE code
 #ifndef KISMET_MSC
                     , enable_if_convertible_t<
@@ -846,7 +840,7 @@ public:
 #endif
                     )
     {
-        assign(it);
+        assign(beg, end);
     }
 
     template<typename Iter>
@@ -854,9 +848,9 @@ public:
         typename std::iterator_traits<Iter>::value_type, 
         T, 
         matrix>&
-    assign(Iter it)
+    assign(Iter beg, Iter end)
     {
-        detail::copy(data(), it, num);
+        checked_copy(beg, end, num, begin(), T(0));
         return *this;
     }
 

@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_row_assign_from_array)
     };
 
     float v[2] = {};
-    m.row(0).assign(v);
+    m.row(0).assign(begin(v), end(v));
     BOOST_CHECK_EQUAL(m.row(0), matrix22f::row_type(v));
 }
 
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(matrix22f_const_col_not_convertible_to_col)
 BOOST_AUTO_TEST_CASE(matrix22f_data_equal_init_data)
 {
     float a[] = { 1, 2, 3, 4 };
-    matrix22f m{a};
+    matrix22f m{begin(a), end(a)};
     matrix22f const& cm = m;
 
     BOOST_CHECK_EQUAL_COLLECTIONS(a, a + 4, m.data(), m.data() + m.size());
