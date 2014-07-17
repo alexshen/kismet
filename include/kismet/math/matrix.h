@@ -14,7 +14,7 @@
 #include "kismet/common_type.h"
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
-#include "kismet/is_either_convertible.h"
+#include "kismet/is_comparable.h"
 #include "kismet/math/linear_system.h"
 #include "kismet/math/math_trait.h"
 #include "kismet/strided_iterator.h"
@@ -313,6 +313,15 @@ using enable_if_assignable_t =
         && !std::is_const<U>::value,
         V>::type;
 
+template<typename T, typename U, typename V>
+using enable_if_comparable_t =
+    typename std::enable_if<is_comparable<T, U>::value, V>::type;
+
+template<std::size_t N1, std::size_t N2, std::size_t N>
+struct is_row_or_column_matrix_with_size
+    : boolean_constant_t<(N1 == 1 || N2 == 1) && N1 * N2 == N>
+{};
+
 } // namespace detail
 
 // forward declaration
@@ -403,7 +412,7 @@ public:
     template<typename U, std::size_t N2, std::size_t S2>
     typename std::enable_if<
         std::is_convertible<U, T>::value &&
-        (N2 == 1 || (S2 == 1 && N2 * S2 == N)),
+        detail::is_row_or_column_matrix_with_size<N2, S2, N>::value,
         matrix_vector&
     >::type
     operator =(matrix<U, N2, S2> const& m)
@@ -446,14 +455,28 @@ public:
 
     // compare a row/column to a row/column
     template<typename U, std::size_t S2>
-    typename std::enable_if<
-        is_either_convertible<
-            typename matrix_vector<U, N, S2>::value_type,
-            value_type>::value,
-        bool>::type
+    typename detail::enable_if_comparable_t<T, U, bool>
     operator ==(matrix_vector<U, N, S2> const& v) const
     {
         return equal_row_row(v, detail::all_row_vectors<S, S2>());
+    }
+
+    template<typename U>
+    typename detail::enable_if_comparable_t<T, U, bool>
+    operator ==(vector<U, N> const& v) const
+    {
+        return equal_row_row(v, detail::all_row_vectors<S>());
+    }
+
+    template<typename U, std::size_t N2, std::size_t S2>
+    typename std::enable_if<
+        is_comparable<T, U>::value &&
+        detail::is_row_or_column_matrix_with_size<N2, S2, N>::value,
+        matrix_vector&
+    >::type
+    operator ==(matrix<U, N2, S2> const& v) const
+    {
+        return equal_row_row(v, detail::all_row_vectors<S>());
     }
 
     template<std::size_t S2>
