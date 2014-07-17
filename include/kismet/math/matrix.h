@@ -321,6 +321,13 @@ public:
     }
 };
 
+template<typename T, typename U, typename V>
+using enable_if_assignable_t =
+    typename std::enable_if<
+        std::is_convertible<T, U>::value
+        && !std::is_const<U>::value,
+        V>::type;
+
 } // namespace detail
 
 // forward declaration
@@ -419,12 +426,7 @@ public:
 
     // assign from a row/column
     template<typename U, std::size_t S2>
-    typename std::enable_if<
-        std::is_convertible<
-            typename matrix_vector<U, N, S2>::value_type,
-            value_type>::value
-        && !std::is_const<T>::value,
-        matrix_vector>::type&
+    detail::enable_if_assignable_t<U, T, matrix_vector&>
     operator =(matrix_vector<U, N, S2> const& v)
     {
         copy_row_row(v, detail::all_row_vectors<S, S2>());
@@ -433,12 +435,10 @@ public:
 
     // assign from a sequence
     template<typename Iter>
-    typename std::enable_if<
-        std::is_convertible<
-            typename std::iterator_traits<Iter>::value_type,
-            value_type>::value
-        && !std::is_const<T>::value,
-        matrix_vector>::type&
+    detail::enable_if_assignable_t<
+        typename std::iterator_traits<Iter>::value_type
+      , T
+      , matrix_vector&>
     assign(Iter it)
     {
         using pointer_type = typename std::iterator_traits<Iter>::pointer;
