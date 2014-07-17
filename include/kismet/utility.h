@@ -91,7 +91,7 @@ inline OutIt checked_copy(It beg, It end,
                          std::random_access_iterator_tag)
 {
     auto size = std::distance(beg, end);
-    KISMET_ASSERT(size <= N);
+    KISMET_ASSERT(size >= 0 && static_cast<std::size_t>(size) <= N);
     dest = std::copy(beg, end, dest);
     return std::fill_n(dest, N - size, val);
 }
