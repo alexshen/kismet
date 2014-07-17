@@ -408,7 +408,7 @@ public:
     template<typename U, std::size_t N2, std::size_t S2>
     typename std::enable_if<
         std::is_convertible<U, T>::value &&
-        N2 == 1 || S2 == 1 && N2 * S2 == N,
+        (N2 == 1 || (S2 == 1 && N2 * S2 == N)),
         matrix_vector&
     >::type
     operator =(matrix<U, N2, S2> const& m)
@@ -877,7 +877,7 @@ public:
     template<typename U, std::size_t S>
     typename std::enable_if<
         std::is_convertible<U, T>::value &&
-        N1 == 1 || N2 == 1,
+        (N1 == 1 || N2 == 1),
         matrix&>::type
     operator =(matrix_vector<U, num, S> const& v)
     {
