@@ -85,29 +85,14 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
     return data;
 }
 
-template<typename T, typename It>
-inline void copy_impl(T* data, It start, std::size_t num, std::random_access_iterator_tag)
+template<std::size_t S, std::size_t... S2>
+struct all_row_vectors
+    : std::integral_constant<bool, S == 1 && all_row_vectors<S2...>::value>
 {
-    std::copy(start, start + num, data);
-}
+};
 
-template<typename T, typename It>
-inline void copy_impl(T* data, It start, std::size_t num, std::input_iterator_tag)
-{
-    while (num--)
-    {
-        *data++ = *start++;
-    }
-}
-
-template<typename T, typename It>
-inline void copy(T* data, It start, std::size_t num)
-{
-    copy_impl(data, start, num, typename std::iterator_traits<It>::iterator_category());
-}
-
-template<std::size_t S1, std::size_t S2>
-using all_row_vectors = std::integral_constant<bool, S1 == S2 && S1 == 1>;
+template<std::size_t S>
+struct all_row_vectors<S> : std::integral_constant<bool, S == 1> {};
 
 template<typename Derived, typename T, std::size_t N, std::size_t S>
 class matrix_vector_base_impl
@@ -334,6 +319,9 @@ using enable_if_assignable_t =
 template<typename T, std::size_t N1, std::size_t N2>
 class matrix;
 
+template<typename T, std::size_t N>
+class vector;
+
 // Represents a row or column of a given matrix.
 // The reference must not outlive the referenced matrix.
 // N is the size of the row or the column
@@ -407,7 +395,7 @@ public:
     matrix_vector& operator =(matrix_vector const& v)
     {
         static_assert(!std::is_const<T>::value, "Cannot assign to const vector ref");
-        copy_row_row(v, detail::all_row_vectors<S, S>());
+        copy_row_row(v, detail::all_row_vectors<S>());
         return *this;
     }
 
@@ -420,7 +408,17 @@ public:
     >::type
     operator =(matrix<U, N2, S2> const& m)
     {
-        copy_pointer_row(m.data(), std::integral_constant<bool, S == 1>());
+        // column/row matrix are contiguous, so we only need to check if we're row vector
+        copy_row_row(m, detail::all_row_vectors<S>());
+        return *this;
+    }
+
+    template<typename U>
+    detail::enable_if_assignable_t<U, T, matrix_vector&>
+    operator =(vector<U, N> const& v)
+    {
+        // vector is contiguous, so we only need to check if we're row vector
+        copy_row_row(v, detail::all_row_vectors<S>());
         return *this;
     }
 
@@ -475,33 +473,16 @@ public:
         swap(v);
     }
 private:
-    // copy from a generic iterator to row vector
-    template<typename It>
-    void copy_pointer_row(It p, std::true_type)
-    {
-        std::copy(p, std::next(p, N), this->data());
-    }
-
-    // copy from a generic iterator to column vector
-    template<typename It>
-    void copy_pointer_row(It p, std::false_type)
-    {
-        for (size_type i = 0; i < N; ++i)
-        {
-            (*this)[i] = *p++;
-        }
-    }
-
-    // copy row vector to row vector
+    // copy row vector/row matrix to row vector
     template<typename U>
-    void copy_row_row(matrix_vector<U, N, S> const& v, std::true_type)
+    void copy_row_row(U const& v, std::true_type)
     {
-        std::copy(v.data(), v.data() + N, this->data());
+        std::copy(v.begin(), v.end(), this->begin());
     }
 
-    // copy row to column, or column to column, or column to row
-    template<typename U, std::size_t S2>
-    void copy_row_row(matrix_vector<U, N, S2> const& v, std::false_type)
+    // column vector is not very efficient, so manual copy
+    template<typename U>
+    void copy_row_row(U const& v, std::false_type)
     {
         for (size_type i = 0; i < N; ++i)
         {
@@ -511,9 +492,9 @@ private:
 
     // compare row to row
     template<typename U>
-    bool equal_row_row(matrix_vector<U, N, S> const& v, std::true_type) const
+    bool equal_row_row(U const& v, std::true_type) const
     {
-        return std::equal(this->data(), this->data() + N, v.data());
+        return std::equal(v.begin(), v.end(), this->begin());
     }
 
     // compare row to column, or column to column, or column to row
