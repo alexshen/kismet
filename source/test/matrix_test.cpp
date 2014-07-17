@@ -418,8 +418,8 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_2x2_fails)
         { 1, 2 }
     };
 
-    auto inverse = inv(m);
-    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
+    matrix22f inverse;
+    BOOST_CHECK(!inv(m, inverse));
 }
 
 BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_succeeds)
@@ -447,8 +447,8 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_fails)
     matrix33f m;
     m.clear();
 
-    auto inverse = inv(m);
-    KISMET_CHECK_EQUAL_COLLECTIONS(inverse, m);
+    matrix33f inverse;
+    BOOST_CHECK(!inv(m, inverse));
 }
 
 BOOST_AUTO_TEST_CASE(matrix_inverse_5x5_succeeds)

@@ -1073,11 +1073,11 @@ namespace detail
 template<typename T, std::size_t N>
 struct inv_impl
 {
-    static matrix<T, N, N> calc(matrix<T, N, N> const& a, T tolerance)
-    {
-        using matrix_type = matrix<T, N, N>;
+    using matrix_type = matrix<T, N, N>;
 
-        matrix_type inverse, l, u;
+    static bool calc(matrix_type const& a, matrix_type& inverse, T tolerance)
+    {
+        matrix_type l, u;
         std::size_t perm[N];
 
         plu_decompose(a, perm, l, u, tolerance);
@@ -1111,46 +1111,49 @@ struct inv_impl
             // solve L*yi = zi
             if (!forward_substitute(l, solution, solution, tolerance))
             {
-                return inverse = a;
+                return false;
             }
 
             // solve U*xi = yi
             if (!backward_substitute(u, solution, solution, tolerance))
             {
-                return inverse = a;
+                return false;
             }
 
             col = solution;
         }
 
-        return inverse;
+        return true;
     }
 };
 
 template<typename T>
 struct inv_impl<T, 1>
 {
-    static matrix<T, 1, 1> calc(matrix<T, 1, 1> a, T tolerance)
+    using matrix_type = matrix<T, 1, 1>;
+
+    static bool calc(matrix_type a, matrix_type& inverse, T tolerance)
     {
-        if (!is_zero(a[0], tolerance))
+        if (is_zero(a[0], tolerance))
         {
-            a[0] = inv(a[0]);
+            return false;
         }
-        return a;
+        a[0] = inv(a[0]);
+        return true;
     }
 };
 
 template<typename T>
 struct inv_impl<T, 2>
 {
-    static matrix<T, 2, 2> calc(matrix<T, 2, 2> const& a, T tolerance)
-    {
-        matrix<T, 2, 2> inverse;
+    using matrix_type = matrix<T, 2, 2>;
 
+    static bool calc(matrix_type const& a, matrix_type& inverse, T tolerance)
+    {
         T det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
         if (is_zero(det, tolerance))
         {
-            return inverse = a;
+            return false;
         }
 
         T inv_det = inv(det);
@@ -1158,16 +1161,18 @@ struct inv_impl<T, 2>
         inverse[0][1] = -a[0][1] * inv_det;
         inverse[1][0] = -a[1][0] * inv_det;
         inverse[1][1] =  a[0][0] * inv_det;
-        return inverse;
+
+        return true;
     }
 };
 
 template<typename T>
 struct inv_impl<T, 3>
 {
-    static matrix<T, 3, 3> calc(matrix<T, 3, 3> const& a, T tolerance)
+    using matrix_type = matrix<T, 3, 3>;
+
+    static bool calc(matrix_type const& a, matrix_type& inverse, T tolerance)
     {
-        matrix<T, 3, 3> inverse;
         // Calculate the adjoint matrix
         inverse[0][0] = a[1][1] * a[2][2] - a[1][2] * a[2][1];
         inverse[0][1] = a[0][2] * a[2][1] - a[0][1] * a[2][2];
@@ -1183,21 +1188,32 @@ struct inv_impl<T, 3>
         T det = a[0][0] * inverse[0][0] + a[0][1] * inverse[1][0] + a[0][2] * inverse[2][0];
         if (is_zero(det, tolerance))
         {
-            return inverse = a;
+            return false;
         }
 
-        return inverse *= inv(det);
+        inverse *= inv(det);
+        return true;
     }
 };
 
 } // namespace detail
 
 /// Calculate the inverse of the matrix using PLU decomposition
+/// Return true if the matrix is invertible
+/// NOTE: whether inverse is modified on failure is unspecified.
+template<typename T, std::size_t N>
+inline bool inv(matrix<T, N, N> const& a, matrix<T, N, N>& inverse, T tolerance = math_trait<T>::zero_tolerance())
+{
+    return detail::inv_impl<T, N>::calc(a, inverse, tolerance);
+}
+
+/// Calculate the inverse of the matrix using PLU decomposition
 /// If the matrix is not invertible, original matrix is returned
 template<typename T, std::size_t N>
 inline matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
 {
-    return detail::inv_impl<T, N>::calc(a, tolerance);
+    matrix<T, N, N> inverse;
+    return inv(a, inverse, tolerance) ? inverse : a;
 }
 
 template<typename T, std::size_t N1, std::size_t N2>
