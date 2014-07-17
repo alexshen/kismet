@@ -86,13 +86,13 @@ inline T* insert_flat(T* data, std::initializer_list<U> const& l)
 }
 
 template<std::size_t S, std::size_t... S2>
-struct all_row_vectors
-    : boolean_constant_t<S == 1 && all_row_vectors<S2...>::value>
+struct all_strides_one
+    : boolean_constant_t<S == 1 && all_strides_one<S2...>::value>
 {
 };
 
 template<std::size_t S>
-struct all_row_vectors<S> : boolean_constant_t<S == 1> {};
+struct all_strides_one<S> : boolean_constant_t<S == 1> {};
 
 template<typename Derived, typename T, std::size_t N, std::size_t S>
 class matrix_vector_base_impl
@@ -404,7 +404,7 @@ public:
     matrix_vector& operator =(matrix_vector const& v)
     {
         static_assert(!std::is_const<T>::value, "Cannot assign to const vector ref");
-        copy_row_row(v, detail::all_row_vectors<S>());
+        copy_row_row(v, detail::all_strides_one<S>());
         return *this;
     }
 
@@ -418,7 +418,7 @@ public:
     operator =(matrix<U, N2, S2> const& m)
     {
         // column/row matrix are contiguous, so we only need to check if we're row vector
-        copy_row_row(m, detail::all_row_vectors<S>());
+        copy_row_row(m, detail::all_strides_one<S>());
         return *this;
     }
 
@@ -427,7 +427,7 @@ public:
     operator =(vector<U, N> const& v)
     {
         // vector is contiguous, so we only need to check if we're row vector
-        copy_row_row(v, detail::all_row_vectors<S>());
+        copy_row_row(v, detail::all_strides_one<S>());
         return *this;
     }
 
@@ -436,7 +436,7 @@ public:
     detail::enable_if_assignable_t<U, T, matrix_vector&>
     operator =(matrix_vector<U, N, S2> const& v)
     {
-        copy_row_row(v, detail::all_row_vectors<S, S2>());
+        copy_row_row(v, detail::all_strides_one<S, S2>());
         return *this;
     }
 
@@ -458,14 +458,14 @@ public:
     typename detail::enable_if_comparable_t<T, U, bool>
     operator ==(matrix_vector<U, N, S2> const& v) const
     {
-        return equal_row_row(v, detail::all_row_vectors<S, S2>());
+        return equal_row_row(v, detail::all_strides_one<S, S2>());
     }
 
     template<typename U>
     typename detail::enable_if_comparable_t<T, U, bool>
     operator ==(vector<U, N> const& v) const
     {
-        return equal_row_row(v, detail::all_row_vectors<S>());
+        return equal_row_row(v, detail::all_strides_one<S>());
     }
 
     template<typename U, std::size_t N2, std::size_t S2>
@@ -476,7 +476,7 @@ public:
     >::type
     operator ==(matrix<U, N2, S2> const& v) const
     {
-        return equal_row_row(v, detail::all_row_vectors<S>());
+        return equal_row_row(v, detail::all_strides_one<S>());
     }
 
     template<std::size_t S2>
