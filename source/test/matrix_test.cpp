@@ -490,7 +490,7 @@ void random_matrix(T& m)
 
 }
 
-BOOST_AUTO_TEST_CASE(matrix_mul_no_outer_inner_loop_unroll)
+BOOST_AUTO_TEST_CASE(matrix_mul)
 {
     matrix33f m1(matrix33f::identity);
     matrix33f m2;
