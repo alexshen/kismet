@@ -14,12 +14,6 @@ for arg in sys.argv[1:]:
     else:
         build = arg
 
-def compiler_repl(match):
-    if match.group(1) == 'CC':
-        return cc and '%s%s%s' % (match.group(1), match.group(2), cc) or match.group(0)
-    else:
-        return cxx and '%s%s%s' % (match.group(1), match.group(2), cxx) or match.group(0)
-
 if (cc or cxx) and build:
     for fname in os.listdir(build):
         if fname.endswith('.make'):
@@ -27,6 +21,10 @@ if (cc or cxx) and build:
             with open(path) as f:
                 old = f.read()
             with open(path, 'w+') as f:
-                f.write(re.sub(r'(CC|CXX)(\s*=\s*)(\S+)', compiler_repl, old))
+                if cc:
+                    f.write('CC = %s\n' % cc)
+                if cxx:
+                    f.write('CXX = %s\n' % cxx)
+                f.write(old)
 else:
     print >> sys.stderr, 'post_premake.py --cc=gcc --cxx=g++ build'
