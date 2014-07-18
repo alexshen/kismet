@@ -6,10 +6,11 @@
 #  pragma warning(disable: 4244)
 #endif
 
-#include <cstddef>
 #include <algorithm>
-#include <type_traits>
+#include <cmath>
+#include <cstddef>
 #include <random>
+#include <type_traits>
 #include <boost/test/unit_test.hpp>
 
 #include "kismet/math/matrix.h"
@@ -307,6 +308,54 @@ BOOST_AUTO_TEST_CASE(matrix_swap_row_col)
     m.row(0).swap(m.column(0));
 
     BOOST_CHECK_EQUAL(m, expected);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_vector_row_normalize)
+{
+    using matrix_type = matrix<float, 1, 2>;
+    matrix_type m
+    {
+        { 1, 1 },
+    };
+
+    matrix_type normalized
+    {
+        {1.0f / sqrt(2.0f), 1.0f / sqrt(2.0f)}
+    };
+    BOOST_CHECK(m.row(0).normalize());
+    KISMET_CHECK_APPROX_COLLECTIONS(m.row(0), normalized.row(0));
+}
+
+BOOST_AUTO_TEST_CASE(matrix_vector_row_mag)
+{
+    matrix22f m = matrix22f::identity;
+    BOOST_CHECK_EQUAL(mag(m.row(0)), 1.f);
+    BOOST_CHECK_EQUAL(squared_mag(m.row(0)), 1.f);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_vector_column_normalize)
+{
+    using matrix_type = matrix<float, 2, 1>;
+    matrix_type m
+    {
+        { 1 },
+        { 1 }
+    };
+
+    matrix_type normalized
+    {
+        { 1.0f / sqrt(2.0f) }, 
+        { 1.0f / sqrt(2.0f) }
+    };
+    BOOST_CHECK(m.column(0).normalize());
+    KISMET_CHECK_APPROX_COLLECTIONS(m.column(0), normalized.column(0));
+}
+
+BOOST_AUTO_TEST_CASE(matrix_vector_column_mag)
+{
+    matrix22f m = matrix22f::identity;
+    BOOST_CHECK_EQUAL(mag(m.column(0)), 1.f);
+    BOOST_CHECK_EQUAL(squared_mag(m.column(0)), 1.f);
 }
 
 BOOST_AUTO_TEST_CASE(matrix_row_iterator_conversion)

@@ -15,6 +15,7 @@
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_comparable.h"
+#include "kismet/math/detail/vector_common.h"
 #include "kismet/math/linear_system.h"
 #include "kismet/math/math_trait.h"
 #include "kismet/strided_iterator.h"
@@ -479,6 +480,11 @@ public:
         return equal_row_row(v, detail::all_strides_one<S>());
     }
 
+    bool normalize(T tolerance = math_trait<T>::zero_tolerance())
+    {
+        return detail::normalize(*this, tolerance);
+    }
+
     template<std::size_t S2>
     void swap(matrix_vector<T, N, S2>& v)
     {
@@ -534,6 +540,18 @@ private:
         return true;
     }
 };
+
+template<typename T, std::size_t N, std::size_t S>
+inline typename T::value_type squared_mag(matrix_vector<T, N, S> const& v)
+{
+    return detail::squared_mag(v);
+}
+
+template<typename T, std::size_t N, std::size_t S>
+inline typename T::value_type mag(matrix_vector<T, N, S> const& v)
+{
+    return detail::mag(v);
+}
 
 template<typename T, std::size_t N, std::size_t S1, std::size_t S2>
 inline void swap(matrix_vector<T, N, S1>& v1, matrix_vector<T, N, S2>& v2)
