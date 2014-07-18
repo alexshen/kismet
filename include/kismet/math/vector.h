@@ -11,6 +11,7 @@
 #include "kismet/common_type.h"
 #include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
+#include "kismet/math/detail/vector_common.h"
 #include "kismet/utility.h"
 
 namespace kismet
@@ -124,6 +125,11 @@ struct vector_base
     {
         KISMET_ASSERT(!is_zero(k));
         return *this *= inv(k);
+    }
+
+    bool normalize(T tolerance = math_trait<T>::zero_tolerance())
+    {
+        return detail::normalize(*this, tolerance);
     }
 
     reference operator [](size_type i)
@@ -351,7 +357,7 @@ public:
 template<typename T, std::size_t N>
 inline T dot(vector<T, N> const& a, vector<T, N> const& b)
 {
-    return std::inner_product(a.begin(), a.end(), b.begin(), T(0));
+    return detail::dot(a, b);
 }
 
 namespace detail
@@ -392,6 +398,36 @@ inline vector<T, 4> cross(vector<T, 4> const& a, vector<T, 4> const& b)
     detail::cross(a.data(), b.data(), res.data());
     res[3] = T(0);
     return res;
+}
+
+template<typename T, std::size_t N>
+inline vector<T, N> normalize(vector<T, N> v, T tolerance = math_trait<T>::zero_tolerance())
+{
+    v.normalize(tolerance);
+    return v;
+}
+
+// Return true if normalization succeeds, 
+// otherwise return false in which case whether res is changed is unspecified.
+template<typename T, std::size_t N>
+inline bool normalize(vector<T, N> const& v, 
+                      vector<T, N>& res, 
+                      T tolerance = math_trait<T>::zero_tolerance())
+{
+    res = v;
+    return res.normalize(tolerance);
+}
+
+template<typename T, std::size_t N>
+inline T squared_mag(vector<T, N> const& v)
+{
+    return detail::squared_mag(v);
+}
+
+template<typename T, std::size_t N>
+inline T mag(vector<T, N> const& v)
+{
+    return detail::mag(v);
 }
 
 template<typename T, std::size_t N>

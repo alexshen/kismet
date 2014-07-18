@@ -2,6 +2,8 @@
 #include <type_traits>
 #include "kismet/math/matrix.h"
 #include "kismet/math/vector.h"
+#include "test/utility.h"
+
 using namespace kismet::math;
 using namespace std;
 
@@ -93,4 +95,19 @@ BOOST_AUTO_TEST_CASE(vector_right_mul)
 
     auto u = m * v;
     BOOST_CHECK_EQUAL(u, exp);
+}
+
+BOOST_AUTO_TEST_CASE(vector_normalize)
+{
+    vector3f res;
+    BOOST_CHECK(!normalize(vector3f::zero, res));
+
+    BOOST_CHECK((normalize(vector3f::right, res)));
+    KISMET_CHECK_APPROX_COLLECTIONS(vector3f::right, res);
+}
+
+BOOST_AUTO_TEST_CASE(vector_mag)
+{
+    BOOST_CHECK_EQUAL(mag(vector3f::right), 1.f);
+    BOOST_CHECK_EQUAL(squared_mag(vector3f::right), 1.f);
 }
