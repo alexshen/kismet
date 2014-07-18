@@ -1,5 +1,5 @@
 local win32
-if string.find(_ACTION, 'vs') then
+if os.is('windows') then
     win32 = true
     if not os.getenv('BOOST_INCLUDE') then
         error('BOOST_INCLUDE not specified')
@@ -10,7 +10,7 @@ if string.find(_ACTION, 'vs') then
 end
 
 local function disable_lang_ext()
-    if win32 then
+    if string.find(_ACTION, 'vs') then
         -- disable language extensions
         buildoptions { '/Za' }
     end
