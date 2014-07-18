@@ -6,6 +6,9 @@
 #  define KISMET_NO_EXTERN_TEMPLATE
 #elif defined(__GNUG__)
 #  define KISMET_GCC __GNUG__
+#  if defined(__MINGW32__)
+#    define KISMET_MINGW32
+#  endif
 #else
 #  error "Unknown compiler"
 #endif
