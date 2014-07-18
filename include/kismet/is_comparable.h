@@ -1,6 +1,7 @@
 #ifndef KISMET_IS_COMPARABLE_H
 #define KISMET_IS_COMPARABLE_H
 
+#include <type_traits>
 #include "kismet/utility.h"
 
 namespace kismet
@@ -13,10 +14,15 @@ template<typename T, typename U>
 struct is_comparable_impl
 {
     template<typename T1, typename U1>
-    static decltype(std::declval<T1>() == std::declval<U1>() ? true : false) check(T1, U1);
+    static typename std::enable_if<
+        std::is_convertible<
+            decltype(std::declval<T1>() == std::declval<U1>())
+          , bool>::value
+      >::type check(T1 const&, U1 const&);
+
     static std::false_type check(...);
 
-    enum { value = std::is_same<bool, decltype(check(std::declval<T>(), std::declval<U>()))>::value };
+    enum { value = std::is_same<void, decltype(check(std::declval<T>(), std::declval<U>()))>::value };
 };
 
 }
