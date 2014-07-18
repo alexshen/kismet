@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
-#include <numeric>
 #include <ostream>
 #include <utility>
 #include "kismet/common_type.h"
