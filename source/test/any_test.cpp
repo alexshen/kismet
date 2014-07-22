@@ -1,10 +1,11 @@
 #include <boost/test/unit_test.hpp>
+#include <string>
 #include "kismet/any.h"
 
 using namespace kismet;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE(any_defautl_consturcted_empty)
+BOOST_AUTO_TEST_CASE(any_default_consturcted_empty)
 {
     any empty;
     BOOST_CHECK(empty.empty());
