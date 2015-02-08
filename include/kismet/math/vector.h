@@ -143,6 +143,13 @@ struct vector_base
         return v[i];
     }
 
+    Derived operator -() const
+    {
+        Derived res;
+        std::transform(begin(), end(), res.begin(), std::negate<T>());
+        return res;
+    }
+
     // return the zero vector
     static Derived const zero;
 protected:
@@ -257,6 +264,7 @@ public:
     T y() const { return this->v[1]; }
     T z() const { return this->v[2]; }
 
+    // right/up/forward forms a right-handed coordinate system
     static vector const left; 
     static vector const right;
     static vector const up;

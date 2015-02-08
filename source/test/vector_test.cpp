@@ -111,3 +111,29 @@ BOOST_AUTO_TEST_CASE(vector_mag)
     BOOST_CHECK_EQUAL(mag(vector3f::right), 1.f);
     BOOST_CHECK_EQUAL(squared_mag(vector3f::right), 1.f);
 }
+
+BOOST_AUTO_TEST_CASE(vector_named_zero_is_zero)
+{
+    BOOST_CHECK_EQUAL(vector2f::zero, vector2f(0, 0));
+}
+
+BOOST_AUTO_TEST_CASE(vector_named_axes_cross)
+{
+    BOOST_CHECK_EQUAL(cross(vector3f::right, vector3f::up), vector3f::forward);
+    BOOST_CHECK_EQUAL(cross(vector3f::up, vector3f::forward), vector3f::right);
+    BOOST_CHECK_EQUAL(cross(vector3f::forward, vector3f::right), vector3f::up);
+}
+
+BOOST_AUTO_TEST_CASE(vector_named_axes_negate)
+{
+    BOOST_CHECK_EQUAL(vector3f::right, -vector3f::left);
+    BOOST_CHECK_EQUAL(vector3f::up, -vector3f::down);
+    BOOST_CHECK_EQUAL(vector3f::forward, -vector3f::back);
+}
+
+BOOST_AUTO_TEST_CASE(vector4_cross_w_component_is_zero)
+{
+    vector4f v0{ 1.0f, 1.0f, 1.0f, 0.0f };
+    vector4f v2{ 2.0f, 2.0f, 2.0f, 0.0f };
+    BOOST_CHECK_EQUAL(cross(v0, v2).w(), 0);
+}
