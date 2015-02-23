@@ -147,7 +147,7 @@ public:
     Derived& operator /=(T k)
     {
         kISMET_ASSERT(!is_zero(k));
-        *this *= inv(k);
+        *this *= invert(k);
         return static_cast<Derived&>(*this);
     }
 
@@ -944,7 +944,7 @@ public:
     matrix& operator /=(T k)
     {
         KISMET_ASSERT(!is_zero(k));
-        return *this *= inv(k);
+        return *this *= invert(k);
     }
 
     // Return the given row
@@ -1156,7 +1156,7 @@ struct inv_impl<T, 1>
         {
             return false;
         }
-        a[0] = inv(a[0]);
+        a[0] = invert(a[0]);
         return true;
     }
 };
@@ -1174,7 +1174,7 @@ struct inv_impl<T, 2>
             return false;
         }
 
-        T inv_det = inv(det);
+        T inv_det = invert(det);
         inverse[0][0] =  a[1][1] * inv_det;
         inverse[0][1] = -a[0][1] * inv_det;
         inverse[1][0] = -a[1][0] * inv_det;
@@ -1209,7 +1209,7 @@ struct inv_impl<T, 3>
             return false;
         }
 
-        inverse *= inv(det);
+        inverse *= invert(det);
         return true;
     }
 };
@@ -1220,7 +1220,7 @@ struct inv_impl<T, 3>
 /// Return true if the matrix is invertible
 /// NOTE: whether inverse is modified on failure is unspecified.
 template<typename T, std::size_t N>
-inline bool inv(matrix<T, N, N> const& a, matrix<T, N, N>& inverse, T tolerance = math_trait<T>::zero_tolerance())
+inline bool invert(matrix<T, N, N> const& a, matrix<T, N, N>& inverse, T tolerance = math_trait<T>::zero_tolerance())
 {
     return detail::inv_impl<T, N>::calc(a, inverse, tolerance);
 }
@@ -1228,10 +1228,10 @@ inline bool inv(matrix<T, N, N> const& a, matrix<T, N, N>& inverse, T tolerance 
 /// Calculate the inverse of the matrix using PLU decomposition
 /// If the matrix is not invertible, original matrix is returned
 template<typename T, std::size_t N>
-inline matrix<T, N, N> inv(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
+inline matrix<T, N, N> invert(matrix<T, N, N> const& a, T tolerance = math_trait<T>::zero_tolerance())
 {
     matrix<T, N, N> inverse;
-    return inv(a, inverse, tolerance) ? inverse : a;
+    return invert(a, inverse, tolerance) ? inverse : a;
 }
 
 template<typename T, std::size_t N1, std::size_t N2>

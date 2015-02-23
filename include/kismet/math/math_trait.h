@@ -51,13 +51,13 @@ private:
     static double s_zero_tol;
 };
 
-inline float inv(float f)
+inline float invert(float f)
 {
     KISMET_ASSERT(f);
     return 1.0f / f;
 }
 
-inline double inv(double d)
+inline double invert(double d)
 {
     KISMET_ASSERT(d);
     return 1.0 / d;

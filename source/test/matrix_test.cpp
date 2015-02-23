@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_2x2_succeeds)
         { 1, -0.25f }
     };
 
-    auto inverse = inv(m);
+    auto inverse = invert(m);
     KISMET_CHECK_APPROX_COLLECTIONS(inverse, exp_m);
 }
 
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_2x2_fails)
     };
 
     matrix22f inverse;
-    BOOST_CHECK(!inv(m, inverse));
+    BOOST_CHECK(!invert(m, inverse));
 }
 
 BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_succeeds)
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_succeeds)
         { 0, 0.5f, -0.25f }
     };
 
-    auto inverse = inv(m);
+    auto inverse = invert(m);
     KISMET_CHECK_EQUAL_COLLECTIONS(inverse, exp_inv);
 }
 
@@ -497,7 +497,7 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_3x3_fails)
     m.clear();
 
     matrix33f inverse;
-    BOOST_CHECK(!inv(m, inverse));
+    BOOST_CHECK(!invert(m, inverse));
 }
 
 BOOST_AUTO_TEST_CASE(matrix_inverse_5x5_succeeds)
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(matrix_inverse_5x5_succeeds)
         {  0,     0,      0,  0.125f, -0.0625f }
     };
 
-    auto inverse = inv(m);
+    auto inverse = invert(m);
     KISMET_CHECK_EQUAL_COLLECTIONS(inverse, exp_inv);
 }
 

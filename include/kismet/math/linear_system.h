@@ -29,7 +29,7 @@ bool solve(T const a[2][2], T const b[2], Out it, T tolerance = math_trait<T>::z
     if (is_zero(det, tolerance))
         return false;
 
-    T inv_det = inv(det);
+    T inv_det = invert(det);
 
     *it++ = (b[0] * a[1][1] - b[1] * a[0][1]) * inv_det;
     *it   = (a[0][0] * b[1] - a[1][0] * b[0]) * inv_det;
@@ -61,7 +61,7 @@ bool solve(T const a[3][3], T const b[3], Out it, T tolerance = math_trait<T>::z
     if (is_zero(det, tolerance))
         return false;
 
-    T inv_det = inv(det);
+    T inv_det = invert(det);
 
     *it++ = (b[0] * inv_mat[0][0] + b[1] * inv_mat[0][1] + b[2] * inv_mat[0][2]) * inv_det;
     *it++ = (b[0] * inv_mat[1][0] + b[1] * inv_mat[1][1] + b[2] * inv_mat[1][2]) * inv_det;
@@ -95,7 +95,7 @@ bool backward_substitute_impl(matrix<T, N, N> const& a, matrix<T, N, 1> const& b
             v -= a[row][col] * x[col];
         }
 
-        x[row] = v * inv(coff);
+        x[row] = v * invert(coff);
     }
 
     return true;
@@ -143,7 +143,7 @@ bool forward_substitute(matrix<T, N, N> const& a, matrix<T, N, 1> const& b, Rand
             v -= a[row][col] * x[col];
         }
 
-        x[row] = v * inv(coff);
+        x[row] = v * invert(coff);
     }
 
     return true;
@@ -192,7 +192,7 @@ bool solve_partial_pivoting(matrix<T, N, N> a, matrix<T, N, 1> b, matrix<T, N, 1
             b[pivot_row].swap(b[i]);
         }
 
-        T neg_inv_pivot = -inv(a[i][i]);
+        T neg_inv_pivot = -invert(a[i][i]);
 
         // eliminate c[i + 1..N][i].
         // actually, we don't bother setting a[row][i] to 0,
@@ -259,7 +259,7 @@ bool lu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& l, matrix<T, N, N>&
             continue;
         }
 
-        T neg_inv_pivot = -inv(pivot);
+        T neg_inv_pivot = -invert(pivot);
 
         // eliminate c[i + 1..N][i].
         // we need to set u[row][i] to 0, as we do Gaussian Elimination on u.
@@ -363,7 +363,7 @@ void plu_decompose_helper(matrix<T, N, N> const& a, std::size_t (&perms) [N], ma
             swap(perms[i], perms[pivot_row]);
         }
 
-        T neg_inv_pivot = -inv(u[i][i]);
+        T neg_inv_pivot = -invert(u[i][i]);
 
         // eliminate c[i + 1..N][i].
         // we need to set u[row][i] to 0, as we do Gaussian Elimination on u.

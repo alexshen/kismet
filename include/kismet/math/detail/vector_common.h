@@ -67,7 +67,7 @@ inline bool normalize(T& v, typename T::value_type tolerance = math_trait<T>::ze
     }
 
     using std::sqrt;
-    auto inv_mag(inv(sqrt(sqr_mag)));
+    auto inv_mag(invert(sqrt(sqr_mag)));
 
     for (std::size_t i = 0; i <= v.size() - 1; ++i)
     {

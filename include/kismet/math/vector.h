@@ -123,7 +123,7 @@ struct vector_base
     Derived& operator /=(T k)
     {
         KISMET_ASSERT(!is_zero(k));
-        return *this *= inv(k);
+        return *this *= invert(k);
     }
 
     bool normalize(T tolerance = math_trait<T>::zero_tolerance())
