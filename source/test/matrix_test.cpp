@@ -17,6 +17,8 @@
 using namespace kismet::math;
 using namespace std;
 
+BOOST_AUTO_TEST_SUITE(matrix_test)
+
 BOOST_AUTO_TEST_CASE(matrix_rank_2)
 {
     BOOST_CHECK_EQUAL(matrix22f::rank, 2);
@@ -548,3 +550,5 @@ BOOST_AUTO_TEST_CASE(matrix_mul)
     auto m3 = m1 * m2;
     BOOST_CHECK_EQUAL(m3, m2);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

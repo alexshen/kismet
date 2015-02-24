@@ -8,6 +8,8 @@
 using namespace std;
 using namespace kismet::math;
 
+BOOST_AUTO_TEST_SUITE(linear_system_test)
+
 BOOST_AUTO_TEST_CASE(linear_system_solve2x2_determinant_zero_fail)
 {
     // initialize an zero array
@@ -221,3 +223,5 @@ BOOST_AUTO_TEST_CASE(linear_system_plu_decompose)
 
     KISMET_CHECK_EQUAL_COLLECTIONS(p_array, exp_p_array);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

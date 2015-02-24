@@ -4,6 +4,8 @@
 using namespace kismet;
 using namespace math;
 
+BOOST_AUTO_TEST_SUITE(quaternion_test)
+
 BOOST_AUTO_TEST_CASE(quaternion_identity)
 {
     BOOST_CHECK_EQUAL(quaternionf::identity, quaternionf(1.0f, 0.0, 0.0, 0.0f));
@@ -25,3 +27,5 @@ BOOST_AUTO_TEST_CASE(quaternion_rotate_vector)
     quaternionf rot_around_x(vector3f::right, deg2rad(90.0f));
     BOOST_CHECK_EQUAL(rot_around_x * vector3f::up, vector3f::forward);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

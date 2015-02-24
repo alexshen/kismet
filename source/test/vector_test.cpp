@@ -7,6 +7,8 @@
 using namespace kismet::math;
 using namespace std;
 
+BOOST_AUTO_TEST_SUITE(vector_test)
+
 BOOST_AUTO_TEST_CASE(vector_scale)
 {
     vector2f v = { 1.f, 2.f };
@@ -137,3 +139,5 @@ BOOST_AUTO_TEST_CASE(vector4_cross_w_component_is_zero)
     vector4f v2{ 2.0f, 2.0f, 2.0f, 0.0f };
     BOOST_CHECK_EQUAL(cross(v0, v2).w(), 0);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
