@@ -11,6 +11,7 @@
 #include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/math/detail/vector_common.h"
+#include "kismet/math/matrix.h"
 #include "kismet/utility.h"
 
 namespace kismet
@@ -522,7 +523,7 @@ inline vector<T, N2> operator *(matrix<T, N1, N2> const& m, vector<T, N2> const&
 template<typename T, typename U, std::size_t N>
 inline bool operator ==(vector<T, N> const& a, vector<U, N> const& b)
 {
-    return std::equal(a.begin(), a.end(), b.begin());
+    return std::equal(a.begin(), a.end(), b.begin(), approximate<T>());
 }
 
 template<typename T, typename U, std::size_t N>
@@ -544,13 +545,22 @@ inline std::ostream& operator <<(std::ostream& os, vector<T, N> const& v)
     return os;
 }
 
-using vector2f = vector<float, 2>;
-using vector3f = vector<float, 3>;
-using vector4f = vector<float, 4>;
+template<typename T>
+using vector2 = vector<T, 2>;
 
-using vector2d = vector<double, 2>;
-using vector3d = vector<double, 3>;
-using vector4d = vector<double, 4>;
+template<typename T>
+using vector3 = vector<T, 3>;
+
+template<typename T>
+using vector4 = vector<T, 4>;
+
+using vector2f = vector2<float>;
+using vector3f = vector3<float>;
+using vector4f = vector4<float>;
+
+using vector2d = vector2<double>;
+using vector3d = vector3<double>;
+using vector4d = vector4<double>;
 
 } // namespace math
 } // namespace kismet

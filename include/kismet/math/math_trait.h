@@ -79,6 +79,32 @@ inline bool approx(T lhs, T rhs, T tol = math_trait<T>::zero_tolerance())
     return abs(lhs - rhs) <= tol;
 }
 
+template<typename T>
+struct approximate
+{
+    bool operator ()(T lhs, T rhs) const
+    {
+        return approx(lhs, rhs);
+    }
+};
+
+// XXX: replace with constexpr
+#define KISMET_PI          3.1415926535897932385
+#define KISMET_PI_OVER_180 0.0174532925199432957
+#define KISMET_180_OVER_PI 57.295779513082320876
+
+template<typename T>
+inline T deg2rad(T deg)
+{
+    return deg * T(KISMET_PI_OVER_180);
+}
+
+template<typename T>
+inline T rad2deg(T rad)
+{
+    return rad * T(KISMET_180_OVER_PI);
+}
+
 // define math traits for integer type.
 // do not use tolerance in is_zero(T, T) which is meaningless for integer type.
 #define INT_MATH_TRAIT(T)          \
