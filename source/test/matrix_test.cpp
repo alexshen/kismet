@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(matrix_vector_row_normalize)
     {
         {1.0f / sqrt(2.0f), 1.0f / sqrt(2.0f)}
     };
-    BOOST_CHECK(m.row(0).normalize());
+    BOOST_CHECK(m.row(0).safe_normalize());
     KISMET_CHECK_APPROX_COLLECTIONS(m.row(0), normalized.row(0));
 }
 
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(matrix_vector_column_normalize)
         { 1.0f / sqrt(2.0f) }, 
         { 1.0f / sqrt(2.0f) }
     };
-    BOOST_CHECK(m.column(0).normalize());
+    BOOST_CHECK(m.column(0).safe_normalize());
     KISMET_CHECK_APPROX_COLLECTIONS(m.column(0), normalized.column(0));
 }
 

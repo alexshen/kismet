@@ -127,9 +127,9 @@ struct vector_base
         return *this *= invert(k);
     }
 
-    bool normalize(T tolerance = math_trait<T>::zero_tolerance())
+    bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
-        return detail::normalize(*this, tolerance);
+        return detail::safe_normalize(*this, tolerance);
     }
 
     reference operator [](size_type i)
@@ -376,21 +376,21 @@ inline vector<T, 4> cross(vector<T, 4> const& a, vector<T, 4> const& b)
 }
 
 template<typename T, std::size_t N>
-inline vector<T, N> normalize(vector<T, N> v, T tolerance = math_trait<T>::zero_tolerance())
+inline vector<T, N> safe_normalize(vector<T, N> v, T tolerance = math_trait<T>::zero_tolerance())
 {
-    v.normalize(tolerance);
+    v.safe_normalize(tolerance);
     return v;
 }
 
 // Return true if normalization succeeds, 
 // otherwise return false in which case whether res is changed is unspecified.
 template<typename T, std::size_t N>
-inline bool normalize(vector<T, N> const& v, 
+inline bool safe_normalize(vector<T, N> const& v, 
                       vector<T, N>& res, 
                       T tolerance = math_trait<T>::zero_tolerance())
 {
     res = v;
-    return res.normalize(tolerance);
+    return res.safe_normalize(tolerance);
 }
 
 template<typename T, std::size_t N>

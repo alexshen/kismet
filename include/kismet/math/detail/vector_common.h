@@ -58,7 +58,7 @@ inline typename T::value_type mag(T const& v)
 // Return true if normalization succeeds, otherwise
 // return false in which case v is left unchanged.
 template<typename T>
-inline bool normalize(T& v, typename T::value_type tolerance = math_trait<T>::zero_tolerance())
+inline bool safe_normalize(T& v, typename T::value_type tolerance = math_trait<T>::zero_tolerance())
 {
     auto sqr_mag(squared_mag(v));
     if (is_zero(sqr_mag, tolerance))

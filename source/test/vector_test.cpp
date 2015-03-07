@@ -102,9 +102,9 @@ BOOST_AUTO_TEST_CASE(vector_right_mul)
 BOOST_AUTO_TEST_CASE(vector_normalize)
 {
     vector3f res;
-    BOOST_CHECK(!normalize(vector3f::zero, res));
+    BOOST_CHECK(!safe_normalize(vector3f::zero, res));
 
-    BOOST_CHECK((normalize(vector3f::right, res)));
+    BOOST_CHECK((safe_normalize(vector3f::right, res)));
     KISMET_CHECK_APPROX_COLLECTIONS(vector3f::right, res);
 }
 

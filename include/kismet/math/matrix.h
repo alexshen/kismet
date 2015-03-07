@@ -480,9 +480,9 @@ public:
         return equal_row_row(v, detail::all_strides_one<S>());
     }
 
-    bool normalize(T tolerance = math_trait<T>::zero_tolerance())
+    bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
-        return detail::normalize(*this, tolerance);
+        return detail::safe_normalize(*this, tolerance);
     }
 
     template<std::size_t S2>
