@@ -223,9 +223,7 @@ public:
     Derived& operator /=(T k)
     {
         KISMET_ASSERT(!is_zero(k));
-        // TODO: check support for sse, if none, use multiplication
-        // Optimizer can do sse division which is faster than do inverse first and then multiplication.
-        std::for_each(data(), data() + N, [k](T& v) { v /= k; });
+        div_integral(k, std::is_integral<T>());
         return static_cast<Derived&>(*this);
     }
 
@@ -238,6 +236,16 @@ public:
 
     const_iterator begin() const { return m_p; }
     const_iterator end()   const { return m_p + N; }
+private:
+    void div_integral(T k, std::true_type)
+    {
+        std::for_each(data(), data() + N, [k](T& v) { v /= k; });
+    }
+
+    void div_integral(T k, std::false_type)
+    {
+        *this *= invert(k);
+    }
 protected:
     pointer m_p;
 };
