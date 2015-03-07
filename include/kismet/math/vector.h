@@ -127,6 +127,14 @@ struct vector_base
         return *this *= invert(k);
     }
 
+    // normalize the vector, assume that the vector's magnitude is not zero
+    void normalize()
+    {
+        detail::normalize(*this);
+    }
+
+    // normalize the vector, return true on success otherwise return false
+    // in which case the vector is not modified.
     bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
         return detail::safe_normalize(*this, tolerance);
@@ -375,10 +383,12 @@ inline vector<T, 4> cross(vector<T, 4> const& a, vector<T, 4> const& b)
     return res;
 }
 
+// normalize the vector, assume that vector's magnitude is not zero
+// return the normalized vector
 template<typename T, std::size_t N>
-inline vector<T, N> safe_normalize(vector<T, N> v, T tolerance = math_trait<T>::zero_tolerance())
+inline vector<T, N> normalize(vector<T, N> v)
 {
-    v.safe_normalize(tolerance);
+    v.normalize(tolerance);
     return v;
 }
 

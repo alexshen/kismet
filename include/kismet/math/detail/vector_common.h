@@ -54,6 +54,19 @@ inline typename T::value_type mag(T const& v)
     return squared_mag(v);
 }
 
+// normalize the given vector, assume that the vector's magnitude is not zero
+template<typename T>
+inline void normalize(T& v)
+{
+    KISMET_ASSERT(!is_zero(mag(v)));
+
+    auto inv_mag(invert(mag(v)));
+    for (std::size_t i = 0; i <= v.size() - 1; ++i)
+    {
+        v[i] *= inv_mag;
+    }
+}
+
 // normalize the given vector
 // Return true if normalization succeeds, otherwise
 // return false in which case v is left unchanged.

@@ -480,6 +480,11 @@ public:
         return equal_row_row(v, detail::all_strides_one<S>());
     }
 
+    void normalize()
+    {
+        detail::normalize(*this);
+    }
+
     bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
         return detail::safe_normalize(*this, tolerance);
