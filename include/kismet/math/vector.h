@@ -127,6 +127,22 @@ struct vector_base
         return *this *= invert(k);
     }
 
+    // return the dot product
+    T dot(const vector_base& rhs) const
+    {
+        return detail::dot(*this, rhs);
+    }
+
+    T squared_mag() const
+    {
+        return detail::squared_mag(*this);
+    }
+
+    T mag() const
+    {
+        return detail::mag(*this);
+    }
+
     // normalize the vector, assume that the vector's magnitude is not zero
     void normalize()
     {
@@ -273,6 +289,17 @@ public:
     T y() const { return this->v[1]; }
     T z() const { return this->v[2]; }
 
+    // return the cross product
+    vector cross(const vector& v) const
+    {
+        vector res;
+        // mnemonics xyzzy, see http://en.wikipedia.org/wiki/Cross_product 
+        res.x(y() * v.z() - z() * v.y());
+        res.y(z() * v.x() - x() * v.z());
+        res.z(x() * v.y() - y() * v.x());
+        return res;
+    }
+
     // right/up/forward forms a right-handed coordinate system
     static vector const left; 
     static vector const right;
@@ -340,47 +367,14 @@ public:
 template<typename T, std::size_t N>
 inline T dot(vector<T, N> const& a, vector<T, N> const& b)
 {
-    return detail::dot(a, b);
-}
-
-namespace detail
-{
-
-template<typename T>
-inline void cross(T const* a, T const* b, T* c)
-{
-    // mnemonics xyzzy, see http://en.wikipedia.org/wiki/Cross_product 
-    c[0] = a[1] * b[2] - a[2] * b[1];
-    c[1] = a[2] * b[0] - a[0] * b[2];
-    c[2] = a[0] * b[1] - a[1] * b[0];
-}
-
+    return a.dot(b);
 }
 
 // Return the cross product of two 3-d vectors
 template<typename T>
 inline vector<T, 3> cross(vector<T, 3> const& a, vector<T, 3> const& b)
 {
-    vector<T, 3> res;
-    detail::cross(a.data(), b.data(), res.data());
-    return res;
-}
-
-// Return the cross product of two augmented 3-d vectors, 
-// the w components of two vectors must be 0
-// 
-// NOTE: Cross product is only defined in 3d/7d spaces, this is
-// only meant to be used as convenience function for calculating
-// cross product of two augmented 3d vectors whose w components
-// are 0.
-template<typename T>
-inline vector<T, 4> cross(vector<T, 4> const& a, vector<T, 4> const& b)
-{
-    KISMET_ASSERT(a.w() == T(0) && b.w() == T(0));
-    vector<T, 4> res;
-    detail::cross(a.data(), b.data(), res.data());
-    res[3] = T(0);
-    return res;
+    return a.cross(b);
 }
 
 // normalize the vector, assume that vector's magnitude is not zero
@@ -406,13 +400,13 @@ inline bool safe_normalize(vector<T, N> const& v,
 template<typename T, std::size_t N>
 inline T squared_mag(vector<T, N> const& v)
 {
-    return detail::squared_mag(v);
+    return v.squared_mag();
 }
 
 template<typename T, std::size_t N>
 inline T mag(vector<T, N> const& v)
 {
-    return detail::mag(v);
+    return v.mag();
 }
 
 template<typename T, std::size_t N>

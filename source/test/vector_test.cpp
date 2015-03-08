@@ -59,14 +59,6 @@ BOOST_AUTO_TEST_CASE(vector_cross)
 
         BOOST_CHECK_EQUAL((cross(v1, v2)), exp);
     }
-
-    {
-        vector4f v1(1, 2, 3, 0);
-        vector4f v2(4, 5, 6, 0);
-        vector4f exp(-3, 6, -3, 0);
-
-        BOOST_CHECK_EQUAL((cross(v1, v2)), exp);
-    }
 }
 
 BOOST_AUTO_TEST_CASE(vector_left_mul)
@@ -131,13 +123,6 @@ BOOST_AUTO_TEST_CASE(vector_named_axes_negate)
     BOOST_CHECK_EQUAL(vector3f::right, -vector3f::left);
     BOOST_CHECK_EQUAL(vector3f::up, -vector3f::down);
     BOOST_CHECK_EQUAL(vector3f::forward, -vector3f::back);
-}
-
-BOOST_AUTO_TEST_CASE(vector4_cross_w_component_is_zero)
-{
-    vector4f v0{ 1.0f, 1.0f, 1.0f, 0.0f };
-    vector4f v2{ 2.0f, 2.0f, 2.0f, 0.0f };
-    BOOST_CHECK_EQUAL(cross(v0, v2).w(), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
