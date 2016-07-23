@@ -46,22 +46,24 @@ solution "kismet"
         flags { "OptimizeSpeed", "Symbols" }
         defines { "NDEBUG" }
 
-    project "common"
-        kind "StaticLib"
-        language "C++"
-        targetdir "lib"
-        files
-        {
-            "include/kismet/*.h",
-            "source/*.cpp",
-        }
-        configuration "debug"
-            targetname "commond"
-            disable_lang_ext()
+    if win32 then
+        project "common"
+            kind "StaticLib"
+            language "C++"
+            targetdir "lib"
+            files
+            {
+                "include/kismet/*.h",
+                "source/*.cpp",
+            }
+            configuration "debug"
+                targetname "commond"
+                disable_lang_ext()
 
-        configuration "release"
-            targetname "common"
-            disable_lang_ext()
+            configuration "release"
+                targetname "common"
+                disable_lang_ext()
+    end
 
     project "ai"
         kind "StaticLib"
