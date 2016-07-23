@@ -2,9 +2,12 @@
 #define KIMSET_MATH_QUATERNION_H
 
 #include "kismet/math/math_trait.h"
+#include "kismet/math/utility.h"
 #include "kismet/math/vector.h"
-#include <ostream>
+
 #include <algorithm>
+#include <ostream>
+
 #include <cmath>
 
 namespace kismet
@@ -28,7 +31,7 @@ public:
     // axis must be a unit vector.
     quaternion(vector3<T> const& v, T angle)
     {
-        KISMET_ASSERT(approx(mag(v), T(1.0)));
+        KISMET_ASSERT(approx(v.mag(), T(1.0)));
 
         using std::cos;
         using std::sin;
@@ -39,10 +42,26 @@ public:
         set(cos(ha), v.x() * sin_ha, v.y() * sin_ha, v.z() * sin_ha);
     }
 
-    // normalize the quaternion
-    bool normalize(T tolerance = math_trait<T>::zero_tolerance())
+    T mag() const
     {
-        T len = mag(*this);
+        return std::sqrt(squared_mag());
+    }
+
+    T squared_mag() const
+    {
+        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3];
+    }
+
+    void normalize(T tolerance = math_trait<T>::zero_tolerance())
+    {
+        KISMET_ASSERT(!is_zero(mag(), tolerance));
+        *this /= mag();
+    }
+
+    // safe normalize the quaternion
+    bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
+    {
+        T len = mag();
         if (is_zero(len, tolerance))
         {
             return false;
@@ -64,7 +83,7 @@ public:
     // invert the quaternion
     bool invert(T tolerance = math_trait<T>::zero_tolerance())
     {
-        T sm = squared_mag(*this);
+        T sm = squared_mag();
         if (is_zero(sm))
         {
             return false;
@@ -88,6 +107,22 @@ public:
 
     T* data() { return v; }
     T const* data() const { return v; }
+
+    // return the dot product of two quaternion
+    T dot(quaternion const& q) const
+    {
+        return v[0] * q.v[0] + v[1] * q.v[1] + v[2] * q.v[2] + v[3] * q.v[3];
+    }
+
+    quaternion operator -() const
+    {
+        quaternion q;
+        q.v[0] = -v[0];
+        q.v[1] = -v[1];
+        q.v[2] = -v[2];
+        q.v[3] = -v[3];
+        return q;
+    }
 
     quaternion& operator +=(quaternion const& rhs)
     {
@@ -134,6 +169,7 @@ public:
         return this *= invert(scale);
     }
 
+    // w: 0, x: 1, y: 2, z:3
     T& operator [](std::size_t index)
     {
         KISMET_ASSERT(index < 4);
@@ -155,18 +191,17 @@ private:
 template<typename T>
 quaternion<T> const quaternion<T>::identity( T( 1.0 ), T(), T(), T() );
 
-template<typename T>
-inline T squared_mag(quaternion<T> const& q)
-{
-    return q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3];
-}
-
 // return the magnitude of the quaternion
 template<typename T>
 inline T mag(quaternion<T> const& q)
 {
-    using std::sqrt;
-    return sqrt(squared_mag(q));
+    return q.mag();
+}
+
+template<typename T>
+inline T squared_mag(quaternion<T> const& q)
+{
+    return q.squared_mag();
 }
 
 // return the conjugate of the quaternion
@@ -210,11 +245,17 @@ inline quaternion<T> operator -(quaternion<T> lhs, quaternion<T> const& rhs)
 }
 
 template<typename T>
-inline quaternion<T> operator *(T scale, quaternion<T> const& rhs)
+inline quaternion<T> operator *(T scale, quaternion<T> rhs)
 {
-    quaternion<T> res(rhs);
-    res *= scale;
-    return res;
+    rhs *= scale;
+    return rhs;
+}
+
+template<typename T>
+inline quaternion<T> operator *(quaternion<T> lhs, T scale)
+{
+    lhs *= scale;
+    return lhs;
 }
 
 // Rotate a vector by a given unit quaternion.
@@ -235,6 +276,54 @@ inline vector3<T> operator *(quaternion<T> const& q, vector3<T> const& v)
     res.y(vqv2 * q.y() + qww * v.y() + qw2 * (q.z() * v.x() - q.x() * v.z()) - v.y() * vqvq);
     res.z(vqv2 * q.z() + qww * v.z() + qw2 * (q.x() * v.y() - q.y() * v.x()) - v.z() * vqvq);
     return res;
+}
+
+// linear interpolate q0 and q1, return the normalized result
+template<typename T>
+quaternion<T> nlerp(quaternion<T> const& q0, quaternion<T> const& q1, T t)
+{
+    quaternion<T> res;
+    res[0] = lerp(q0[0], q1[0], t);
+    res[1] = lerp(q0[1], q1[1], t);
+    res[2] = lerp(q0[2], q1[2], t);
+    res[3] = lerp(q0[3], q1[3], t);
+    res.normalize();
+    return res;   
+}
+
+// return the dot product of two quaternion
+template<typename T>
+T dot(quaternion<T> const& q0, quaternion<T> const& q1)
+{
+    return q0.dot(q1);
+}
+
+// return the spherical linear interpolation of q0 and q1
+template<typename T>
+quaternion<T> slerp(quaternion<T> const& q0, quaternion<T> const& q1, T t)
+{
+    KISMET_ASSERT(t >= 0 && t <= 1);
+
+    // calculate the angle between q0 and q1
+    T c = dot(q0, q1);
+
+    // if the angle is nearly 0, we should fallback to nlerp to avoid numeric issue
+    if (std::abs(c) >= T(0.9999))
+    {
+        return nlerp(q0, q1, t);
+    }
+
+    T angle = std::acos(c);
+    T sin0 = std::sin((1 - t) * angle);
+    T sin1 = std::sin(t * angle);
+    T denom = T(1.0) / std::sin(angle);
+
+    // make sure slerp along the shortest path
+    if (c < T(0))
+    {
+        return sin0 * denom * q0 - sin1 * denom * q1;
+    }
+    return sin0 * denom * q0 + sin1 * denom * q1;
 }
 
 template<typename T>

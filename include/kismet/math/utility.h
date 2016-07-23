@@ -34,6 +34,13 @@ inline void make_identity(T (&a)[3][3])
     a[2][2] = T(1);
 }
 
+
+template<typename T>
+inline T lerp(T a, T b, T t)
+{
+    return a + (b - a) * t;
+}
+
 } // namespace math
 
 } // namespace kismet
