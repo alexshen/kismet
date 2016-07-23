@@ -380,7 +380,7 @@ inline vector<T, 3> cross(vector<T, 3> const& a, vector<T, 3> const& b)
 // normalize the vector, assume that vector's magnitude is not zero
 // return the normalized vector
 template<typename T, std::size_t N>
-inline vector<T, N> normalize(vector<T, N> v)
+inline vector<T, N> normalize(vector<T, N> v, T tolerance = math_trait<T>::zero_tolerance())
 {
     v.normalize(tolerance);
     return v;

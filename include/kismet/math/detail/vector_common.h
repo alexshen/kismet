@@ -51,7 +51,7 @@ template<typename T>
 inline typename T::value_type mag(T const& v)
 {
     using std::sqrt;
-    return squared_mag(v);
+    return sqrt(squared_mag(v));
 }
 
 // normalize the given vector, assume that the vector's magnitude is not zero
