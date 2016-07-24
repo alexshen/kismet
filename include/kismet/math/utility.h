@@ -41,6 +41,21 @@ inline T lerp(T a, T b, T t)
     return a + (b - a) * t;
 }
 
+template<typename T>
+int max_index(T a, T b, T c)
+{
+    if (a > b)
+    {
+        if (a >= c) { return 0; }
+        else { return 2; }
+    }
+    else // a <=b 
+    {
+        if (b > c) { return 1; }
+        else { return 2; }
+    }
+}
+
 } // namespace math
 
 } // namespace kismet

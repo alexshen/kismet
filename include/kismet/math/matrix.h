@@ -1373,13 +1373,17 @@ std::ostream& operator <<(std::ostream& os, matrix<T, N1, N2> const& m)
     return os;
 }
 
-using matrix22f = matrix<float, 2, 2>;
-using matrix33f = matrix<float, 3, 3>;
-using matrix44f = matrix<float, 4, 4>;
+#define matrix_alias(d) \
+    template<typename T> \
+    using matrix##d##d = matrix<T, d, d>; \
+    using matrix##d##d##f = matrix<float, d, d>; \
+    using matrix##d##d##d = matrix<double, d, d>;
 
-using matrix22d = matrix<double, 2, 2>;
-using matrix33d = matrix<double, 3, 3>;
-using matrix44d = matrix<double, 4, 4>;
+matrix_alias(2)
+matrix_alias(3)
+matrix_alias(4)
+
+#undef matrix_alias
 
 } // namespace math
 } // namespace kismet

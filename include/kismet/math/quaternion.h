@@ -108,6 +108,12 @@ public:
     T* data() { return v; }
     T const* data() const { return v; }
 
+    T* begin() { return v; }
+    T* end() { return v + 4; }
+
+    T const* begin() const { return v; }
+    T const* end() const { return v + 4; }
+
     // return the dot product of two quaternion
     T dot(quaternion const& q) const
     {

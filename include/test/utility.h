@@ -1,9 +1,12 @@
 #ifndef KISMET_TEST_UTILITY_H
 #define KISMET_TEST_UTILITY_H
 
-#include <boost/test/unit_test.hpp>
-#include <algorithm>
 #include "kismet/math/math_trait.h"
+
+#include <boost/test/unit_test.hpp>
+
+#include <algorithm>
+#include <iterator>
 
 namespace kismet
 {
@@ -32,9 +35,17 @@ inline bool approx(InputIt1 start0, InputIt1 end0, InputIt2 start1)
 
 /// Check two collections are approximately equal
 #define KISMET_CHECK_APPROX_COLLECTIONS(a, b) \
-    BOOST_CHECK((::kismet::test::approx(begin(a), end(a), begin(b))))
+do { \
+    using std::begin; \
+    using std::end; \
+    BOOST_CHECK((::kismet::test::approx(begin(a), end(a), begin(b)))); \
+} while (0)
 
 #define KISMET_CHECK_EQUAL_COLLECTIONS(a, b) \
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(a), end(a), begin(b), end(b))
+do { \
+    using std::begin; \
+    using std::end; \
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(a), end(a), begin(b), end(b)); \
+} while (0)
 
 #endif // KISMET_TEST_UTILITY_H

@@ -117,7 +117,7 @@ inline T rad2deg(T rad)
         }                          \
     };                             \
                                    \
-    inline bool is_zero(T v, T)    \
+    inline bool is_zero(T v, T = (T)0)    \
     {                              \
         return v == (T)0;          \
     }
