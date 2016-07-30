@@ -25,8 +25,7 @@ inline typename T::value_type dot(T const& v1, T const& v2)
     KISMET_ASSERT(v1.size() == v2.size());
     
     typename T::value_type res(0);
-    // use <= to avoid out of bound comparison of pointers
-    for (std::size_t i = 0; i <= v1.size() - 1; ++i)
+    for (std::size_t i = 0; i < v1.size(); ++i)
     {
         res += v1[i] * v2[i];
     }
@@ -38,10 +37,9 @@ template<typename T>
 inline typename T::value_type squared_mag(T const& v)
 {
     typename T::value_type res(0);
-    // use <= to avoid out of bound comparison of pointers
-    for (std::size_t i = 0; i <= v.size() - 1; ++i)
+    for (std::size_t i = 0; i < v.size(); ++i)
     {
-        res += v[i];
+        res += v[i] * v[i];
     }
     return res;
 }

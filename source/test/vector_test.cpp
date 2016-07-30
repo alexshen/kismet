@@ -113,9 +113,9 @@ BOOST_AUTO_TEST_CASE(vector_named_zero_is_zero)
 
 BOOST_AUTO_TEST_CASE(vector_named_axes_cross)
 {
-    BOOST_CHECK_EQUAL(cross(vector3f::right, vector3f::up), vector3f::forward);
-    BOOST_CHECK_EQUAL(cross(vector3f::up, vector3f::forward), vector3f::right);
-    BOOST_CHECK_EQUAL(cross(vector3f::forward, vector3f::right), vector3f::up);
+    BOOST_CHECK_EQUAL(cross(vector3f::right, vector3f::up), vector3f::back);
+    BOOST_CHECK_EQUAL(cross(vector3f::up, vector3f::forward), vector3f::left);
+    BOOST_CHECK_EQUAL(cross(vector3f::forward, vector3f::right), vector3f::down);
 }
 
 BOOST_AUTO_TEST_CASE(vector_named_axes_negate)

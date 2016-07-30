@@ -322,10 +322,10 @@ template<typename T>
 vector<T, 3> const vector<T, 3>::down(T(0), T(-1), T(0));
 
 template<typename T>
-vector<T, 3> const vector<T, 3>::forward(T(0), T(0), T(1));
+vector<T, 3> const vector<T, 3>::forward(T(0), T(0), T(-1));
 
 template<typename T>
-vector<T, 3> const vector<T, 3>::back(T(0), T(0), T(-1));
+vector<T, 3> const vector<T, 3>::back(T(0), T(0), T(1));
 
 template<typename T>
 class vector<T, 4> : public detail::vector_base<vector<T, 4>, T, 4>
