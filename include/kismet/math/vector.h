@@ -144,9 +144,9 @@ struct vector_base
     }
 
     // normalize the vector, assume that the vector's magnitude is not zero
-    void normalize()
+    void normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
-        detail::normalize(*this);
+        detail::normalize(*this, tolerance);
     }
 
     // normalize the vector, return true on success otherwise return false

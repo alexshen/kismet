@@ -54,12 +54,12 @@ inline typename T::value_type mag(T const& v)
 
 // normalize the given vector, assume that the vector's magnitude is not zero
 template<typename T>
-inline void normalize(T& v)
+inline void normalize(T& v, typename T::value_type tolerance)
 {
-    KISMET_ASSERT(!is_zero(mag(v)));
+    KISMET_ASSERT(!is_zero(mag(v), tolerance));
 
     auto inv_mag(invert(mag(v)));
-    for (std::size_t i = 0; i <= v.size() - 1; ++i)
+    for (std::size_t i = 0; i < v.size(); ++i)
     {
         v[i] *= inv_mag;
     }

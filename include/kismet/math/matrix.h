@@ -497,9 +497,9 @@ public:
         return equal_row_row(v, detail::all_strides_one<S>());
     }
 
-    void normalize()
+    void normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
-        detail::normalize(*this);
+        detail::normalize(*this, tolerance);
     }
 
     bool safe_normalize(T tolerance = math_trait<T>::zero_tolerance())
