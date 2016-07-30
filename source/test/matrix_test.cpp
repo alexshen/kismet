@@ -14,6 +14,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "kismet/math/matrix.h"
+#include "kismet/math/vector.h"
+
 using namespace kismet::math;
 using namespace std;
 
@@ -549,6 +551,14 @@ BOOST_AUTO_TEST_CASE(matrix_mul)
 
     auto m3 = m1 * m2;
     BOOST_CHECK_EQUAL(m3, m2);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_vector_assign)
+{
+    matrix33f m(matrix33f::identity);
+    m[0][2] = 1.0f;
+    m.row(0).assign(vector2f(1.0f, 1.0f));
+    BOOST_CHECK_EQUAL(m.row(0), vector3f(1.0f, 1.0f, 1.0f));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

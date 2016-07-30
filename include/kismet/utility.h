@@ -95,7 +95,7 @@ inline OutIt checked_copy(It beg, It end,
     dest = std::copy(beg, end, dest);
     return std::fill_n(dest, N - size, val);
 }
-}
+} // namespace detail
 
 /// Copy [beg, end) to OutIt
 /// The size of the source range must be <= N

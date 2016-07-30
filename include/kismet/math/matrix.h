@@ -449,17 +449,26 @@ public:
         return *this;
     }
 
-    // assign from a sequence, if size of sequence is less than N
-    // remaining elements are fill with 0
+    // assign from a sequence, if size of sequence is N, then
+    // elements in [offset, offset+N) are updated with the elements from the sequence
     template<typename Iter>
     detail::enable_if_assignable_t<
         typename std::iterator_traits<Iter>::value_type
       , T
       , matrix_vector&>
-    assign(Iter beg, Iter end)
+    assign(Iter beg, Iter end, size_type offset = 0)
     {
-        checked_copy(beg, end, N, this->begin(), T(0));
+        std::copy(beg, end, this->begin() + offset);
         return *this;
+    }
+
+    // equivalent to assign(v.begin(), v.end(), offset)
+    template<typename U, std::size_t N2>
+    detail::enable_if_assignable_t<U, T, matrix_vector&>
+    assign(vector<U, N2> const& v, size_type offset = 0)
+    {
+        KISMET_ASSERT(offset + N2 <= N);
+        return assign(v.begin(), v.end(), offset);
     }
 
     // compare a row/column to a row/column
