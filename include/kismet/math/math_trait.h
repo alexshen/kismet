@@ -1,9 +1,11 @@
 #ifndef KISMET_MATH_TRAIT_H
 #define KISMET_MATH_TRAIT_H
 
+#include "kismet/core/assert.h"
+
+#include <type_traits>
 #include <cmath>
 #include <cstdint>
-#include "kismet/core/assert.h"
 
 namespace kismet
 {
@@ -93,16 +95,54 @@ struct approximate
 #define KISMET_PI_OVER_180 0.0174532925199432957
 #define KISMET_180_OVER_PI 57.295779513082320876
 
-template<typename T>
-inline T deg2rad(T deg)
+namespace detail
 {
-    return deg * T(KISMET_PI_OVER_180);
+template<typename T>
+struct is_integral_or_float
+    : std::integral_constant<
+          bool, 
+          std::is_integral<T>::value ||
+            std::is_same<T, float>::value
+      >
+{};
+
+// promote type T to a floating point type
+// if T is already a float point type, resulting type is unchanged.
+template<typename T>
+struct promote_to_float
+{
+    using type = float;
+};
+
+template<>
+struct promote_to_float<double>
+{
+    using type = double;
+};
+
+template<>
+struct promote_to_float<long double>
+{
+    using type = long double;
+};
+
+template<typename T>
+using promote_to_float_t = typename promote_to_float<T>::type;
+
+} // namespace detail
+
+template<typename T>
+inline detail::promote_to_float_t<T> deg2rad(T deg)
+{
+    using result_type = detail::promote_to_float_t<T>;
+    return result_type(deg) * result_type(KISMET_PI_OVER_180);
 }
 
 template<typename T>
-inline T rad2deg(T rad)
+inline detail::promote_to_float_t<T> rad2deg(T rad)
 {
-    return rad * T(KISMET_180_OVER_PI);
+    using result_type = detail::promote_to_float_t<T>;
+    return result_type(rad) * result_type(KISMET_180_OVER_PI);
 }
 
 // define math traits for integer type.
