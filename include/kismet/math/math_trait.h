@@ -97,15 +97,6 @@ struct approximate
 
 namespace detail
 {
-template<typename T>
-struct is_integral_or_float
-    : std::integral_constant<
-          bool, 
-          std::is_integral<T>::value ||
-            std::is_same<T, float>::value
-      >
-{};
-
 // promote type T to a floating point type
 // if T is already a float point type, resulting type is unchanged.
 template<typename T>
