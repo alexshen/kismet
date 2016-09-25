@@ -3,9 +3,10 @@
 
 #include "kismet/core/assert.h"
 
-#include <type_traits>
 #include <cmath>
 #include <cstdint>
+#include <algorithm>
+#include <type_traits>
 
 namespace kismet
 {
@@ -82,6 +83,16 @@ inline bool approx(T lhs, T rhs, T tol = math_trait<T>::zero_tolerance())
 }
 
 template<typename T>
+inline T clamp(T v, T from, T to)
+{
+    using std::min;
+    using std::max;
+
+    KISMET_ASSERT(from <= to);
+    return max(from, min(v, to));
+}
+
+template<typename T>
 struct approximate
 {
     bool operator ()(T lhs, T rhs) const
@@ -90,10 +101,17 @@ struct approximate
     }
 };
 
+template<typename T>
+inline T sign(T f)
+{
+    return f < T(0) ? T(-1) : (f == T(0) ? T(0) : T(1));
+}
+
 // XXX: replace with constexpr
 #define KISMET_PI          3.1415926535897932385
 #define KISMET_PI_OVER_180 0.0174532925199432957
 #define KISMET_180_OVER_PI 57.295779513082320876
+#define KISMET_PI_OVER_2   1.5707963267948966192
 
 namespace detail
 {
