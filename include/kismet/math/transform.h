@@ -93,6 +93,48 @@ quaternion<T> matrix_to_quat(matrix44<T> const& m)
     return res;
 }
 
+// euler angles to matrix
+// the rotation is applied in the order specified as in the function name in the local space
+
+template<typename T>
+matrix44<T> euler_yxz_to_matrix(T y, T x, T z)
+{
+    using std::cos;
+    using std::sin;
+
+    matrix44<T> res; 
+
+    T cy = cos(y);
+    T cx = cos(x);
+    T cz = cos(z);
+    T sy = sin(y);
+    T sx = sin(x);
+    T sz = sin(z);
+
+    T sysx = sy * sx;
+    T cysx = cy * sx;
+
+    res[0][0] = cy * cz + sysx * sz;
+    res[0][1] = -cy * sz + sysx * cz;
+    res[0][2] = sy * cx;
+    res[0][3] = T(0);
+
+    res[1][0] = cx * sz;
+    res[1][1] = cx * cz;
+    res[1][2] = -sx;
+    res[1][3] = T(0);
+
+    res[2][0] = -sy * cz + cysx * sz;
+    res[2][1] = sy * sz + cysx * cz;
+    res[2][2] = cy * cx;
+    res[2][3] = T(0);
+
+    res[3][0] = res[3][1] = res[3][2] = T(0);
+    res[3][3] = T(1);
+
+    return res;
+}
+
 } // namespace math
 } // namespace kismet
 
