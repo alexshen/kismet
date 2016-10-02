@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <ostream>
+#include <type_traits>
 #include <utility>
 #include "kismet/common_type.h"
 #include "kismet/core.h"
@@ -25,6 +26,9 @@ namespace detail
 template<typename Derived, typename T, std::size_t N>
 struct vector_base
 {
+    template<typename, typename, std::size_t>
+    friend struct vector_base;
+
     static_assert(N > 0, "N must be positive");
 
     using size_type              = std::size_t;
@@ -63,6 +67,14 @@ struct vector_base
     enable_if_convertible_t<U, T, Derived&> operator =(std::initializer_list<U> list)
     {
         assign(list.begin(), list.end());
+        return static_cast<Derived&>(*this);
+    }
+
+    // truncate a vector
+    template<typename U, std::size_t N2>
+    typename std::enable_if<(N<N2), Derived&>::type operator =(vector_base<U, T, N2> const& rhs)
+    {
+        std::copy(rhs.v, rhs.v + N, v);
         return static_cast<Derived&>(*this);
     }
 
@@ -205,6 +217,8 @@ public:
         : base_type(list)
     {
     }
+
+    using base_type::operator =;
 };
 
 template<typename T>
@@ -220,6 +234,12 @@ public:
         this->y() = y;
     }
 
+    template<typename U, std::size_t N2>
+    vector(vector<U, N2> const& rhs, typename std::enable_if<(2<N2)>::type* = 0)
+        : vector(rhs.x(), rhs.y())
+    {
+    }
+
     template<typename U>
     vector(vector<U, 2> const& rhs,
            enable_if_convertible_t<U, T>* = 0)
@@ -232,6 +252,8 @@ public:
         : base_type(list)
     {
     }
+
+    using base_type::operator =;
 
     T& x() { return this->v[0]; }
     T& y() { return this->v[1]; }
@@ -271,6 +293,12 @@ public:
         this->z() = z;
     }
 
+    template<typename U, std::size_t N2>
+    vector(vector<U, N2> const& rhs, typename std::enable_if<(3<N2)>::type* = 0)
+        : vector(rhs.x(), rhs.y(), rhs.z())
+    {
+    }
+
     template<typename U>
     vector(vector<U, 3> const& rhs,
            enable_if_convertible_t<U, T>* = 0)
@@ -283,6 +311,8 @@ public:
         : base_type(list)
     {
     }
+
+    using base_type::operator =;
 
     T& x() { return this->v[0]; }
     T& y() { return this->v[1]; }
@@ -357,6 +387,8 @@ public:
         : base_type(list)
     {
     }
+
+    using base_type::operator =;
 
     T& x() { return this->v[0]; }
     T& y() { return this->v[1]; }
