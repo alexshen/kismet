@@ -216,7 +216,8 @@ public:
 
     vector(T x, T y)
     {
-        this->x(x).y(y);
+        this->x() = x;
+        this->y() = y;
     }
 
     template<typename U>
@@ -232,8 +233,8 @@ public:
     {
     }
 
-    vector& x(T a) { this->v[0] = a; return *this; }
-    vector& y(T a) { this->v[1] = a; return *this; }
+    T& x() { return this->v[0]; }
+    T& y() { return this->v[1]; }
 
     T x() const { return this->v[0]; }
     T y() const { return this->v[1]; }
@@ -265,7 +266,9 @@ public:
 
     vector(T x, T y, T z)
     {
-        this->x(x).y(y).z(z);
+        this->x() = x;
+        this->y() = y;
+        this->z() = z;
     }
 
     template<typename U>
@@ -281,9 +284,9 @@ public:
     {
     }
 
-    vector& x(T a) { this->v[0] = a; return *this; }
-    vector& y(T a) { this->v[1] = a; return *this; }
-    vector& z(T a) { this->v[2] = a; return *this; }
+    T& x() { return this->v[0]; }
+    T& y() { return this->v[1]; }
+    T& z() { return this->v[2]; }
 
     T x() const { return this->v[0]; }
     T y() const { return this->v[1]; }
@@ -294,9 +297,9 @@ public:
     {
         vector res;
         // mnemonics xyzzy, see http://en.wikipedia.org/wiki/Cross_product 
-        res.x(y() * v.z() - z() * v.y());
-        res.y(z() * v.x() - x() * v.z());
-        res.z(x() * v.y() - y() * v.x());
+        res.x() = y() * v.z() - z() * v.y();
+        res.y() = z() * v.x() - x() * v.z();
+        res.z() = x() * v.y() - y() * v.x();
         return res;
     }
 
@@ -336,7 +339,10 @@ public:
 
     vector(T x, T y, T z, T w)
     {
-        this->x(x).y(y).z(z).w(w);
+        this->x() = x;
+        this->y() = y;
+        this->z() = z;
+        this->w() = w;
     }
 
     template<typename U>
@@ -352,10 +358,10 @@ public:
     {
     }
 
-    vector& x(T a) { this->v[0] = a; return *this; }
-    vector& y(T a) { this->v[1] = a; return *this; }
-    vector& z(T a) { this->v[2] = a; return *this; }
-    vector& w(T a) { this->v[3] = a; return *this; }
+    T& x() { return this->v[0]; }
+    T& y() { return this->v[1]; }
+    T& z() { return this->v[2]; }
+    T& w() { return this->v[3]; }
 
     T x() const { return this->v[0]; }
     T y() const { return this->v[1]; }

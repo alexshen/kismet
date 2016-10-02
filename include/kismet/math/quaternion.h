@@ -278,9 +278,9 @@ inline vector3<T> operator *(quaternion<T> const& q, vector3<T> const& v)
     T qw2 = T(2.0) * q.w();
 
     vector3<T> res;
-    res.x(vqv2 * q.x() + qww * v.x() + qw2 * (q.y() * v.z() - q.z() * v.y()) - v.x() * vqvq);
-    res.y(vqv2 * q.y() + qww * v.y() + qw2 * (q.z() * v.x() - q.x() * v.z()) - v.y() * vqvq);
-    res.z(vqv2 * q.z() + qww * v.z() + qw2 * (q.x() * v.y() - q.y() * v.x()) - v.z() * vqvq);
+    res.x() = vqv2 * q.x() + qww * v.x() + qw2 * (q.y() * v.z() - q.z() * v.y()) - v.x() * vqvq;
+    res.y() = vqv2 * q.y() + qww * v.y() + qw2 * (q.z() * v.x() - q.x() * v.z()) - v.y() * vqvq;
+    res.z() = vqv2 * q.z() + qww * v.z() + qw2 * (q.x() * v.y() - q.y() * v.x()) - v.z() * vqvq;
     return res;
 }
 
