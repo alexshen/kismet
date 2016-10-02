@@ -19,7 +19,7 @@ end
 solution "kismet"
     -- Need c++11
     if _ACTION == 'gmake' then
-        buildoptions { '-std=c++11' }
+        buildoptions { '-std=c++14' }
     end
 
     configurations { "debug", "release" }

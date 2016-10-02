@@ -2,8 +2,8 @@
 #include <boost/test/unit_test.hpp>
 #include "kismet/integer_sequence.h"
 
-using namespace std;
 using namespace kismet;
+using std::is_same;
 
 BOOST_AUTO_TEST_SUITE(integer_sequence_test)
 

@@ -19,12 +19,12 @@ if (cc or cxx) and build:
         if fname.endswith('.make'):
             path = os.path.join(build, fname)
             with open(path) as f:
-                old = f.read()
+                data = f.read()
+            if cc:
+                data = re.sub(r'CC = \S+', 'CC = %s' % cc, data)
+            if cxx:
+                data = re.sub(r'CXX = \S+','CXX = %s' % cxx, data)
             with open(path, 'w+') as f:
-                if cc:
-                    f.write('CC = %s\n' % cc)
-                if cxx:
-                    f.write('CXX = %s\n' % cxx)
-                f.write(old)
+                f.write(data)
 else:
     print >> sys.stderr, 'post_premake.py --cc=gcc --cxx=g++ build'
