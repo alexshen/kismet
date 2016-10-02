@@ -310,19 +310,23 @@ quaternion<T> slerp(quaternion<T> const& q0, quaternion<T> const& q1, T t)
 {
     KISMET_ASSERT(t >= 0 && t <= 1);
 
+    using std::abs;
+    using std::sin;
+    using std::acos;
+
     // calculate the angle between q0 and q1
     T c = dot(q0, q1);
 
     // if the angle is nearly 0, we should fallback to nlerp to avoid numeric issue
-    if (std::abs(c) >= T(0.9999))
+    if (abs(c) >= T(0.9999))
     {
         return nlerp(q0, q1, t);
     }
 
-    T angle = std::acos(c);
-    T sin0 = std::sin((1 - t) * angle);
-    T sin1 = std::sin(t * angle);
-    T denom = T(1.0) / std::sin(angle);
+    T angle = acos(c);
+    T sin0 = sin((1 - t) * angle);
+    T sin1 = sin(t * angle);
+    T denom = T(1.0) / sin(angle);
 
     // make sure slerp along the shortest path
     if (c < T(0))
