@@ -333,6 +333,11 @@ public:
         return res;
     }
 
+    vector<T, 4> as_point() const
+    {
+        return vector<T, 4>(x(), y(), z(), T(1.0));
+    }
+
     // right/up/forward forms a right-handed coordinate system
     static vector const left; 
     static vector const right;
