@@ -107,11 +107,16 @@ inline T sign(T f)
     return f < T(0) ? T(-1) : (f == T(0) ? T(0) : T(1));
 }
 
-// XXX: replace with constexpr
-#define KISMET_PI          3.1415926535897932385
-#define KISMET_PI_OVER_180 0.0174532925199432957
-#define KISMET_180_OVER_PI 57.295779513082320876
-#define KISMET_PI_OVER_2   1.5707963267948966192
+#define PI_CONSTANT(name, value) \
+    constexpr double KISMET_##name = value; \
+    constexpr float  KISMET_##name##_F = (float)value;
+
+PI_CONSTANT(PI,          3.1415926535897932385);
+PI_CONSTANT(PI_OVER_180, 0.0174532925199432957);
+PI_CONSTANT(180_OVER_PI, 57.295779513082320876);
+PI_CONSTANT(PI_OVER_2,   1.5707963267948966192);
+
+#undef PI_CONSTANT
 
 namespace detail
 {
