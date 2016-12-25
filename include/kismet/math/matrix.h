@@ -771,8 +771,8 @@ public:
         : m_data(p)
         , m_end(end)
     {
-        KISMET_ASSERT(p && end);
-        KISMET_ASSERT(end - p >= N1);
+        KISMET_ASSERT(p && end && p <= end);
+        KISMET_ASSERT(static_cast<std::size_t>(end - p) >= N1);
     }
 
     // for converting from non-const row_iterator
@@ -967,6 +967,24 @@ public:
     {
         KISMET_ASSERT(!is_zero(k));
         return *this *= invert(k);
+    }
+
+    matrix& operator *=(matrix<T, N2, N2> const& rhs)
+    {
+        matrix tmp;
+        for (std::size_t i = 0; i < N1; ++i)
+        {
+            for (std::size_t j = 0; j < N2; ++j)
+            {
+                tmp[i][j] = T(0);
+                for (std::size_t k = 0; k < N2; ++k)
+                {
+                    tmp[i][j] += m_a[i][k] * rhs.m_a[k][j];
+                }
+            }
+        }
+        *this = tmp;
+        return *this;
     }
 
     // Return the given row

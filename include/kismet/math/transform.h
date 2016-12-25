@@ -5,6 +5,7 @@
 
 #include "kismet/math/quaternion.h"
 #include "kismet/math/matrix.h"
+#include "kismet/math/vector.h"
 #include "kismet/math/utility.h"
 
 #include <cmath>
@@ -132,6 +133,26 @@ matrix44<T> euler_yxz_to_matrix(T y, T x, T z)
     res[3][0] = res[3][1] = res[3][2] = T(0);
     res[3][3] = T(1);
 
+    return res;
+}
+
+template<typename T>
+inline matrix44<T> matrix_scale44(T s)
+{
+    matrix44<T> res = matrix44<T>::identity;
+    res[0][0] = s;
+    res[1][1] = s;
+    res[2][2] = s;
+    return res;
+}
+
+template<typename T>
+inline matrix44<T> matrix_translate(vector<T, 3> const& delta)
+{
+    matrix44<T> res = matrix44<T>::identity;
+    res[0][3] = delta.x();
+    res[1][3] = delta.y();
+    res[2][3] = delta.z();
     return res;
 }
 

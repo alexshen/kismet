@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <type_traits>
+#include <limits>
 
 #ifndef KISMET_INSTANTIATE_TEMPLATE
 #  ifndef KISMET_NO_EXTERN_TEMPLATE
@@ -40,13 +41,13 @@ template<typename RandIt, typename IndexRandIt>
 void reorder(RandIt start, RandIt end, IndexRandIt index_start)
 {
     using std::iter_swap;
+    using index_type = typename std::iterator_traits<IndexRandIt>::value_type;
 
-    using difference_type = typename std::iterator_traits<RandIt>::difference_type;
-    auto dist = end - start;
-    KISMET_ASSERT(dist >= 0);
-
+    KISMET_ASSERT(start <= end);
+    auto dist = static_cast<index_type>(end - start);
     auto index_end = index_start + dist;
-    for (difference_type i = 0; i < dist; ++i, ++index_start)
+
+    for (index_type i = 0; i < dist; ++i, ++index_start)
     {
         // if current item's index is not i
         if (*index_start != i)

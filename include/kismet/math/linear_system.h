@@ -405,7 +405,7 @@ void plu_decompose(matrix<T, N, N> const& a, matrix<T, N, N>& p, matrix<T, N, N>
     // to get the correct permutation matrix, we need to transpose,
     // as P^-1 = P^T
     p.clear();
-    for (int i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < N; ++i)
     {
         p[perms[i]][i] = T(1);
     }
@@ -431,7 +431,7 @@ void plu_decompose(matrix<T, N, N> const& a, std::size_t (&p) [N], matrix<T, N, 
     // P*A = L'*U
     // to get the correct permutation matrix, we need to transpose,
     // as P^-1 = P^T
-    for (int i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < N; ++i)
     {
         p[perms[i]] = i;
     }
