@@ -2,6 +2,7 @@
 #define KISMET_MATH_UTILITY_H
 
 #include "kismet/math/math_trait.h"
+#include "kismet/core/assert.h"
 
 namespace kismet
 {
@@ -39,6 +40,14 @@ template<typename T>
 inline T lerp(T a, T b, T t)
 {
     return a + (b - a) * t;
+}
+
+// calculate the t satisfies c = lerp(a, b, t)
+template<typename T>
+inline T inverse_lerp(T a, T b, T c)
+{
+    KISMET_ASSERT(a < b);
+    return (c - a) / (b - a);
 }
 
 template<typename T>
