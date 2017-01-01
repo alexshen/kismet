@@ -138,7 +138,10 @@ public:
         T y0 = w() * rhs.y() - rhs.w() * y() + z() * rhs.x() - x() * rhs.z();
         T z0 = w() * rhs.z() - rhs.w() * z() + x() * rhs.y() - y() * rhs.x();
 
-        w(w0).x(x0).y(y0).z(z0);
+        w() = w0;
+        x() = x0;
+        y() = y0;
+        z() = z0;
         return *this;
     }
 
