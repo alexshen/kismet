@@ -55,7 +55,7 @@ public:
     void normalize(T tolerance = math_trait<T>::zero_tolerance())
     {
         KISMET_ASSERT(!is_zero(mag(), tolerance));
-        *this /= mag();
+        scale(math::invert(mag()));
     }
 
     // safe normalize the quaternion
@@ -67,7 +67,7 @@ public:
             return false;
         }
 
-        *this /= len;
+        scale(math::invert(len));
         return true;
     }
 
@@ -84,20 +84,20 @@ public:
     bool invert(T tolerance = math_trait<T>::zero_tolerance())
     {
         T sm = squared_mag();
-        if (is_zero(sm))
+        if (is_zero(sm, tolerance))
         {
             return false;
         }
 
-        *this /= sm;
+        scale(math::invert(sm));
         return true;
     }
 
     // component mutators
-    quaternion& w(T a) { v[0] = a; return *this; }
-    quaternion& x(T a) { v[1] = a; return *this; }
-    quaternion& y(T a) { v[2] = a; return *this; }
-    quaternion& z(T a) { v[3] = a; return *this; }
+    T& w() { return v[0]; }
+    T& x() { return v[1]; }
+    T& y() { return v[2]; }
+    T& z() { return v[3]; }
 
     // component accessors
     T w() const { return v[0]; }
@@ -130,33 +130,6 @@ public:
         return q;
     }
 
-    quaternion& operator +=(quaternion const& rhs)
-    {
-        v[0] += rhs.v[0];
-        v[1] += rhs.v[1];
-        v[2] += rhs.v[2];
-        v[3] += rhs.v[3];
-        return *this;
-    }
-
-    quaternion& operator -=(quaternion const& rhs)
-    {
-        v[0] -= rhs.v[0];
-        v[1] -= rhs.v[1];
-        v[2] -= rhs.v[2];
-        v[3] -= rhs.v[3];
-        return *this;
-    }
-
-    quaternion& operator *=(T scale)
-    {
-        v[0] *= scale;
-        v[1] *= scale;
-        v[2] *= scale;
-        v[3] *= scale;
-        return *this;
-    }
-
     // left multiply a quaternion
     quaternion& operator *=(quaternion const& rhs)
     {
@@ -167,12 +140,6 @@ public:
 
         w(w0).x(x0).y(y0).z(z0);
         return *this;
-    }
-
-    quaternion& operator /=(T scale)
-    {
-        KISMET_ASSERT(!is_zero(scale));
-        return this *= invert(scale);
     }
 
     // w: 0, x: 1, y: 2, z:3
@@ -191,6 +158,14 @@ public:
     // The identity quaternion
     static quaternion const identity;
 private:
+    void scale(T k)
+    {
+        v[0] *= k;
+        v[1] *= k;
+        v[2] *= k;
+        v[3] *= k;
+    }
+
     T v[4];
 };
 
