@@ -16,7 +16,7 @@ namespace math
 {
 
 template<typename T>
-matrix44<T> quat_to_matrix(quaternion<T> const& q)
+matrix44<T> matrix_rotate(quaternion<T> const& q)
 {
     matrix44<T> res;
 

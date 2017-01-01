@@ -10,9 +10,9 @@ using namespace math;
 
 BOOST_AUTO_TEST_SUITE(quaternion_test)
 
-BOOST_AUTO_TEST_CASE(quaternion_to_matrix)
+BOOST_AUTO_TEST_CASE(matrix_rotation)
 {
-    matrix44<float> res = quat_to_matrix(quaternionf::identity);
+    matrix44<float> res = matrix_rotate(quaternionf::identity);
     KISMET_CHECK_APPROX_COLLECTIONS(res, matrix44<float>::identity);
 }
 
