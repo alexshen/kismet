@@ -9,6 +9,7 @@
 #include <ostream>
 #include <type_traits>
 #include <utility>
+
 #include <boost/iterator/iterator_facade.hpp>
 
 #include "kismet/common_type.h"
@@ -146,7 +147,7 @@ public:
 
     Derived& operator /=(T k)
     {
-        kISMET_ASSERT(!is_zero(k));
+        KISMET_ASSERT(!is_zero(k));
         *this *= invert(k);
         return static_cast<Derived&>(*this);
     }
