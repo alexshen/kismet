@@ -29,12 +29,6 @@
 namespace kismet
 {
 
-template<typename T, typename... Args>
-inline std::unique_ptr<T> make_unique(Args&&... args)
-{
-    return std::unique_ptr<T>(new T{ std::forward<Args>(args)... });
-}
-
 /// In-place reorder a range based on the given indices, indices will be modified.
 /// Index cannot be duplicate, otherwise behavior is undefined.
 template<typename RandIt, typename IndexRandIt>

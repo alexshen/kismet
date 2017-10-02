@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <limits>
+#include <memory>
+
 #include "kismet/ai/fuzzy/fuzzy_and.h"
 #include "kismet/utility.h"
 
@@ -21,7 +23,7 @@ float fuzzy_and::get_dom() const
 
 std::unique_ptr<fuzzy_term> fuzzy_and::clone() const
 {
-    return make_unique<fuzzy_and>(*this);
+    return std::make_unique<fuzzy_and>(*this);
 }
 
 } // namespace fuzzy

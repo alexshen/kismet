@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <memory>
+
 #include "kismet/ai/fuzzy/fuzzy_set_wrapper.h"
 #include "kismet/ai/fuzzy/fuzzy_set.h"
 #include "kismet/utility.h"
@@ -25,7 +27,7 @@ void fuzzy_set_wrapper::aggregate(float dom)
 
 std::unique_ptr<fuzzy_term> fuzzy_set_wrapper::clone() const
 {
-    return make_unique<fuzzy_set_wrapper>(*this);
+    return std::make_unique<fuzzy_set_wrapper>(*this);
 }
 } // namespace fuzzy
 } // namespace kismet
