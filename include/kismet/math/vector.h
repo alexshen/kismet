@@ -51,6 +51,14 @@ struct vector_base
     }
 
     template<typename U>
+    vector_base(const U* p, std::size_t n)
+    {
+        KISMET_ASSERT(n <= N);
+        assign(p, p + n);
+    }
+
+
+    template<typename U>
     vector_base(vector_base<Derived, U, N> const& rhs)
         : v{ rhs.v }
     {
@@ -189,12 +197,31 @@ struct vector_base
 
     // return the zero vector
     static Derived const zero;
+    static Derived const one;
 protected:
     value_type v[N];
 };
 
 template<typename Derived, typename T, std::size_t N>
 Derived const vector_base<Derived, T, N>::zero = { T(0) }; // non-empty initializer list, force filling zero.
+
+template<typename T, std::size_t N>
+inline const T* vector_one_data()
+{
+    struct container
+    {
+        T a[N];
+        container()
+        {
+            std::fill_n(a, N, T(1.0));
+        }
+    };
+    static container s_data;
+    return s_data.a;
+}
+
+template<typename Derived, typename T, std::size_t N>
+Derived const vector_base<Derived, T, N>::one(vector_one_data<T, N>(), N);
 
 } // namespace detail
 
@@ -215,6 +242,12 @@ public:
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
         : base_type(list)
+    {
+    }
+
+    template<typename U>
+    vector(const U* p, std::size_t n, enable_if_convertible_t<U, T>* = 0)
+        : base_type(p, n)
     {
     }
 
@@ -250,6 +283,12 @@ public:
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
         : base_type(list)
+    {
+    }
+
+    template<typename U>
+    vector(const U* p, std::size_t n, enable_if_convertible_t<U, T>* = 0)
+        : base_type(p, n)
     {
     }
 
@@ -309,6 +348,12 @@ public:
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
         : base_type(list)
+    {
+    }
+
+    template<typename U>
+    vector(const U* p, std::size_t n, enable_if_convertible_t<U, T>* = 0)
+        : base_type(p, n)
     {
     }
 
@@ -390,6 +435,12 @@ public:
     template<typename U>
     vector(std::initializer_list<U> list, enable_if_convertible_t<U, T>* = 0)
         : base_type(list)
+    {
+    }
+
+    template<typename U>
+    vector(const U* p, std::size_t n, enable_if_convertible_t<U, T>* = 0)
+        : base_type(p, n)
     {
     }
 
