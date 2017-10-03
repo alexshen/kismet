@@ -1,8 +1,10 @@
 enable_testing()
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(unit_test ${SOURCES})
+
 target_link_libraries(
     unit_test
     ${Boost_LIBRARIES}
