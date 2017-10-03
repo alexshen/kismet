@@ -121,7 +121,7 @@ struct vector_base
 
     Derived& operator +=(Derived const& rhs)
     {
-        for (std::size_t i = 0; i < N; ++i)
+        for (size_type i = 0; i < N; ++i)
         {
             v[i] += rhs.v[i];
         }
@@ -130,7 +130,7 @@ struct vector_base
 
     Derived& operator -=(Derived const& rhs)
     {
-        for (std::size_t i = 0; i < N; ++i)
+        for (size_type i = 0; i < N; ++i)
         {
             v[i] -= rhs.v[i];
         }
@@ -139,7 +139,10 @@ struct vector_base
 
     Derived& operator *=(T k)
     {
-        std::for_each(v, v + N, [k](T& a) { a *= k; });
+        for (size_type i = 0; i < N; ++i)
+        {
+            v[i] *= k;
+        }
         return static_cast<Derived&>(*this);
     }
 
@@ -193,7 +196,10 @@ struct vector_base
     Derived operator -() const
     {
         Derived res;
-        std::transform(begin(), end(), res.begin(), std::negate<T>());
+        for (size_type i = 0; i < N; ++i)
+        {
+            res.v[i] = -v[i];
+        }
         return res;
     }
 
