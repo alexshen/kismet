@@ -118,6 +118,18 @@ PI_CONSTANT(PI_OVER_2,   1.5707963267948966192);
 
 #undef PI_CONSTANT
 
+template<typename T>
+inline T radians(T degs)
+{
+    return (T)degs * (T)KISMET_PI / (T)180;
+}
+
+template<typename T>
+inline T degrees(T rads)
+{
+    return (T)rads * (T)180 / (T)KISMET_PI;
+}
+
 namespace detail
 {
 // promote type T to a floating point type

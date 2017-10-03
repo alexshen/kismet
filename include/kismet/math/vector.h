@@ -551,6 +551,16 @@ inline vector<T, N> operator *(T k, vector<T, N> a)
     return a;
 }
 
+// component-wise multiplication
+template<typename T, std::size_t N>
+inline vector<T, N> operator *(vector<T, N> a, vector<T, N> const& b)
+{
+    for (auto i = 0u; i < N; ++i) {
+        a[i] *= b[i];
+    }
+    return a;
+}
+
 template<typename T, std::size_t N>
 inline vector<T, N> operator /(vector<T, N> a, T k)
 {
@@ -626,6 +636,13 @@ inline vector<T, N> lerp(vector<T, N> const& v0, vector<T, N> const& v1, T t)
         res[i] = v0[i] + t * (v1[i] - v0[i]);
     }
     return res;
+}
+
+// reflect the incident vector off the surface with normal n, n must be unit vector
+template<typename T, std::size_t N>
+inline vector<T, N> reflect(vector<T, N> const& v, vector<T, N> const& n)
+{
+    return v - T(2.0) * dot(v, n) * n;
 }
 
 template<typename T, typename U, std::size_t N>
