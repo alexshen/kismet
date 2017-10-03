@@ -8,6 +8,8 @@
 #include <ostream>
 #include <type_traits>
 #include <utility>
+#include <functional>
+
 #include "kismet/common_type.h"
 #include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
