@@ -48,8 +48,7 @@ inline typename T::value_type squared_mag(T const& v)
 template<typename T>
 inline typename T::value_type mag(T const& v)
 {
-    using std::sqrt;
-    return sqrt(squared_mag(v));
+    return std::sqrtf(squared_mag(v));
 }
 
 // normalize the given vector, assume that the vector's magnitude is not zero
@@ -77,8 +76,7 @@ inline bool safe_normalize(T& v, typename T::value_type tolerance = math_trait<T
         return false;
     }
 
-    using std::sqrt;
-    auto inv_mag(invert(sqrt(sqr_mag)));
+    auto inv_mag(invert(sqrtf(sqr_mag)));
 
     for (std::size_t i = 0; i <= v.size() - 1; ++i)
     {
