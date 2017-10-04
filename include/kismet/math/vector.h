@@ -151,6 +151,15 @@ struct vector_base
         KISMET_ASSERT(!is_zero(k));
         return *this *= invert(k);
     }
+    
+    Derived& operator *=(const vector_base& rhs)
+    {
+        for (size_type i = 0; i < N; ++i)
+        {
+            v[i] *= rhs.v[i];
+        }
+        return static_cast<Derived&>(*this);
+    }
 
     // return the dot product
     T dot(const vector_base& rhs) const
@@ -563,9 +572,7 @@ inline vector<T, N> operator *(T k, vector<T, N> a)
 template<typename T, std::size_t N>
 inline vector<T, N> operator *(vector<T, N> a, vector<T, N> const& b)
 {
-    for (auto i = 0u; i < N; ++i) {
-        a[i] *= b[i];
-    }
+    a *= b;
     return a;
 }
 

@@ -118,18 +118,6 @@ PI_CONSTANT(PI_OVER_2,   1.5707963267948966192);
 
 #undef PI_CONSTANT
 
-template<typename T>
-inline T radians(T degs)
-{
-    return (T)degs * (T)KISMET_PI / (T)180;
-}
-
-template<typename T>
-inline T degrees(T rads)
-{
-    return (T)rads * (T)180 / (T)KISMET_PI;
-}
-
 namespace detail
 {
 // promote type T to a floating point type
@@ -169,6 +157,20 @@ inline detail::promote_to_float_t<T> rad2deg(T rad)
 {
     using result_type = detail::promote_to_float_t<T>;
     return result_type(rad) * result_type(KISMET_180_OVER_PI);
+}
+
+template<typename T>
+inline detail::promote_to_float_t<T> radians(T degs)
+{
+    using result_type = detail::promote_to_float_t<T>;
+    return result_type(degs) * result_type(KISMET_PI) / 180;
+}
+
+template<typename T>
+inline detail::promote_to_float_t<T> degrees(T rads)
+{
+    using result_type = detail::promote_to_float_t<T>;
+    return result_type(rads) * 180 / result_type(KISMET_PI);
 }
 
 // define math traits for integer type.

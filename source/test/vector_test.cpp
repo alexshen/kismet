@@ -111,6 +111,11 @@ BOOST_AUTO_TEST_CASE(vector_named_zero_is_zero)
     BOOST_CHECK_EQUAL(vector2f::zero, vector2f(0, 0));
 }
 
+BOOST_AUTO_TEST_CASE(vector_named_one_is_one)
+{
+    BOOST_CHECK_EQUAL(vector2f::one, vector2f(1, 1));
+}
+
 BOOST_AUTO_TEST_CASE(vector_named_axes_cross)
 {
     BOOST_CHECK_EQUAL(cross(vector3f::right, vector3f::up), vector3f::back);
@@ -123,6 +128,11 @@ BOOST_AUTO_TEST_CASE(vector_named_axes_negate)
     BOOST_CHECK_EQUAL(vector3f::right, -vector3f::left);
     BOOST_CHECK_EQUAL(vector3f::up, -vector3f::down);
     BOOST_CHECK_EQUAL(vector3f::forward, -vector3f::back);
+}
+
+BOOST_AUTO_TEST_CASE(vector_component_wise_mul)
+{
+    KISMET_CHECK_APPROX_COLLECTIONS(vector2f(1, 3), vector2f(0.5, 1) * vector2f(2, 3));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
