@@ -58,7 +58,7 @@ quaternion<T> matrix_to_quat(matrix44<T> const& m)
     T trace = m[0][0] + m[1][1] + m[2][2];
     if (trace > T(0))
     {
-        res.w() = std::sqrtf(trace + T(1)) * T(0.5);
+        res.w() = std::sqrt(trace + T(1)) * T(0.5);
         T inv_denom = T(0.25) / res.w();
         res.x() = inv_denom * (m[2][1] - m[1][2]);
         res.y() = inv_denom * (m[0][2] - m[2][0]);
@@ -69,7 +69,7 @@ quaternion<T> matrix_to_quat(matrix44<T> const& m)
         int i = max_index(m[0][0], m[1][1], m[2][2]);
         if (i == 0)
         {
-            res.x() = std::sqrtf(T(1) + m[0][0] - m[1][1] - m[2][2]) * T(0.5);
+            res.x() = std::sqrt(T(1) + m[0][0] - m[1][1] - m[2][2]) * T(0.5);
             T inv_denom = T(0.25) / res.x();
             res.y() = inv_denom * (m[0][1] + m[1][0]);
             res.z() = inv_denom * (m[0][2] + m[2][0]);
@@ -77,7 +77,7 @@ quaternion<T> matrix_to_quat(matrix44<T> const& m)
         }
         else if (i == 1)
         {
-            res.y() = std::sqrtf(T(1) - m[0][0] + m[1][1] - m[2][2]) * T(0.5);
+            res.y() = std::sqrt(T(1) - m[0][0] + m[1][1] - m[2][2]) * T(0.5);
             T inv_denom = T(0.25) / res.y();
             res.x() = inv_denom * (m[0][1] + m[1][0]);
             res.z() = inv_denom * (m[1][2] + m[2][1]);
@@ -85,7 +85,7 @@ quaternion<T> matrix_to_quat(matrix44<T> const& m)
         }
         else
         {
-            res.z() = std::sqrtf(T(1) - m[0][0] - m[1][1] + m[2][2]) * T(0.5);
+            res.z() = std::sqrt(T(1) - m[0][0] - m[1][1] + m[2][2]) * T(0.5);
             T inv_denom = T(0.25) * res.z();
             res.x() = inv_denom * (m[0][2] + m[2][0]);
             res.y() = inv_denom * (m[1][2] + m[2][1]);

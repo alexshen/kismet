@@ -28,7 +28,7 @@ public:
 
     void aggregate(float dom) override
     {
-        m_term->aggregate(std::sqrtf(dom));
+        m_term->aggregate(std::sqrt(dom));
     }
 private:
     fuzzy_term_ptr m_term;

@@ -44,7 +44,7 @@ public:
 
     T mag() const
     {
-        return std::sqrtf(squared_mag());
+        return std::sqrt(squared_mag());
     }
 
     T squared_mag() const
