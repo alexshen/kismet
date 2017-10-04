@@ -646,11 +646,7 @@ inline vector<T, N2> operator *(matrix<T, N1, N2> const& m, vector<T, N2> const&
 template<typename T, std::size_t N>
 inline vector<T, N> lerp(vector<T, N> const& v0, vector<T, N> const& v1, T t)
 {
-    vector<T, N> res;
-    for (std::size_t i = 0; i < N; ++i) {
-        res[i] = v0[i] + t * (v1[i] - v0[i]);
-    }
-    return res;
+    return v0 + t * (v1 - v0);
 }
 
 // reflect the incident vector off the surface with normal n, n must be unit vector
