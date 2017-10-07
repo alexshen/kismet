@@ -38,14 +38,18 @@ inline bool approx(InputIt1 start0, InputIt1 end0, InputIt2 start1)
 do { \
     using std::begin; \
     using std::end; \
-    BOOST_CHECK((::kismet::test::approx(begin(a), end(a), begin(b)))); \
+	const auto& tmp0 = a; \
+	const auto& tmp1 = b; \
+    BOOST_CHECK((::kismet::test::approx(begin(tmp0), end(tmp0), begin(tmp1)))); \
 } while (0)
 
 #define KISMET_CHECK_EQUAL_COLLECTIONS(a, b) \
 do { \
     using std::begin; \
     using std::end; \
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(a), end(a), begin(b), end(b)); \
+	const auto& tmp0 = a; \
+	const auto& tmp1 = b; \
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(tmp0), end(tmp0), begin(tmp1), end(tmp1)); \
 } while (0)
 
 #endif // KISMET_TEST_UTILITY_H
