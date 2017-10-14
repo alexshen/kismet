@@ -284,12 +284,6 @@ public:
         this->y() = y;
     }
 
-    template<typename U, std::size_t N2>
-    vector(vector<U, N2> const& rhs, typename std::enable_if<(2<N2)>::type* = 0)
-        : vector(rhs.x(), rhs.y())
-    {
-    }
-
     template<typename U>
     vector(vector<U, 2> const& rhs,
            enable_if_convertible_t<U, T>* = 0)
@@ -347,12 +341,6 @@ public:
         this->x() = x;
         this->y() = y;
         this->z() = z;
-    }
-
-    template<typename U, std::size_t N2>
-    vector(vector<U, N2> const& rhs, typename std::enable_if<(3<N2)>::type* = 0)
-        : vector(rhs.x(), rhs.y(), rhs.z())
-    {
     }
 
     template<typename U>
