@@ -10,7 +10,6 @@
 #include <utility>
 #include <functional>
 
-#include "kismet/common_type.h"
 #include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/math/detail/vector_common.h"
@@ -515,15 +514,13 @@ inline vector<T, N> operator +(vector<T, N> a, vector<T, N> const& b)
     return a;
 }
 
-#ifndef KISMET_MSC
 template<typename T, typename U, std::size_t N>
-inline vector<common_type_t<T, U>, N> operator +(vector<T, N> const& a, vector<U, N> const& b)
+inline vector<std::common_type_t<T, U>, N> operator +(vector<T, N> const& a, vector<U, N> const& b)
 {
-    vector<common_type_t<T, U>, N> res{ a };
+    vector<std::common_type_t<T, U>, N> res{ a };
     res += b;
     return res;
 }
-#endif
 
 template<typename T, std::size_t N>
 inline vector<T, N> operator -(vector<T, N> a, vector<T, N> const& b)
@@ -532,15 +529,13 @@ inline vector<T, N> operator -(vector<T, N> a, vector<T, N> const& b)
     return a;
 }
 
-#ifndef KISMET_MSC
 template<typename T, typename U, std::size_t N>
-inline vector<common_type_t<T, U>, N> operator -(vector<T, N> const& a, vector<U, N> const& b)
+inline vector<std::common_type_t<T, U>, N> operator -(vector<T, N> const& a, vector<U, N> const& b)
 {
-    vector<common_type_t<T, U>, N> res{ a };
+    vector<std::common_type_t<T, U>, N> res{ a };
     res -= b;
     return res;
 }
-#endif
 
 template<typename T, std::size_t N>
 inline vector<T, N> operator *(vector<T, N> a, T k)
@@ -571,31 +566,29 @@ inline vector<T, N> operator /(vector<T, N> a, T k)
     return a;
 }
 
-#ifndef KISMET_MSC
 template<typename T, std::size_t N, typename U>
-inline vector<common_type_t<T, U>, N> operator *(vector<T, N> const& a, U k)
+inline vector<std::common_type_t<T, U>, N> operator *(vector<T, N> const& a, U k)
 {
-    vector<common_type_t<T, U>, N> v { a };
+    vector<std::common_type_t<T, U>, N> v { a };
     v *= k;
     return v;
 }
 
 template<typename U, typename T, std::size_t N>
-inline vector<common_type_t<T, U>, N> operator *(U k, vector<T, N> const& a)
+inline vector<std::common_type_t<T, U>, N> operator *(U k, vector<T, N> const& a)
 {
-    vector<common_type_t<T, U>, N> v { a };
+    vector<std::common_type_t<T, U>, N> v { a };
     v *= k;
     return v;
 }
 
 template<typename T, std::size_t N, typename U>
-inline vector<common_type_t<T, U>, N> operator /(vector<T, N> const& a, U k)
+inline vector<std::common_type_t<T, U>, N> operator /(vector<T, N> const& a, U k)
 {
-    vector<common_type_t<T, U>, N> v { a };
+    vector<std::common_type_t<T, U>, N> v { a };
     v /= k;
     return v;
 }
-#endif
 
 /// Left multiply a vector with a matrix
 /// Returns v * M

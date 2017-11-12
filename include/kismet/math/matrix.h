@@ -12,7 +12,6 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "kismet/common_type.h"
 #include "kismet/core/assert.h"
 #include "kismet/enable_if_convertible.h"
 #include "kismet/is_comparable.h"
@@ -1287,16 +1286,14 @@ inline matrix<T, N1, N2> operator -(matrix<T, N1, N2> m1, matrix<T, N1, N2> cons
     return m1 -= m2;
 }
 
-#ifndef KISMET_MSC
 // return a matrix with element is common type of scalar and matrix's element type
 template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<common_type_t<U, T>, N1, N2> operator *(U k, matrix<T, N1, N2> const& m)
+inline matrix<std::common_type_t<U, T>, N1, N2> operator *(U k, matrix<T, N1, N2> const& m)
 {
-    matrix<common_type_t<U, T>, N1, N2> res{m};
+    matrix<std::common_type_t<U, T>, N1, N2> res{m};
     res *= k;
     return res;
 }
-#endif
 
 // TODO: do we need this for performance reason, in case that generic scalar multiplication version
 // cannot optimize for rvalue ?
@@ -1307,16 +1304,14 @@ inline matrix<T, N1, N2> operator *(T k, matrix<T, N1, N2> m)
     return m;
 }
 
-#ifndef KISMET_MSC
 // return a matrix with element is common type of scalar and matrix's element type
 template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<common_type_t<U, T>, N1, N2> operator *(matrix<T, N1, N2> const& m, U k)
+inline matrix<std::common_type_t<U, T>, N1, N2> operator *(matrix<T, N1, N2> const& m, U k)
 {
-    matrix<common_type_t<U, T>, N1, N2> res{m};
+    matrix<std::common_type_t<U, T>, N1, N2> res{m};
     res *= k;
     return res;
 }
-#endif
 
 // TODO: do we need this for performance reason, in case that generic scalar multiplication version
 // cannot optimize for rvalue ?
@@ -1327,15 +1322,13 @@ inline matrix<T, N1, N2> operator *(matrix<T, N1, N2> m, T k)
     return m;
 }
 
-#ifndef KISMET_MSC
 template<typename U, typename T, std::size_t N1, std::size_t N2>
-inline matrix<common_type_t<U, T>, N1, N2> operator /(matrix<T, N1, N2> const& m, U k)
+inline matrix<std::common_type_t<U, T>, N1, N2> operator /(matrix<T, N1, N2> const& m, U k)
 {
-    matrix<common_type_t<U, T>, N1, N2> res{m};
+    matrix<std::common_type_t<U, T>, N1, N2> res{m};
     res /= k;
     return res;
 }
-#endif
 
 // TODO: do we need this for performance reason, in case that generic scalar multiplication version
 // cannot optimize for rvalue ?
