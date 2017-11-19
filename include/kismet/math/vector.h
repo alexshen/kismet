@@ -3,12 +3,13 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <ostream>
 #include <type_traits>
+#include <tuple>
 #include <utility>
-#include <functional>
 
 #include "kismet/core.h"
 #include "kismet/enable_if_convertible.h"
@@ -681,6 +682,14 @@ using vector4d = vector4<double>;
 
 } // namespace math
 } // namespace kismet
+
+namespace std
+{
+    template<typename T, size_t N>
+    class tuple_size<::kismet::math::vector<T, N>>
+        : public integral_constant<size_t, N>
+    {};
+}
 
 #endif // KISMET_MATH_VECTOR_H
 
